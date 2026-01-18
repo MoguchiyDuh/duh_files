@@ -142,6 +142,7 @@ class DebianInstaller(DistroInstaller):
         ("fastfetch", "manager", "fastfetch"),
         ("jq", "manager", "jq"),
         ("nnn", "manager", "nnn"),
+        ("tree", "manager", "tree"),
         ("direnv", "manager", "direnv"),
         # 4. Tools
         (

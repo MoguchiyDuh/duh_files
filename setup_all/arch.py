@@ -92,13 +92,12 @@ class ArchInstaller(DistroInstaller):
         ("jq", "manager", "jq"),
         ("nnn", "manager", "nnn"),
         ("direnv", "manager", "direnv"),
-        # 4. Tools (Docker, Redis, Postgres)
+        # 4. Tools
         (
             "docker",
             "binary",
-            "curl -fsSL https://get.docker.com -o get-docker.sh && sudo sh get-docker.sh",
+            "curl -fsSL https://get.docker.com -o get-docker.sh && sudo sh get-docker.sh && rm get-docker.sh",
         ),
-        ("mod-docker", "binary", "sudo usermod -aG docker $USER"),
         ("redis", "manager", "redis"),
         ("postgres", "manager", "postgresql"),
         # 5. Langs
