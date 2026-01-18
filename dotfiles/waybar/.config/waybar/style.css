@@ -1,0 +1,311 @@
+@import "colors.css";
+
+* {
+    border: none;
+    border-radius: 0;
+    font-family: "FiraCode Nerd Font Propo";
+    font-size: 13px;
+    font-weight: 500;
+    min-height: 0;
+}
+
+window#waybar {
+    background-color: transparent;
+    color: @foreground;
+}
+
+/* All modules */
+#workspaces,
+#custom-distro-icon,
+#cpu,
+#memory,
+#custom-gpu,
+#taskbar,
+#custom-cliphist,
+#tray,
+#custom-notifications,
+#pulseaudio,
+#bluetooth,
+#network,
+#language,
+#custom-weather,
+#clock,
+#battery,
+#custom-power {
+    padding: 0 12px;
+    margin: 5px;
+    background: alpha(@color0, 0.8);
+    border-radius: 10px;
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.8);
+}
+
+/* LEFT */
+#custom-distro-icon {
+    font-size: 20px;
+    color: @color12;
+    background: linear-gradient(135deg, alpha(@color12, 0.4), alpha(@color11, 0.3));
+    padding: 0 14px;
+    font-weight: bold;
+    transition: all 0.3s ease;
+}
+
+#custom-distro-icon:hover {
+    background: linear-gradient(135deg, alpha(@color12, 0.55), alpha(@color11, 0.45));
+}
+
+#cpu,
+#memory,
+#custom-gpu {
+    color: @color9;
+    background: alpha(@color9, 0.4);
+    padding: 0 12px;
+    transition: all 0.3s ease;
+}
+
+#cpu:hover,
+#memory:hover,
+#custom-gpu:hover {
+    background: alpha(@color9, 0.55);
+}
+
+#taskbar {
+    padding: 0;
+    background-color: transparent;
+}
+
+#taskbar button {
+    padding: 0 12px;
+    margin: 0 3px;
+    background: alpha(@color0, 0.75);
+    color: @color7;
+    border-radius: 10px;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.7);
+}
+
+#taskbar button.active {
+    background: linear-gradient(135deg, alpha(@color12, 0.8), alpha(@color11, 0.7));
+    color: @color0;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+}
+
+#taskbar button:hover {
+    background: alpha(@color12, 0.6);
+}
+
+#taskbar button.minimized {
+    opacity: 0.5;
+    background: alpha(@color0, 0.5);
+}
+
+/* MIDDLE */
+#workspaces {
+    padding: 0 4px;
+    background-color: transparent;
+}
+
+#workspaces button {
+    padding: 0 12px;
+    margin: 0 3px;
+    background: alpha(@color0, 0.8);
+    color: @color7;
+    border-radius: 10px;
+    font-weight: 600;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.8);
+}
+
+#workspaces button.active {
+    background: linear-gradient(135deg, @color12, @color11);
+    color: @color0;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+}
+
+#workspaces button:hover {
+    background: alpha(@color12, 0.6);
+}
+
+#workspaces button.urgent {
+    background: linear-gradient(135deg, @color1, @color9);
+    animation: urgent-pulse 1.5s ease-in-out infinite;
+}
+
+@keyframes urgent-pulse {
+
+    0% {
+        opacity: 1;
+    }
+
+    100% {
+        opacity: 1;
+    }
+
+    50% {
+        opacity: 0.7;
+    }
+}
+
+/* RIGHT */
+#custom-cliphist,
+#custom-notifications {
+    padding: 0 12px;
+    color: @color15;
+    background: alpha(@color14, 0.4);
+    transition: all 0.3s ease;
+}
+
+#custom-cliphist:hover,
+#custom-notifications:hover {
+    background: alpha(@color14, 0.55);
+}
+
+#tray {
+    padding: 0 12px;
+    background: alpha(@color0, 0.7);
+}
+
+#tray>.passive {
+    opacity: 0.6;
+}
+
+#tray>.needs-attention {
+    background: alpha(@color1, 0.4);
+    animation: attention-blink 1s ease-in-out infinite;
+}
+
+@keyframes attention-blink {
+
+    0% {
+        opacity: 1;
+    }
+
+    100% {
+        opacity: 1;
+    }
+
+    50% {
+        opacity: 0.5;
+    }
+}
+
+#bluetooth,
+#network,
+#pulseaudio.source,
+#pulseaudio.sink {
+    color: @color13;
+    background: alpha(@color13, 0.4);
+    padding: 0 12px;
+    transition: all 0.3s ease;
+}
+
+#bluetooth:hover,
+#network:hover,
+#pulseaudio.source:hover,
+#pulseaudio.sink:hover {
+    background: alpha(@color13, 0.55);
+}
+
+#bluetooth.disabled,
+#network.disconnected,
+#pulseaudio.source.source-muted,
+#pulseaudio.sink.muted {
+    color: @color8;
+    background: alpha(@color8, 0.4);
+    opacity: 0.6;
+}
+
+#language {
+    padding: 0 12px;
+    color: @color3;
+    background: alpha(@color3, 0.4);
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+#language:hover {
+    background: alpha(@color3, 0.55);
+}
+
+#custom-weather,
+#clock {
+    font-family: "JetBrainsMono Nerd Font";
+    color: @color5;
+    background: linear-gradient(135deg, alpha(@color5, 0.4), alpha(@color6, 0.35));
+    font-weight: 700;
+    padding: 0 12px;
+    transition: all 0.3s ease;
+}
+
+#custom-weather:hover,
+#clock:hover {
+    background: linear-gradient(135deg, alpha(@color5, 0.55), alpha(@color6, 0.5));
+}
+
+#battery {
+    color: @color2;
+    background: alpha(@color2, 0.4);
+    padding: 0 12px;
+    transition: all 0.3s ease;
+}
+
+#battery:hover {
+    background: alpha(@color2, 0.55);
+}
+
+#battery.charging {
+    color: @color10;
+    background: alpha(@color10, 0.4);
+}
+
+#battery.warning:not(.charging) {
+    color: @color3;
+    background: alpha(@color3, 0.5);
+}
+
+#battery.critical:not(.charging) {
+    color: @color1;
+    background: alpha(@color1, 0.6);
+    animation: battery-critical 2s ease-in-out infinite;
+}
+
+@keyframes battery-critical {
+
+    0% {
+        opacity: 1;
+    }
+
+    100% {
+        opacity: 1;
+    }
+
+    50% {
+        opacity: 0.6;
+    }
+}
+
+#custom-power {
+    color: @color1;
+    font-size: 18px;
+    background: linear-gradient(135deg, alpha(@color1, 0.4), alpha(@color9, 0.3));
+    padding: 0 14px;
+    font-weight: bold;
+    transition: all 0.3s ease;
+}
+
+#custom-power:hover {
+    background: linear-gradient(135deg, alpha(@color1, 0.55), alpha(@color9, 0.45));
+}
+
+/* Tooltip */
+tooltip {
+    background: alpha(@color0, 0.95);
+    border: 2px solid alpha(@color12, 0.6);
+    border-radius: 10px;
+    padding: 10px 14px;
+}
+
+tooltip label {
+    color: @foreground;
+    font-weight: 500;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+}

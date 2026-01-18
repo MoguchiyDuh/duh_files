@@ -25,7 +25,7 @@ class ArchInstaller(DistroInstaller):
         (
             "oh-my-zsh",
             "binary",
-            'sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"',
+            'RUNZSH=no CHSH=no sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"',
         ),
         (
             "powerlevel10k",
@@ -33,8 +33,9 @@ class ArchInstaller(DistroInstaller):
             (
                 "https://github.com/romkatv/powerlevel10k.git",
                 [
+                    "rm -rf ~/.oh-my-zsh/custom/themes/powerlevel10k",
                     "mkdir -p ~/.oh-my-zsh/custom/themes/powerlevel10k",
-                    "cp -r * ~/.oh-my-zsh/custom/themes/powerlevel10k",
+                    "cp -r . ~/.oh-my-zsh/custom/themes/powerlevel10k",
                 ],
             ),
         ),
@@ -44,8 +45,9 @@ class ArchInstaller(DistroInstaller):
             (
                 "https://github.com/zsh-users/zsh-autosuggestions",
                 [
+                    "rm -rf ~/.oh-my-zsh/custom/plugins/zsh-autosuggestions",
                     "mkdir -p ~/.oh-my-zsh/custom/plugins/zsh-autosuggestions",
-                    "cp -r * ~/.oh-my-zsh/custom/plugins/zsh-autosuggestions",
+                    "cp -r . ~/.oh-my-zsh/custom/plugins/zsh-autosuggestions",
                 ],
             ),
         ),
@@ -55,8 +57,9 @@ class ArchInstaller(DistroInstaller):
             (
                 "https://github.com/zsh-users/zsh-syntax-highlighting.git",
                 [
+                    "rm -rf ~/.oh-my-zsh/custom/plugins/zsh-syntax-highlighting",
                     "mkdir -p ~/.oh-my-zsh/custom/plugins/zsh-syntax-highlighting",
-                    "cp -r * ~/.oh-my-zsh/custom/plugins/zsh-syntax-highlighting",
+                    "cp -r . ~/.oh-my-zsh/custom/plugins/zsh-syntax-highlighting",
                 ],
             ),
         ),
@@ -66,14 +69,14 @@ class ArchInstaller(DistroInstaller):
             (
                 "https://github.com/zsh-users/zsh-completions.git",
                 [
+                    "rm -rf ~/.oh-my-zsh/custom/plugins/zsh-completions",
                     "mkdir -p ~/.oh-my-zsh/custom/plugins/zsh-completions",
-                    "cp -r * ~/.oh-my-zsh/custom/plugins/zsh-completions",
+                    "cp -r . ~/.oh-my-zsh/custom/plugins/zsh-completions",
                 ],
             ),
         ),
         ("tmux", "manager", "tmux"),
         ("stow", "manager", "stow"),
-        ("starship", "binary", "curl -sS https://starship.rs/install.sh | sh -s -- -y"),
         (
             "font",
             "font",
@@ -90,14 +93,23 @@ class ArchInstaller(DistroInstaller):
         ("btop", "manager", "btop"),
         ("fastfetch", "manager", "fastfetch"),
         ("jq", "manager", "jq"),
+        ("yq", "manager", "yq"),
         ("nnn", "manager", "nnn"),
         ("direnv", "manager", "direnv"),
+        ("dust", "manager", "dust"),
+        ("duf", "manager", "duf"),
+        ("hyperfine", "manager", "hyperfine"),
+        # Archive tools
+        ("zip", "manager", "zip"),
+        ("unzip", "manager", "unzip"),
+        ("p7zip", "manager", "p7zip"),
         # 4. Tools
         (
             "docker",
             "binary",
             "curl -fsSL https://get.docker.com -o get-docker.sh && sudo sh get-docker.sh && rm get-docker.sh",
         ),
+        ("docker-group", "binary", "sudo usermod -aG docker $(whoami)"),
         ("redis", "manager", "redis"),
         ("postgres", "manager", "postgresql"),
         # 5. Langs
@@ -108,10 +120,9 @@ class ArchInstaller(DistroInstaller):
         (
             "rust",
             "binary",
-            "curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh",
+            "curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y",
         ),
         ("uv", "binary", "curl -LsSf https://astral.sh/uv/install.sh | sh"),
-        ("c++", "manager", "gcc"),
         # 6. Dependent / Late Bound
         ("tealdeer", "binary", ". ~/.cargo/env && cargo install tealdeer"),
         ("yay", "aur", "yay"),
@@ -140,8 +151,9 @@ class ArchInstaller(DistroInstaller):
             (
                 "https://github.com/tmux-plugins/tmux-continuum.git",
                 [
+                    "rm -rf ~/.config/tmux/plugins/tmux-continuum",
                     "mkdir -p ~/.config/tmux/plugins/tmux-continuum",
-                    "cp -r * ~/.config/tmux/plugins/tmux-continuum",
+                    "cp -r . ~/.config/tmux/plugins/tmux-continuum",
                 ],
             ),
         ),
@@ -151,8 +163,9 @@ class ArchInstaller(DistroInstaller):
             (
                 "https://github.com/tmux-plugins/tmux-cpu.git",
                 [
+                    "rm -rf ~/.config/tmux/plugins/tmux-cpu",
                     "mkdir -p ~/.config/tmux/plugins/tmux-cpu",
-                    "cp -r * ~/.config/tmux/plugins/tmux-cpu",
+                    "cp -r . ~/.config/tmux/plugins/tmux-cpu",
                 ],
             ),
         ),
@@ -162,8 +175,9 @@ class ArchInstaller(DistroInstaller):
             (
                 "https://github.com/tmux-plugins/tmux-prefix-highlight.git",
                 [
+                    "rm -rf ~/.config/tmux/plugins/tmux-prefix-highlight",
                     "mkdir -p ~/.config/tmux/plugins/tmux-prefix-highlight",
-                    "cp -r * ~/.config/tmux/plugins/tmux-prefix-highlight",
+                    "cp -r . ~/.config/tmux/plugins/tmux-prefix-highlight",
                 ],
             ),
         ),
@@ -173,11 +187,45 @@ class ArchInstaller(DistroInstaller):
             (
                 "https://github.com/tmux-plugins/tmux-resurrect.git",
                 [
+                    "rm -rf ~/.config/tmux/plugins/tmux-resurrect",
                     "mkdir -p ~/.config/tmux/plugins/tmux-resurrect",
-                    "cp -r * ~/.config/tmux/plugins/tmux-resurrect",
+                    "cp -r . ~/.config/tmux/plugins/tmux-resurrect",
                 ],
             ),
         ),
+        # 7. Arch-specific (Hyprland ecosystem)
+        ("hyprland", "manager", "hyprland"),
+        ("waybar", "manager", "waybar"),
+        ("kitty", "manager", "kitty"),
+        ("rofi-wayland", "manager", "rofi-wayland"),
+        ("swaync", "manager", "swaync"),
+        ("hypridle", "manager", "hypridle"),
+        ("hyprlock", "manager", "hyprlock"),
+        ("wallust", "manager", "wallust"),
+        # Wayland core tools
+        ("wl-clipboard", "manager", "wl-clipboard"),
+        ("cliphist", "manager", "cliphist"),
+        ("grim", "manager", "grim"),
+        ("slurp", "manager", "slurp"),
+        ("hyprshot", "aur", "hyprshot"),
+        ("hyprpicker", "manager", "hyprpicker"),
+        ("swww", "manager", "swww"),
+        ("wlogout", "manager", "wlogout"),
+        # OCR & Translation
+        ("tesseract", "manager", "tesseract"),
+        ("tesseract-data-eng", "manager", "tesseract-data-eng"),
+        ("tesseract-data-rus", "manager", "tesseract-data-rus"),
+        # Audio/Media/System
+        ("wireplumber", "manager", "wireplumber"),
+        ("playerctl", "manager", "playerctl"),
+        ("brightnessctl", "manager", "brightnessctl"),
+        ("libnotify", "manager", "libnotify"),
+        # Qt/GTK theming
+        ("qt5ct", "manager", "qt5ct"),
+        ("kvantum", "manager", "kvantum"),
+        # Apps
+        ("nautilus", "manager", "nautilus"),
+        ("flatpak", "manager", "flatpak"),
     ]
 
     def check_update(self) -> None:

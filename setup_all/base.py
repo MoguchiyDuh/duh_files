@@ -316,41 +316,129 @@ class DistroInstaller(ABC):
 
         # Restore configurations after installation
         self.restore_configs()
+        self.link_scripts()
 
     def restore_configs(self) -> None:
-        """Restore configuration files from local directory to home."""
-        self.log("Restoring dotfiles and configurations...")
+        """Use GNU Stow to symlink dotfiles from repo to home."""
+        self.log("Stowing dotfiles...")
 
         home = os.path.expanduser("~")
         script_dir = os.path.dirname(os.path.abspath(__file__))
+        dotfiles_dir = os.path.join(os.path.dirname(script_dir), "dotfiles")
 
-        # Mapping: source_rel_path -> dest_abs_path
-        configs = {
-            ".zshrc": os.path.join(home, ".zshrc"),
-            ".p10k.zsh": os.path.join(home, ".p10k.zsh"),
-            ".config/tmux": os.path.join(home, ".config/tmux"),
-            ".config/nvim": os.path.join(home, ".config/nvim"),
-            ".config/fastfetch": os.path.join(home, ".config/fastfetch"),
-        }
+        if not os.path.exists(dotfiles_dir):
+            self.log(f"  ⚠ Dotfiles directory not found: {dotfiles_dir}")
+            return
 
-        for src_rel, dest in configs.items():
-            src = os.path.join(script_dir, src_rel)
-            if os.path.exists(src):
-                self.log(f"  Restoring {src_rel} -> {dest}")
-                # Ensure parent dir exists
-                parent = os.path.dirname(dest)
-                if not os.path.exists(parent):
-                    os.makedirs(parent, exist_ok=True)
+        # Create backup dir if needed
+        from datetime import datetime
+        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+        backup_dir = os.path.join(os.path.dirname(script_dir), f".backups/{timestamp}")
 
-                # Copy logic (using shell cp for recursion)
-                try:
-                    if os.path.isdir(src):
-                        subprocess.run(["rm", "-rf", dest], check=False)
-                        subprocess.run(["cp", "-r", src, dest], check=True)
-                    else:
-                        subprocess.run(["cp", src, dest], check=True)
-                except Exception as e:
-                    self.log(f"  ⚠ Failed to restore {src_rel}: {e}")
+        # Stow packages (each subdirectory in dotfiles/)
+        packages = ["zsh", "nvim", "tmux", "fastfetch"]
+
+        # Add arch-specific packages if on Arch
+        if self.log_id == "arch":
+            packages.extend(["hypr", "waybar", "kitty", "rofi"])
+
+        for pkg in packages:
+            pkg_path = os.path.join(dotfiles_dir, pkg)
+            if not os.path.exists(pkg_path):
+                continue
+
+            self.log(f"  Checking {pkg} for conflicts...")
+
+            # Try stow first to detect conflicts
+            result = subprocess.run(
+                ["stow", "--simulate", "--restow", "--target", home, pkg],
+                cwd=dotfiles_dir,
+                capture_output=True,
+                text=True,
+            )
+
+            # If conflicts detected, backup existing files
+            if result.returncode != 0 and "existing target" in result.stderr:
+                self.log(f"    Found conflicts, backing up existing files...")
+                os.makedirs(backup_dir, exist_ok=True)
+
+                # Extract conflicting file paths from stow error output
+                for line in result.stderr.split("\n"):
+                    if "existing target" in line:
+                        # Parse: "* existing target is ... (.zshrc)"
+                        parts = line.split("(")
+                        if len(parts) > 1:
+                            conflict_file = parts[-1].rstrip(")")
+                            conflict_path = os.path.join(home, conflict_file)
+
+                            if os.path.exists(conflict_path) and not os.path.islink(conflict_path):
+                                backup_path = os.path.join(backup_dir, conflict_file)
+                                os.makedirs(os.path.dirname(backup_path), exist_ok=True)
+
+                                # Move to backup
+                                subprocess.run(["mv", conflict_path, backup_path], check=True)
+                                self.log(f"    Backed up {conflict_file}")
+
+            # Now stow (should succeed after backup)
+            try:
+                subprocess.run(
+                    ["stow", "--restow", "--target", home, pkg],
+                    cwd=dotfiles_dir,
+                    check=True,
+                    capture_output=True,
+                )
+                self.log(f"  ✓ Stowed {pkg}")
+            except subprocess.CalledProcessError as e:
+                self.log(f"  ⚠ Failed to stow {pkg}: {e.stderr.decode()}")
+
+        if os.path.exists(backup_dir):
+            self.log(f"  Backups saved to: {backup_dir}")
+
+    def link_scripts(self) -> None:
+        """Symlink scripts from repo to ~/.local/bin."""
+        self.log("Linking scripts to ~/.local/bin...")
+
+        home = os.path.expanduser("~")
+        bin_dir = os.path.join(home, ".local/bin")
+        script_dir = os.path.dirname(os.path.abspath(__file__))
+        scripts_dir = os.path.join(os.path.dirname(script_dir), "scripts")
+
+        if not os.path.exists(scripts_dir):
+            self.log(f"  ⚠ Scripts directory not found: {scripts_dir}")
+            return
+
+        # Ensure ~/.local/bin exists
+        os.makedirs(bin_dir, exist_ok=True)
+
+        # Find all executable scripts
+        for script_file in os.listdir(scripts_dir):
+            script_path = os.path.join(scripts_dir, script_file)
+
+            # Skip non-files and non-executables
+            if not os.path.isfile(script_path):
+                continue
+            if not (script_file.endswith(".py") or script_file.endswith(".sh")):
+                continue
+
+            # Create symlink name (duh-<name> without extension)
+            script_name = os.path.splitext(script_file)[0]
+            if not script_name.startswith("duh-"):
+                link_name = f"duh-{script_name}"
+            else:
+                link_name = script_name
+
+            link_path = os.path.join(bin_dir, link_name)
+
+            try:
+                # Remove existing symlink/file
+                if os.path.lexists(link_path):
+                    os.remove(link_path)
+
+                # Create symlink
+                os.symlink(script_path, link_path)
+                self.log(f"  ✓ Linked {script_file} -> {link_name}")
+            except Exception as e:
+                self.log(f"  ⚠ Failed to link {script_file}: {e}")
 
     @property
     @abstractmethod

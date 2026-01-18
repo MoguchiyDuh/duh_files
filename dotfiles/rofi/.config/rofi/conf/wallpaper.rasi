@@ -1,0 +1,94 @@
+@import "colors.rasi"
+
+* {
+    font: "FiraCode Nerd Font 12";
+    background-color: transparent;
+    text-color: @normal-text;
+}
+
+window {
+    transparency: "real";
+    location: center;
+    anchor: center;
+    fullscreen: false;
+    width: 90%;
+    x-offset: 0px;
+    y-offset: 0px;
+    background-color: transparent;
+    border: 3px;
+    border-color: @window-border;
+    border-radius: 16px;
+}
+
+mainbox {
+    enabled: true;
+    spacing: 20px;
+    margin: 10px;
+    padding: 0px;
+    background-color: transparent;
+    children: [ "listview" ];
+}
+
+listview {
+    enabled: true;
+    columns: 6;
+    lines: 2;
+    cycle: true;
+    dynamic: true;
+    scrollbar: false;
+    layout: vertical;
+    reverse: false;
+    fixed-height: false;
+    fixed-columns: false;
+    spacing: 12px;
+    margin: 0px;
+    padding: 0px;
+    background-color: transparent;
+    border: 0px;
+}
+
+element {
+    enabled: true;
+    spacing: 8px;
+    margin: 6px;
+    padding: 12px;
+    border: 3px;
+    border-color: transparent;
+    border-radius: 12px;
+    background-color: rgba(0, 0, 0, 0.3);
+    text-color: @normal-text;
+    orientation: vertical;
+    cursor: pointer;
+}
+
+element normal.normal {
+    background-color: rgba(0, 0, 0, 0.3);
+    text-color: @normal-text;
+    border-color: transparent;
+}
+
+element selected.normal {
+    background-color: @selected-background;
+    text-color: @selected-text;
+    border: 2px;
+    border-color: @window-border;
+}
+
+element-icon {
+    background-color: transparent;
+    text-color: inherit;
+    size: 280;
+    cursor: inherit;
+    border-radius: 8px;
+}
+
+element-text {
+    background-color: transparent;
+    text-color: inherit;
+    expand: false;
+    horizontal-align: 0.5;
+    vertical-align: 0.5;
+    margin: 8px 0px 0px 0px;
+    cursor: inherit;
+    font: "FiraCode Nerd Font Medium 11";
+}

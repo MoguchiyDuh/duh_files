@@ -1,0 +1,118 @@
+@import "colors.rasi"
+
+* {
+    font: "FiraCode Nerd Font 12";
+    text-color: @normal-text;
+    background-color: transparent;
+    margin: 0;
+    padding: 0;
+    spacing: 0;
+}
+
+window {
+    background-color: transparent;
+    location: center;
+    width: 36%;
+    border-radius: 16px;
+    border: 3px solid;
+    border-color: @window-border;
+    padding: 18px;
+}
+
+inputbar {
+    font: "FiraCode Nerd Font Bold 16";
+    padding: 14px 18px;
+    spacing: 14px;
+    children: [ icon-search, entry ];
+    background-color: rgba(0, 0, 0, 0.4);
+    border-radius: 12px;
+    margin: 0 0 10px 0;
+    border: 2px solid;
+    border-color: @window-border;
+}
+
+icon-search {
+    expand: false;
+    filename: "search";
+    size: 22px;
+    text-color: @scrollbar-filled;
+}
+
+icon-search, entry, element-icon, element-text {
+    vertical-align: 0.5;
+}
+
+entry {
+    font: inherit;
+    placeholder: "kensaku...";
+    placeholder-color: @scrollbar-filled;
+    text-color: @normal-text;
+}
+
+message {
+    border: 1px 0 0;
+    border-color: @window-border;
+    background-color: rgba(0, 0, 0, 0.4);
+    padding: 14px;
+    border-radius: 10px;
+}
+
+textbox {
+    padding: 14px 20px;
+    text-color: @error-message;
+    font: "FiraCode Nerd Font 10";
+}
+
+listview {
+    lines: 15;
+    columns: 1;
+    fixed-height: true;
+    border: 2px 0 0;
+    border-color: @scrollbar-empty;
+    spacing: 3px;
+    margin: 6px 0 0 0;
+    dynamic: false;
+    scrollbar: false;
+}
+
+element {
+    padding: 7px 18px;
+    spacing: 14px;
+    background-color: rgba(0, 0, 0, 0.3);
+    border-radius: 10px;
+    border: 2px solid;
+    border-color: transparent;
+}
+
+element normal.active,
+element alternate.active {
+    background-color: rgba(0, 0, 0, 0.5);
+    text-color: @selected-background;
+    border-color: @scrollbar-filled;
+}
+
+element selected.normal,
+element selected.active {
+    background-color: @selected-background;
+    text-color: @selected-text;
+    border-color: @window-border;
+}
+
+element-icon {
+    size: 32px;
+}
+
+element-text {
+    text-color: inherit;
+    highlight: bold;
+    highlight-color: @scrollbar-filled;
+    font: "FiraCode Nerd Font Medium 13";
+}
+
+scrollbar {
+    handle-width: 8px;
+    handle-color: @selected-background;
+    background-color: rgba(0, 0, 0, 0.3);
+    border-radius: 4px;
+    padding: 0 4px;
+}
