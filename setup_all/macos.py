@@ -11,24 +11,25 @@ class MacOSInstaller(DistroInstaller):
         return "macos"
 
     PACKAGES = [
-        # 1. Dev
+        # 1. Dev (Compilers, Base)
         (
             "brew",
             "binary",
             '/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"',
         ),
-        ("openssl", "manager", "openssl"),
-        ("ssh", "manager", "openssh"),
-        ("git", "manager", "git"),
-        ("curl", "manager", "curl"),
-        ("cmake", "manager", "cmake"),
-        ("ninja", "manager", "ninja"),
-        # 2. Terminal
-        ("zsh", "manager", "zsh"),
+        ("openssl", "brew", "openssl"),
+        ("openssh", "brew", "openssh"),
+        ("git", "brew", "git"),
+        ("curl", "brew", "curl"),
+        ("cmake", "brew", "cmake"),
+        ("ninja", "brew", "ninja"),
+        ("clang", "brew", "llvm"),
+        # 2. Terminal and Font
+        ("zsh", "brew", "zsh"),
         (
             "oh-my-zsh",
             "binary",
-            'sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"',
+            'RUNZSH=no CHSH=no sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"',
         ),
         (
             "powerlevel10k",
@@ -36,8 +37,9 @@ class MacOSInstaller(DistroInstaller):
             (
                 "https://github.com/romkatv/powerlevel10k.git",
                 [
+                    "rm -rf ~/.oh-my-zsh/custom/themes/powerlevel10k",
                     "mkdir -p ~/.oh-my-zsh/custom/themes/powerlevel10k",
-                    "cp -r * ~/.oh-my-zsh/custom/themes/powerlevel10k",
+                    "cp -r . ~/.oh-my-zsh/custom/themes/powerlevel10k",
                 ],
             ),
         ),
@@ -47,8 +49,9 @@ class MacOSInstaller(DistroInstaller):
             (
                 "https://github.com/zsh-users/zsh-autosuggestions",
                 [
+                    "rm -rf ~/.oh-my-zsh/custom/plugins/zsh-autosuggestions",
                     "mkdir -p ~/.oh-my-zsh/custom/plugins/zsh-autosuggestions",
-                    "cp -r * ~/.oh-my-zsh/custom/plugins/zsh-autosuggestions",
+                    "cp -r . ~/.oh-my-zsh/custom/plugins/zsh-autosuggestions",
                 ],
             ),
         ),
@@ -58,8 +61,9 @@ class MacOSInstaller(DistroInstaller):
             (
                 "https://github.com/zsh-users/zsh-syntax-highlighting.git",
                 [
+                    "rm -rf ~/.oh-my-zsh/custom/plugins/zsh-syntax-highlighting",
                     "mkdir -p ~/.oh-my-zsh/custom/plugins/zsh-syntax-highlighting",
-                    "cp -r * ~/.oh-my-zsh/custom/plugins/zsh-syntax-highlighting",
+                    "cp -r . ~/.oh-my-zsh/custom/plugins/zsh-syntax-highlighting",
                 ],
             ),
         ),
@@ -69,44 +73,52 @@ class MacOSInstaller(DistroInstaller):
             (
                 "https://github.com/zsh-users/zsh-completions.git",
                 [
+                    "rm -rf ~/.oh-my-zsh/custom/plugins/zsh-completions",
                     "mkdir -p ~/.oh-my-zsh/custom/plugins/zsh-completions",
-                    "cp -r * ~/.oh-my-zsh/custom/plugins/zsh-completions",
+                    "cp -r . ~/.oh-my-zsh/custom/plugins/zsh-completions",
                 ],
             ),
         ),
-        ("tmux", "manager", "tmux"),
-        ("stow", "manager", "stow"),
-        ("starship", "binary", "curl -sS https://starship.rs/install.sh | sh -s -- -y"),
+        ("tmux", "brew", "tmux"),
+        ("stow", "brew", "stow"),
         ("font", "font", "font-fira-code-nerd-font"),
         # 3. Helpers
-        ("gh", "manager", "gh"),
-        ("zoxide", "manager", "zoxide"),
-        ("fzf", "manager", "fzf"),
-        ("eza", "manager", "eza"),
-        ("bat", "manager", "bat"),
-        ("fd", "manager", "fd"),
-        ("ripgrep", "manager", "ripgrep"),
-        ("btop", "manager", "btop"),
-        ("fastfetch", "manager", "fastfetch"),
-        ("jq", "manager", "jq"),
-        ("nnn", "manager", "nnn"),
-        ("tree", "manager", "tree"),
-        ("direnv", "manager", "direnv"),
+        ("gh", "brew", "gh"),
+        ("zoxide", "brew", "zoxide"),
+        ("fzf", "brew", "fzf"),
+        ("eza", "brew", "eza"),
+        ("bat", "brew", "bat"),
+        ("fd", "brew", "fd"),
+        ("ripgrep", "brew", "ripgrep"),
+        ("btop", "brew", "btop"),
+        ("fastfetch", "brew", "fastfetch"),
+        ("jq", "brew", "jq"),
+        ("yq", "brew", "yq"),
+        ("nnn", "brew", "nnn"),
+        ("direnv", "brew", "direnv"),
+        ("dust", "brew", "dust"),
+        ("duf", "brew", "duf"),
+        ("hyperfine", "brew", "hyperfine"),
+        # Archive tools
+        ("zip", "brew", "zip"),
+        ("unzip", "brew", "unzip"),
+        ("p7zip", "brew", "p7zip"),
         # 4. Tools
         ("docker", "brew", "docker"),
-        ("redis", "manager", "redis"),
-        ("postgres", "manager", "postgresql"),
+        ("redis", "brew", "redis"),
+        ("postgres", "brew", "postgresql"),
         # 5. Langs
-        ("python", "manager", "python3"),
-        ("node", "manager", "node"),
-        ("go", "manager", "go"),
+        ("python", "brew", "python3"),
+        ("node", "brew", "node"),
+        ("npm", "brew", "npm"),
+        ("go", "brew", "go"),
         (
             "rust",
             "binary",
-            "curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh",
+            "curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y",
         ),
         ("uv", "binary", "curl -LsSf https://astral.sh/uv/install.sh | sh"),
-        # 6. Dependent
+        # 6. Dependent / Late Bound
         ("tealdeer", "binary", ". ~/.cargo/env && cargo install tealdeer"),
         ("lazygit", "binary", "go install github.com/jesseduffield/lazygit@latest"),
         (
@@ -133,8 +145,9 @@ class MacOSInstaller(DistroInstaller):
             (
                 "https://github.com/tmux-plugins/tmux-continuum.git",
                 [
+                    "rm -rf ~/.config/tmux/plugins/tmux-continuum",
                     "mkdir -p ~/.config/tmux/plugins/tmux-continuum",
-                    "cp -r * ~/.config/tmux/plugins/tmux-continuum",
+                    "cp -r . ~/.config/tmux/plugins/tmux-continuum",
                 ],
             ),
         ),
@@ -144,8 +157,9 @@ class MacOSInstaller(DistroInstaller):
             (
                 "https://github.com/tmux-plugins/tmux-cpu.git",
                 [
+                    "rm -rf ~/.config/tmux/plugins/tmux-cpu",
                     "mkdir -p ~/.config/tmux/plugins/tmux-cpu",
-                    "cp -r * ~/.config/tmux/plugins/tmux-cpu",
+                    "cp -r . ~/.config/tmux/plugins/tmux-cpu",
                 ],
             ),
         ),
@@ -155,8 +169,9 @@ class MacOSInstaller(DistroInstaller):
             (
                 "https://github.com/tmux-plugins/tmux-prefix-highlight.git",
                 [
+                    "rm -rf ~/.config/tmux/plugins/tmux-prefix-highlight",
                     "mkdir -p ~/.config/tmux/plugins/tmux-prefix-highlight",
-                    "cp -r * ~/.config/tmux/plugins/tmux-prefix-highlight",
+                    "cp -r . ~/.config/tmux/plugins/tmux-prefix-highlight",
                 ],
             ),
         ),
@@ -166,8 +181,9 @@ class MacOSInstaller(DistroInstaller):
             (
                 "https://github.com/tmux-plugins/tmux-resurrect.git",
                 [
+                    "rm -rf ~/.config/tmux/plugins/tmux-resurrect",
                     "mkdir -p ~/.config/tmux/plugins/tmux-resurrect",
-                    "cp -r * ~/.config/tmux/plugins/tmux-resurrect",
+                    "cp -r . ~/.config/tmux/plugins/tmux-resurrect",
                 ],
             ),
         ),
@@ -178,7 +194,23 @@ class MacOSInstaller(DistroInstaller):
         subprocess.run(["brew", "update"], check=True)
         subprocess.run(["brew", "upgrade"], check=True)
 
+    def is_package_installed(self, package: str) -> bool:
+        """Check if brew package is installed."""
+        try:
+            result = subprocess.run(
+                ["brew", "list", package],
+                stdout=subprocess.DEVNULL,
+                stderr=subprocess.DEVNULL,
+            )
+            return result.returncode == 0
+        except Exception:
+            return False
+
     def install(self, package: str) -> None:
+        # Check if already installed
+        if self.is_package_installed(package):
+            return
+
         self.log(f"  Installing {package} via brew...")
         subprocess.run(["brew", "install", package], check=True)
 

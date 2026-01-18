@@ -1,0 +1,109 @@
+@import "colors.rasi"
+
+* {
+    font: "FiraCode Nerd Font 12";
+    text-color: @normal-text;
+    background-color: transparent;
+    margin: 0;
+    padding: 0;
+    spacing: 0;
+}
+
+window {
+    background-color: rgba(0, 0, 0, 0.5);
+    location: center;
+    width: 40%;
+    height: 60%;
+    border-radius: 12px;
+    border: 2px solid;
+    border-color: @window-border;
+    padding: 16px;
+}
+
+inputbar {
+    font: "FiraCode Nerd Font Bold 18";
+    padding: 20px 24px;
+    spacing: 16px;
+    children: [ icon-search, entry ];
+    background-color: rgba(255, 255, 255, 0.05);
+    border-radius: 8px;
+    margin: 0 0 12px 0;
+}
+
+icon-search {
+    expand: false;
+    filename: "search";
+    size: 24px;
+    text-color: @scrollbar-filled;
+}
+
+icon-search, entry, element-icon, element-text {
+    vertical-align: 0.5;
+}
+
+entry {
+    font: inherit;
+    placeholder: "Search...";
+    placeholder-color: @scrollbar-filled;
+    text-color: @normal-text;
+}
+
+message {
+    border: 1px 0 0;
+    border-color: @window-border;
+    background-color: rgba(77, 69, 67, 0.8);
+    padding: 12px;
+}
+
+textbox {
+    padding: 12px 20px;
+    text-color: @error-message;
+    font: "FiraCode Nerd Font 10";
+}
+
+listview {
+    lines: 12;
+    columns: 1;
+    fixed-height: false;
+    border: 1px 0 0;
+    border-color: @window-border;
+    spacing: 4px;
+    margin: 8px 0 0 0;
+    dynamic: true;
+}
+
+element {
+    padding: 10px 20px;
+    spacing: 20px;
+    background-color: rgba(255, 255, 255, 0.03);
+    border-radius: 8px;
+}
+
+element normal.active,
+element alternate.active {
+    background-color: rgba(255, 255, 255, 0.08);
+    text-color: @selected-background;
+}
+
+element selected.normal,
+element selected.active {
+    background-color: @selected-background;
+    text-color: @selected-text;
+}
+
+element-icon {
+    size: 28px;
+}
+
+element-text {
+    text-color: inherit;
+    highlight: bold;
+    highlight-color: @normal-text;
+    font: "FiraCode Nerd Font Medium 14";
+}
+
+scrollbar {
+    handle-width: 6px;
+    handle-color: @selected-background;
+    padding: 0;
+}

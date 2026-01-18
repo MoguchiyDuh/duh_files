@@ -70,7 +70,6 @@ def check_packages(installer: DistroInstaller) -> Tuple[List[str], List[str]]:
         is_installed, details = checker.enhanced_check(name, method, content)
 
         status = "INSTALLED" if is_installed else "MISSING"
-        status = "INSTALLED" if is_installed else "MISSING"
         color_code = Colors.GREEN if is_installed else Colors.RED
         details_display = details[:60] + "..." if len(details) > 60 else details
 
@@ -123,7 +122,6 @@ def request_approval(missing: List[str], auto_yes: bool = False) -> bool:
     for pkg in missing:
         print(f"  - {pkg}")
 
-    # Auto-approve if --yes flag
     # Auto-approve if --yes flag
     if auto_yes:
         print(f"\n{Colors.CYAN}Auto-approved via --yes flag{Colors.RESET}")

@@ -2,7 +2,6 @@
 __pycache__/
 *.py[oc]
 build/
-dist/
 wheels/
 *.egg-info
 *cache*
@@ -15,3 +14,5 @@ wheels/
 .env*
 *.json
 
+# Backup directory (created by stow conflicts)
+.backups/
