@@ -41,9 +41,6 @@ eval "$(register-python-argcomplete duh-ytdl)"
 # --- Aliases: Core Remaps ---
 alias ls='eza --icons --git --header --group-directories-first'
 alias la='eza -la --icons --git --header --group-directories-first'
-alias cat='bat'
-alias grep='rg'
-alias find='fd'
 
 # --- Aliases: Pacman ---
 alias pac='sudo pacman'
