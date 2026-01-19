@@ -15,7 +15,9 @@ Multi-distro dotfiles manager and auto-installer using GNU Stow.
 │       ├── hypr/      # .config/hypr/
 │       ├── waybar/    # .config/waybar/
 │       ├── kitty/     # .config/kitty/
-│       └── rofi/      # .config/rofi/
+│       ├── rofi/      # .config/rofi/
+│       ├── gtk/       # .config/gtk-{3.0,4.0}/
+│       └── qt5/       # .config/qt5ct/, QtProject.conf
 │
 ├── scripts/           # Custom scripts (linked to ~/.local/bin/duh-*)
 │   ├── ytdl.py
@@ -44,8 +46,8 @@ python3 main.py -y       # Auto-approve
 ### Manually stow dotfiles
 ```bash
 cd ~/duh_files/dotfiles
-stow zsh nvim tmux fastfetch  # Common
-stow hypr waybar kitty rofi   # Arch only
+stow zsh nvim tmux fastfetch     # Common
+stow hypr waybar kitty rofi gtk qt5  # Arch only
 ```
 
 ### Manually link scripts
