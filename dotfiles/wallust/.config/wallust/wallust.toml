@@ -1,0 +1,38 @@
+backend = "fastresize"
+color_space = "lchmixed"
+palette = "dark16"
+threshold = 10
+
+[templates]
+kitty.template = 'kitty-colors.conf'
+kitty.target = '~/.config/kitty/colors.conf'
+
+hypr.template = 'hyprland-colors.conf'
+hypr.target = '~/.config/hypr/colors.conf'
+
+rofi.template = 'rofi-colors.rasi'
+rofi.target = '~/.config/rofi/colors.rasi'
+
+waybar.template = 'waybar-colors.css'
+waybar.target = '~/.config/waybar/colors.css'
+
+wlogout.template = 'waybar-colors.css'
+wlogout.target = '~/.config/wlogout/colors.css'
+
+btop.template = 'btop-colors.theme'
+btop.target = '~/.config/btop/themes/wallust.theme'
+
+cava.template = 'cava-colors'
+cava.target = '~/.config/cava/config'
+
+swaync.template = 'swaync-colors.css'
+swaync.target = '~/.config/swaync/colors.css'
+
+gtk4.template = 'gtk-colors.css'
+gtk4.target = '~/.config/gtk-4.0/colors.css'
+
+gtk3.template = 'gtk-colors.css'
+gtk3.target = '~/.config/gtk-3.0/colors.css'
+
+qt5ct.template = 'qt5ct-colors.conf'
+qt5ct.target = '~/.config/qt5ct/colors/wallust.conf'
