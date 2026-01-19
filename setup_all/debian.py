@@ -112,6 +112,7 @@ class DebianInstaller(DistroInstaller):
         ),
         ("fd", "manager", "fd-find"),
         ("ripgrep", "manager", "ripgrep"),
+        ("rsync", "manager", "rsync"),
         ("btop", "manager", "btop"),
         ("fastfetch-repo", "repo", "ppa:zhangsongcui3371/fastfetch"),
         ("fastfetch", "manager", "fastfetch"),

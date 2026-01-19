@@ -90,6 +90,7 @@ class ArchInstaller(DistroInstaller):
         ("bat", "manager", "bat"),
         ("fd", "manager", "fd"),
         ("ripgrep", "manager", "ripgrep"),
+        ("rsync", "manager", "rsync"),
         ("btop", "manager", "btop"),
         ("fastfetch", "manager", "fastfetch"),
         ("jq", "manager", "jq"),

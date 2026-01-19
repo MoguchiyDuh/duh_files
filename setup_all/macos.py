@@ -90,6 +90,7 @@ class MacOSInstaller(DistroInstaller):
         ("bat", "brew", "bat"),
         ("fd", "brew", "fd"),
         ("ripgrep", "brew", "ripgrep"),
+        ("rsync", "brew", "rsync"),
         ("btop", "brew", "btop"),
         ("fastfetch", "brew", "fastfetch"),
         ("jq", "brew", "jq"),
