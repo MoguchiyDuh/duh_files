@@ -1,0 +1,52 @@
+theme[main_bg]="{{ background }}"
+theme[main_fg]="{{ foreground }}"
+
+theme[title]="{{ foreground }}"
+theme[hi_fg]="{{ color3 }}"
+theme[selected_bg]="{{ color3 }}"
+theme[selected_fg]="{{ color7 }}"
+theme[inactive_fg]="{{ color8 }}"
+theme[graph_text]="{{ foreground }}"
+theme[meter_bg]="{{ color8 }}"
+theme[proc_misc]="{{ color5 }}"
+theme[cpu_box]="{{ color5 }}"
+theme[mem_box]="{{ color6 }}"
+theme[net_box]="{{ color1 }}"
+theme[proc_box]="{{ color4 }}"
+theme[div_line]="{{ color8 }}"
+
+theme[temp_start]="{{ color5 }}"
+theme[temp_mid]="{{ color13 }}"
+theme[temp_end]="{{ color14 }}"
+
+theme[cpu_start]="{{ color5 }}"
+theme[cpu_mid]="{{ color13 }}"
+theme[cpu_end]="{{ color14 }}"
+
+theme[free_start]="{{ color6 }}"
+theme[free_mid]="{{ color6 }}"
+theme[free_end]="{{ color2 }}"
+
+theme[cached_start]="{{ color6 }}"
+theme[cached_mid]="{{ color6 }}"
+theme[cached_end]="{{ color2 }}"
+
+theme[available_start]="{{ color6 }}"
+theme[available_mid]="{{ color6 }}"
+theme[available_end]="{{ color2 }}"
+
+theme[used_start]="{{ color6 }}"
+theme[used_mid]="{{ color6 }}"
+theme[used_end]="{{ color2 }}"
+
+theme[download_start]="{{ color1 }}"
+theme[download_mid]="{{ color9 }}"
+theme[download_end]="{{ color9 }}"
+
+theme[upload_start]="{{ color10 }}"
+theme[upload_mid]="{{ color11 }}"
+theme[upload_end]="{{ color12 }}"
+
+theme[process_start]="{{ color4 }}"
+theme[process_mid]="{{ color3 }}"
+theme[process_end]="{{ color0 }}"
