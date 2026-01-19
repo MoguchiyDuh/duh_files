@@ -87,6 +87,7 @@ STANDARD_PACKAGES = [
     ("bat", "manager", "bat"),
     ("fd", "manager", "<distro-specific>"),
     ("ripgrep", "manager", "ripgrep"),
+    ("rsync", "manager", "rsync"),
     ("btop", "manager", "btop"),
     ("fastfetch", "manager", "fastfetch"),
     ("jq", "manager", "jq"),

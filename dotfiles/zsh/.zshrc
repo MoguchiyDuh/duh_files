@@ -36,7 +36,7 @@ compdef _cargo cargo.exe
 compdef _go go.exe
 compdef _pip pip.exe
 compdef _python python.exe
-eval "$(register-python-argcomplete duh-ytdl)"
+eval "$(register-python-argcomplete duh-yt_manager)"
 
 # --- Aliases: Core Remaps ---
 alias ls='eza --icons --git --header --group-directories-first'
