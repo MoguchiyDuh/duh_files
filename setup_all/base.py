@@ -340,7 +340,7 @@ class DistroInstaller(ABC):
 
         # Add arch-specific packages if on Arch
         if self.log_id == "arch":
-            packages.extend(["hypr", "waybar", "kitty", "rofi"])
+            packages.extend(["hypr", "waybar", "kitty", "rofi", "gtk", "qt5"])
 
         for pkg in packages:
             pkg_path = os.path.join(dotfiles_dir, pkg)
