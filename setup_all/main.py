@@ -162,6 +162,12 @@ Examples:
         action="store_true",
         help="Check packages only, do not install anything",
     )
+    parser.add_argument(
+        "--verbose",
+        "-v",
+        action="store_true",
+        help="Show verbose output from package managers",
+    )
     return parser.parse_args()
 
 
@@ -173,6 +179,7 @@ def main():
         # Step 1: Detect OS/distro
         print(f"{Colors.CYAN}🔍 Detecting system...{Colors.RESET}")
         installer = detect_distro()
+        installer.verbose = args.verbose
         print(f"Detected: {Colors.GREEN}{installer.log_id.upper()}{Colors.RESET}")
 
         # Step 2: Check all packages

@@ -120,8 +120,6 @@ class DebianInstaller(DistroInstaller):
         ("yq", "manager", "yq"),
         ("nnn", "manager", "nnn"),
         ("direnv", "manager", "direnv"),
-        ("dust", "binary", "cargo install du-dust"),
-        ("duf", "binary", "go install github.com/muesli/duf@latest"),
         ("hyperfine", "manager", "hyperfine"),
         # Archive tools
         ("zip", "manager", "zip"),
@@ -156,13 +154,15 @@ class DebianInstaller(DistroInstaller):
             "go install github.com/jesseduffield/lazydocker@latest",
         ),
         ("lazysql", "binary", "go install github.com/jorgerojas26/lazysql@latest"),
+        ("duf", "binary", "go install github.com/muesli/duf@latest"),
+        ("dust", "binary", ". ~/.cargo/env && cargo install du-dust"),
         (
             "neovim",
             "git",
             (
                 "https://github.com/neovim/neovim.git",
                 [
-                    "git checkout stable",
+                    "git checkout stable || true",
                     "make CMAKE_BUILD_TYPE=RelWithDebInfo",
                     "sudo make install",
                 ],
@@ -220,8 +220,17 @@ class DebianInstaller(DistroInstaller):
 
     def check_update(self) -> None:
         self.log("Updating apt cache and upgrading system...")
-        subprocess.run(["sudo", "apt", "update"], check=True)
-        subprocess.run(["sudo", "apt", "upgrade", "-y"], check=True)
+        stdout = None if self.verbose else subprocess.DEVNULL
+        stderr = None if self.verbose else subprocess.DEVNULL
+        apt_args = ["sudo", "apt", "update"]
+        if not self.verbose:
+            apt_args.insert(2, "-qq")
+        subprocess.run(apt_args, check=True, stdout=stdout, stderr=stderr)
+
+        upgrade_args = ["sudo", "apt", "upgrade", "-y"]
+        if not self.verbose:
+            upgrade_args.insert(2, "-qq")
+        subprocess.run(upgrade_args, check=True, stdout=stdout, stderr=stderr)
 
     def is_package_installed(self, package: str) -> bool:
         """Check if apt package is installed."""
@@ -241,14 +250,24 @@ class DebianInstaller(DistroInstaller):
             return
 
         self.log(f"  Installing {package} via apt...")
-        subprocess.run(["sudo", "apt", "install", "-y", package], check=True)
+        stdout = None if self.verbose else subprocess.DEVNULL
+        stderr = None if self.verbose else subprocess.DEVNULL
+        install_args = ["sudo", "apt", "install", "-y", package]
+        if not self.verbose:
+            install_args.insert(2, "-qq")
+        subprocess.run(install_args, check=True, stdout=stdout, stderr=stderr)
 
     def add_repo(self, repo_info: str) -> None:
         # repo_info for Debian is usually a PPA or a source line
         self.log(f"  Adding repo: {repo_info}")
+        stdout = None if self.verbose else subprocess.DEVNULL
+        stderr = None if self.verbose else subprocess.DEVNULL
         if repo_info.startswith("ppa:"):
-            subprocess.run(["sudo", "add-apt-repository", "-y", repo_info], check=True)
+            subprocess.run(["sudo", "add-apt-repository", "-y", repo_info], check=True, stdout=stdout, stderr=stderr)
         else:
             with open("/etc/apt/sources.list.d/custom.list", "a") as f:
                 f.write(f"\n{repo_info}\n")
-        subprocess.run(["sudo", "apt", "update"], check=True)
+        apt_args = ["sudo", "apt", "update"]
+        if not self.verbose:
+            apt_args.insert(2, "-qq")
+        subprocess.run(apt_args, check=True, stdout=stdout, stderr=stderr)
