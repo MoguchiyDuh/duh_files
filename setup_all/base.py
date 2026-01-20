@@ -34,7 +34,10 @@ class Colors:
 
 
 class DistroInstaller(ABC):
-    PACKAGES: List[PackageDef] = []
+    @property
+    @abstractmethod
+    def PACKAGES(self) -> List[PackageDef]:
+        pass
 
     def __init__(self) -> None:
         self.verbose: bool = False
@@ -124,6 +127,13 @@ class DistroInstaller(ABC):
             "npm": "npm",
             "yay": "yay",
             "redis": "redis-server",
+            "rsync": "rsync",
+            "dust": "dust",
+            "duf": "duf",
+            "hyperfine": "hyperfine",
+            "jq": "jq",
+            "yq": "yq",
+            "p7zip": "7z",
         }
 
         # Package name variations across distros (for package manager checks)
@@ -154,6 +164,11 @@ class DistroInstaller(ABC):
         if name.lower() in cmd_map:
             if self.command_exists(cmd_map[name.lower()]):
                 self.log(f"  ↳ Skipping {name} (already installed)")
+                return True
+        else:
+            # Fallback: check if the name itself is a valid command
+            if self.command_exists(name.lower()):
+                self.log(f"  ↳ Skipping {name} (found command: {name})")
                 return True
 
         # Check package manager for packages that may not have obvious commands
@@ -309,7 +324,13 @@ class DistroInstaller(ABC):
                 elif method == "binary":
                     stdout = None if self.verbose else subprocess.DEVNULL
                     stderr = None if self.verbose else subprocess.DEVNULL
-                    subprocess.run(str(content), shell=True, check=True, stdout=stdout, stderr=stderr)
+                    subprocess.run(
+                        str(content),
+                        shell=True,
+                        check=True,
+                        stdout=stdout,
+                        stderr=stderr,
+                    )
                 elif method == "git":
                     if isinstance(content, (list, tuple)):
                         self.build_from_source(content[0], content[1])  # type: ignore
@@ -337,6 +358,7 @@ class DistroInstaller(ABC):
 
         # Create backup dir if needed
         from datetime import datetime
+
         timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
         backup_dir = os.path.join(os.path.dirname(script_dir), f".backups/{timestamp}")
 
@@ -345,7 +367,9 @@ class DistroInstaller(ABC):
 
         # Add arch-specific packages if on Arch
         if self.log_id == "arch":
-            packages.extend(["hypr", "waybar", "kitty", "rofi", "gtk", "qt5", "wallust"])
+            packages.extend(
+                ["hypr", "waybar", "kitty", "rofi", "gtk", "qt5", "wallust"]
+            )
 
         for pkg in packages:
             pkg_path = os.path.join(dotfiles_dir, pkg)
@@ -376,12 +400,16 @@ class DistroInstaller(ABC):
                             conflict_file = parts[-1].rstrip(")")
                             conflict_path = os.path.join(home, conflict_file)
 
-                            if os.path.exists(conflict_path) and not os.path.islink(conflict_path):
+                            if os.path.exists(conflict_path) and not os.path.islink(
+                                conflict_path
+                            ):
                                 backup_path = os.path.join(backup_dir, conflict_file)
                                 os.makedirs(os.path.dirname(backup_path), exist_ok=True)
 
                                 # Move to backup
-                                subprocess.run(["mv", conflict_path, backup_path], check=True)
+                                subprocess.run(
+                                    ["mv", conflict_path, backup_path], check=True
+                                )
                                 self.log(f"    Backed up {conflict_file}")
 
             # Now stow (should succeed after backup)
@@ -482,7 +510,14 @@ class DistroInstaller(ABC):
 
         for cmd in build_commands:
             self.log(f"    Running: {cmd}")
-            subprocess.run(cmd, shell=True, cwd=clone_path, check=True, stdout=stdout, stderr=stderr)
+            subprocess.run(
+                cmd,
+                shell=True,
+                cwd=clone_path,
+                check=True,
+                stdout=stdout,
+                stderr=stderr,
+            )
 
     @abstractmethod
     def add_repo(self, repo_info: str) -> None:
@@ -517,7 +552,9 @@ class DistroInstaller(ABC):
             subprocess.run(unzip_args, check=True, stdout=stdout, stderr=stderr)
             subprocess.run(["rm", temp_path], check=True, stdout=stdout, stderr=stderr)
         else:
-            subprocess.run(["mv", temp_path, target_dir], check=True, stdout=stdout, stderr=stderr)
+            subprocess.run(
+                ["mv", temp_path, target_dir], check=True, stdout=stdout, stderr=stderr
+            )
 
         # Refresh font cache
         if system != "darwin":

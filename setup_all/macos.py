@@ -10,185 +10,206 @@ class MacOSInstaller(DistroInstaller):
     def log_id(self) -> str:
         return "macos"
 
-    PACKAGES = [
-        # 1. Dev (Compilers, Base)
-        (
-            "brew",
-            "binary",
-            '/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"',
-        ),
-        ("openssl", "brew", "openssl"),
-        ("openssh", "brew", "openssh"),
-        ("git", "brew", "git"),
-        ("curl", "brew", "curl"),
-        ("cmake", "brew", "cmake"),
-        ("ninja", "brew", "ninja"),
-        ("clang", "brew", "llvm"),
-        # 2. Terminal and Font
-        ("zsh", "brew", "zsh"),
-        (
-            "oh-my-zsh",
-            "binary",
-            'RUNZSH=no CHSH=no sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"',
-        ),
-        (
-            "powerlevel10k",
-            "git",
+    @property
+    def PACKAGES(self) -> List:
+        return [
+            # 1. Foundation
             (
-                "https://github.com/romkatv/powerlevel10k.git",
-                [
-                    "rm -rf ~/.oh-my-zsh/custom/themes/powerlevel10k",
-                    "mkdir -p ~/.oh-my-zsh/custom/themes/powerlevel10k",
-                    "cp -r . ~/.oh-my-zsh/custom/themes/powerlevel10k",
-                ],
+                "brew",
+                "binary",
+                '/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"',
             ),
-        ),
-        (
-            "zsh-autosuggestions",
-            "git",
+            ("git", "brew", "git"),
+            # 2. Dev (Compilers, Base)
+            ("openssl", "brew", "openssl"),
+            ("openssh", "brew", "openssh"),
+            ("curl", "brew", "curl"),
+            ("cmake", "brew", "cmake"),
+            ("ninja", "brew", "ninja"),
+            ("clang", "brew", "llvm"),
+            # Neovim build deps
+            ("gettext", "brew", "gettext"),
+            ("libtool", "brew", "libtool"),
+            ("autoconf", "brew", "autoconf"),
+            ("automake", "brew", "automake"),
+            ("pkg-config", "brew", "pkg-config"),
+            # 3. Terminal and Font
+            ("zsh", "brew", "zsh"),
             (
-                "https://github.com/zsh-users/zsh-autosuggestions",
-                [
-                    "rm -rf ~/.oh-my-zsh/custom/plugins/zsh-autosuggestions",
-                    "mkdir -p ~/.oh-my-zsh/custom/plugins/zsh-autosuggestions",
-                    "cp -r . ~/.oh-my-zsh/custom/plugins/zsh-autosuggestions",
-                ],
+                "oh-my-zsh",
+                "binary",
+                'RUNZSH=no CHSH=no sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"',
             ),
-        ),
-        (
-            "zsh-syntax-highlighting",
-            "git",
             (
-                "https://github.com/zsh-users/zsh-syntax-highlighting.git",
-                [
-                    "rm -rf ~/.oh-my-zsh/custom/plugins/zsh-syntax-highlighting",
-                    "mkdir -p ~/.oh-my-zsh/custom/plugins/zsh-syntax-highlighting",
-                    "cp -r . ~/.oh-my-zsh/custom/plugins/zsh-syntax-highlighting",
-                ],
+                "powerlevel10k",
+                "git",
+                (
+                    "https://github.com/romkatv/powerlevel10k.git",
+                    [
+                        "rm -rf ~/.oh-my-zsh/custom/themes/powerlevel10k",
+                        "mkdir -p ~/.oh-my-zsh/custom/themes/powerlevel10k",
+                        "cp -r . ~/.oh-my-zsh/custom/themes/powerlevel10k",
+                    ],
+                ),
             ),
-        ),
-        (
-            "zsh-completions",
-            "git",
             (
-                "https://github.com/zsh-users/zsh-completions.git",
-                [
-                    "rm -rf ~/.oh-my-zsh/custom/plugins/zsh-completions",
-                    "mkdir -p ~/.oh-my-zsh/custom/plugins/zsh-completions",
-                    "cp -r . ~/.oh-my-zsh/custom/plugins/zsh-completions",
-                ],
+                "zsh-autosuggestions",
+                "git",
+                (
+                    "https://github.com/zsh-users/zsh-autosuggestions",
+                    [
+                        "rm -rf ~/.oh-my-zsh/custom/plugins/zsh-autosuggestions",
+                        "mkdir -p ~/.oh-my-zsh/custom/plugins/zsh-autosuggestions",
+                        "cp -r . ~/.oh-my-zsh/custom/plugins/zsh-autosuggestions",
+                    ],
+                ),
             ),
-        ),
-        ("tmux", "brew", "tmux"),
-        ("stow", "brew", "stow"),
-        ("font", "font", "font-fira-code-nerd-font"),
-        # 3. Helpers
-        ("gh", "brew", "gh"),
-        ("zoxide", "brew", "zoxide"),
-        ("fzf", "brew", "fzf"),
-        ("eza", "brew", "eza"),
-        ("bat", "brew", "bat"),
-        ("fd", "brew", "fd"),
-        ("ripgrep", "brew", "ripgrep"),
-        ("rsync", "brew", "rsync"),
-        ("btop", "brew", "btop"),
-        ("fastfetch", "brew", "fastfetch"),
-        ("jq", "brew", "jq"),
-        ("yq", "brew", "yq"),
-        ("nnn", "brew", "nnn"),
-        ("direnv", "brew", "direnv"),
-        ("dust", "brew", "dust"),
-        ("duf", "brew", "duf"),
-        ("hyperfine", "brew", "hyperfine"),
-        # Archive tools
-        ("zip", "brew", "zip"),
-        ("unzip", "brew", "unzip"),
-        ("p7zip", "brew", "p7zip"),
-        # 4. Tools
-        ("docker", "brew", "docker"),
-        ("redis", "brew", "redis"),
-        ("postgres", "brew", "postgresql"),
-        # 5. Langs
-        ("python", "brew", "python3"),
-        ("node", "brew", "node"),
-        ("npm", "brew", "npm"),
-        ("go", "brew", "go"),
-        (
-            "rust",
-            "binary",
-            "curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y",
-        ),
-        ("uv", "binary", "curl -LsSf https://astral.sh/uv/install.sh | sh"),
-        # 6. Dependent / Late Bound
-        ("tealdeer", "binary", ". ~/.cargo/env && cargo install tealdeer"),
-        ("lazygit", "binary", "go install github.com/jesseduffield/lazygit@latest"),
-        (
-            "lazydocker",
-            "binary",
-            "go install github.com/jesseduffield/lazydocker@latest",
-        ),
-        ("lazysql", "binary", "go install github.com/jorgerojas26/lazysql@latest"),
-        (
-            "neovim",
-            "git",
             (
-                "https://github.com/neovim/neovim.git",
-                [
-                    "git checkout stable",
-                    "make CMAKE_BUILD_TYPE=RelWithDebInfo",
-                    "sudo make install",
-                ],
+                "zsh-syntax-highlighting",
+                "git",
+                (
+                    "https://github.com/zsh-users/zsh-syntax-highlighting.git",
+                    [
+                        "rm -rf ~/.oh-my-zsh/custom/plugins/zsh-syntax-highlighting",
+                        "mkdir -p ~/.oh-my-zsh/custom/plugins/zsh-syntax-highlighting",
+                        "cp -r . ~/.oh-my-zsh/custom/plugins/zsh-syntax-highlighting",
+                    ],
+                ),
             ),
-        ),
-        (
-            "tmux-continuum",
-            "git",
             (
-                "https://github.com/tmux-plugins/tmux-continuum.git",
-                [
-                    "rm -rf ~/.config/tmux/plugins/tmux-continuum",
-                    "mkdir -p ~/.config/tmux/plugins/tmux-continuum",
-                    "cp -r . ~/.config/tmux/plugins/tmux-continuum",
-                ],
+                "zsh-completions",
+                "git",
+                (
+                    "https://github.com/zsh-users/zsh-completions.git",
+                    [
+                        "rm -rf ~/.oh-my-zsh/custom/plugins/zsh-completions",
+                        "mkdir -p ~/.oh-my-zsh/custom/plugins/zsh-completions",
+                        "cp -r . ~/.oh-my-zsh/custom/plugins/zsh-completions",
+                    ],
+                ),
             ),
-        ),
-        (
-            "tmux-cpu",
-            "git",
+            ("tmux", "brew", "tmux"),
+            ("stow", "brew", "stow"),
+            ("font", "font", "font-fira-code-nerd-font"),
+            # 4. Helpers
+            ("gh", "brew", "gh"),
+            ("zoxide", "brew", "zoxide"),
+            ("fzf", "brew", "fzf"),
+            ("eza", "brew", "eza"),
+            ("bat", "brew", "bat"),
+            ("fd", "brew", "fd"),
+            ("ripgrep", "brew", "ripgrep"),
+            ("rsync", "brew", "rsync"),
+            ("btop", "brew", "btop"),
+            ("fastfetch", "brew", "fastfetch"),
+            ("jq", "brew", "jq"),
+            ("yq", "brew", "yq"),
+            ("nnn", "brew", "nnn"),
+            ("direnv", "brew", "direnv"),
+            ("dust", "brew", "dust"),
+            ("duf", "brew", "duf"),
+            ("hyperfine", "brew", "hyperfine"),
+            # Archive tools
+            ("zip", "brew", "zip"),
+            ("unzip", "brew", "unzip"),
+            ("p7zip", "brew", "p7zip"),
+            # 5. Tools
+            ("docker", "brew", "docker"),
+            ("redis", "brew", "redis"),
+            ("postgres", "brew", "postgresql"),
+            # 6. Langs
+            ("python", "brew", "python3"),
+            ("node", "brew", "node"),
+            ("npm", "brew", "npm"),
+            ("go", "brew", "go"),
             (
-                "https://github.com/tmux-plugins/tmux-cpu.git",
-                [
-                    "rm -rf ~/.config/tmux/plugins/tmux-cpu",
-                    "mkdir -p ~/.config/tmux/plugins/tmux-cpu",
-                    "cp -r . ~/.config/tmux/plugins/tmux-cpu",
-                ],
+                "rust",
+                "binary",
+                "curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y",
             ),
-        ),
-        (
-            "tmux-prefix-highlight",
-            "git",
+            ("uv", "binary", "curl -LsSf https://astral.sh/uv/install.sh | sh"),
+            # 7. AUR-equivalent (Build from source / binary)
             (
-                "https://github.com/tmux-plugins/tmux-prefix-highlight.git",
-                [
-                    "rm -rf ~/.config/tmux/plugins/tmux-prefix-highlight",
-                    "mkdir -p ~/.config/tmux/plugins/tmux-prefix-highlight",
-                    "cp -r . ~/.config/tmux/plugins/tmux-prefix-highlight",
-                ],
+                "tealdeer",
+                "binary",
+                'env PATH="$HOME/.cargo/bin:$PATH" cargo install tealdeer',
             ),
-        ),
-        (
-            "tmux-resurrect",
-            "git",
             (
-                "https://github.com/tmux-plugins/tmux-resurrect.git",
-                [
-                    "rm -rf ~/.config/tmux/plugins/tmux-resurrect",
-                    "mkdir -p ~/.config/tmux/plugins/tmux-resurrect",
-                    "cp -r . ~/.config/tmux/plugins/tmux-resurrect",
-                ],
+                "lazygit",
+                "binary",
+                'env PATH="$HOME/go/bin:$PATH" go install github.com/jesseduffield/lazygit@latest',
             ),
-        ),
-    ]
+            (
+                "lazydocker",
+                "binary",
+                'env PATH="$HOME/go/bin:$PATH" go install github.com/jesseduffield/lazydocker@latest',
+            ),
+            (
+                "lazysql",
+                "binary",
+                'env PATH="$HOME/go/bin:$PATH" go install github.com/jorgerojas26/lazysql@latest',
+            ),
+            (
+                "neovim",
+                "git",
+                (
+                    "https://github.com/neovim/neovim.git",
+                    [
+                        "git checkout stable",
+                        "make CMAKE_BUILD_TYPE=RelWithDebInfo",
+                        "sudo make install",
+                    ],
+                ),
+            ),
+            (
+                "tmux-continuum",
+                "git",
+                (
+                    "https://github.com/tmux-plugins/tmux-continuum.git",
+                    [
+                        "rm -rf ~/.config/tmux/plugins/tmux-continuum",
+                        "mkdir -p ~/.config/tmux/plugins/tmux-continuum",
+                        "cp -r . ~/.config/tmux/plugins/tmux-continuum",
+                    ],
+                ),
+            ),
+            (
+                "tmux-cpu",
+                "git",
+                (
+                    "https://github.com/tmux-plugins/tmux-cpu.git",
+                    [
+                        "rm -rf ~/.config/tmux/plugins/tmux-cpu",
+                        "mkdir -p ~/.config/tmux/plugins/tmux-cpu",
+                        "cp -r . ~/.config/tmux/plugins/tmux-cpu",
+                    ],
+                ),
+            ),
+            (
+                "tmux-prefix-highlight",
+                "git",
+                (
+                    "https://github.com/tmux-plugins/tmux-prefix-highlight.git",
+                    [
+                        "rm -rf ~/.config/tmux/plugins/tmux-prefix-highlight",
+                        "mkdir -p ~/.config/tmux/plugins/tmux-prefix-highlight",
+                        "cp -r . ~/.config/tmux/plugins/tmux-prefix-highlight",
+                    ],
+                ),
+            ),
+            (
+                "tmux-resurrect",
+                "git",
+                (
+                    "https://github.com/tmux-plugins/tmux-resurrect.git",
+                    [
+                        "rm -rf ~/.config/tmux/plugins/tmux-resurrect",
+                        "mkdir -p ~/.config/tmux/plugins/tmux-resurrect",
+                        "cp -r . ~/.config/tmux/plugins/tmux-resurrect",
+                    ],
+                ),
+            ),
+        ]
 
     def check_update(self) -> None:
         self.log("Updating Homebrew...")
