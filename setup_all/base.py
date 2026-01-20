@@ -36,6 +36,9 @@ class Colors:
 class DistroInstaller(ABC):
     PACKAGES: List[PackageDef] = []
 
+    def __init__(self) -> None:
+        self.verbose: bool = False
+
     @staticmethod
     def command_exists(cmd: str) -> bool:
         """Check if a command exists in PATH."""
@@ -304,7 +307,9 @@ class DistroInstaller(ABC):
                 elif method == "repo":
                     self.add_repo(str(content))
                 elif method == "binary":
-                    subprocess.run(str(content), shell=True, check=True)
+                    stdout = None if self.verbose else subprocess.DEVNULL
+                    stderr = None if self.verbose else subprocess.DEVNULL
+                    subprocess.run(str(content), shell=True, check=True, stdout=stdout, stderr=stderr)
                 elif method == "git":
                     if isinstance(content, (list, tuple)):
                         self.build_from_source(content[0], content[1])  # type: ignore
@@ -466,13 +471,18 @@ class DistroInstaller(ABC):
             subprocess.run(["rm", "-rf", clone_path], check=True)
 
         self.log(f"    Cloning {repo_url}...")
+        stdout = None if self.verbose else subprocess.DEVNULL
+        stderr = None if self.verbose else subprocess.DEVNULL
         subprocess.run(
-            ["git", "clone", "--depth", "1", repo_url, clone_path], check=True
+            ["git", "clone", "--depth", "1", repo_url, clone_path],
+            check=True,
+            stdout=stdout,
+            stderr=stderr,
         )
 
         for cmd in build_commands:
             self.log(f"    Running: {cmd}")
-            subprocess.run(cmd, shell=True, cwd=clone_path, check=True)
+            subprocess.run(cmd, shell=True, cwd=clone_path, check=True, stdout=stdout, stderr=stderr)
 
     @abstractmethod
     def add_repo(self, repo_info: str) -> None:
@@ -492,20 +502,27 @@ class DistroInstaller(ABC):
         temp_path = f"/tmp/{font_file}"
 
         # Download font
-        subprocess.run(["wget", "-q", font_url, "-O", temp_path], check=True)
+        stdout = None if self.verbose else subprocess.DEVNULL
+        stderr = None if self.verbose else subprocess.DEVNULL
+        wget_args = ["wget", font_url, "-O", temp_path]
+        if not self.verbose:
+            wget_args.insert(1, "-q")
+        subprocess.run(wget_args, check=True, stdout=stdout, stderr=stderr)
 
         # Unzip if it's a zip file
         if font_file.endswith(".zip"):
-            subprocess.run(
-                ["unzip", "-q", "-o", temp_path, "-d", target_dir], check=True
-            )
-            subprocess.run(["rm", temp_path], check=True)
+            unzip_args = ["unzip", "-o", temp_path, "-d", target_dir]
+            if not self.verbose:
+                unzip_args.insert(1, "-q")
+            subprocess.run(unzip_args, check=True, stdout=stdout, stderr=stderr)
+            subprocess.run(["rm", temp_path], check=True, stdout=stdout, stderr=stderr)
         else:
-            subprocess.run(["mv", temp_path, target_dir], check=True)
+            subprocess.run(["mv", temp_path, target_dir], check=True, stdout=stdout, stderr=stderr)
 
         # Refresh font cache
         if system != "darwin":
-            subprocess.run(["fc-cache", "-fv"], check=True)
+            fc_args = ["fc-cache", "-fv"] if self.verbose else ["fc-cache", "-f"]
+            subprocess.run(fc_args, check=True, stdout=stdout, stderr=stderr)
 
     def brew_install(self, package: str) -> None:
         pass

@@ -80,19 +80,19 @@ return require("packer").startup(function(use)
 	})
 
 	-- AI/Ollama
-	use({
-		"David-Kunz/gen.nvim",
-		requires = "nvim-lua/plenary.nvim",
-		config = function()
-			require("plugins.gen")
-		end,
-	})
-	use({
-		"huggingface/llm.nvim",
-		config = function()
-			require("plugins.llm")
-		end,
-	})
+	-- use({
+	-- 	"David-Kunz/gen.nvim",
+	-- 	requires = "nvim-lua/plenary.nvim",
+	-- 	config = function()
+	-- 		require("plugins.gen")
+	-- 	end,
+	-- })
+	-- use({
+	-- 	"huggingface/llm.nvim",
+	-- 	config = function()
+	-- 		require("plugins.llm")
+	-- 	end,
+	-- })
 
 	if packer_bootstrap then
 		require("packer").sync()
