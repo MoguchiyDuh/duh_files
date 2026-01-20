@@ -168,6 +168,11 @@ Examples:
         action="store_true",
         help="Show verbose output from package managers",
     )
+    parser.add_argument(
+        "--hyprland",
+        action="store_true",
+        help="Install Hyprland ecosystem and desktop tools (Arch only)",
+    )
     return parser.parse_args()
 
 
@@ -180,6 +185,8 @@ def main():
         print(f"{Colors.CYAN}🔍 Detecting system...{Colors.RESET}")
         installer = detect_distro()
         installer.verbose = args.verbose
+        if hasattr(installer, "hyprland"):
+            setattr(installer, "hyprland", args.hyprland)
         print(f"Detected: {Colors.GREEN}{installer.log_id.upper()}{Colors.RESET}")
 
         # Step 2: Check all packages
