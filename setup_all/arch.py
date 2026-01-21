@@ -107,6 +107,8 @@ class ArchInstaller(DistroInstaller):
             ("yq", "aur", "yq"),
             ("nnn", "aur", "nnn"),
             ("direnv", "aur", "direnv"),
+            ("delta", "aur", "git-delta"),
+            ("procs", "aur", "procs"),
             ("dust", "aur", "dust"),
             ("duf", "aur", "duf"),
             ("hyperfine", "aur", "hyperfine"),
@@ -241,8 +243,11 @@ class ArchInstaller(DistroInstaller):
     def install(self, package: str) -> None:
         """Install a package via pacman."""
         self.log(f"  Installing {package} via pacman...")
+        install_args = ["sudo", "pacman", "-S", "--noconfirm", package]
+        if not self.force:
+            install_args.insert(3, "--needed")
         subprocess.run(
-            ["sudo", "pacman", "-S", "--noconfirm", "--needed", package],
+            install_args,
             check=True,
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE,
@@ -270,8 +275,13 @@ class ArchInstaller(DistroInstaller):
             return
 
         self.log(f"  Installing {package} via yay...")
+        install_args = ["yay", "-S", "--noconfirm", package]
+        if self.force:
+            install_args.append(
+                "--force"
+            )  # yay specific force if needed, but usually just omitting --needed works
         subprocess.run(
-            ["yay", "-S", "--noconfirm", package],
+            install_args,
             check=True,
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE,

@@ -15,7 +15,6 @@ STANDARD_PACKAGES = [
     ("cmake", "manager", "cmake"),
     ("ninja", "manager", "<distro-specific>"),
     ("clang", "manager", "clang"),
-
     # 2. Terminal and Font
     ("zsh", "manager", "zsh"),
     (
@@ -78,7 +77,6 @@ STANDARD_PACKAGES = [
         "font",
         "https://github.com/ryanoasis/nerd-fonts/releases/latest/download/FiraCode.zip",
     ),
-
     # 3. Helpers
     ("gh", "manager", "<distro-specific>"),
     ("zoxide", "manager", "<distro-specific>"),
@@ -93,7 +91,6 @@ STANDARD_PACKAGES = [
     ("jq", "manager", "jq"),
     ("nnn", "manager", "nnn"),
     ("direnv", "manager", "direnv"),
-
     # 4. Tools
     (
         "docker",
@@ -103,7 +100,6 @@ STANDARD_PACKAGES = [
     ("docker-group", "binary", "sudo usermod -aG docker $(whoami)"),
     ("redis", "manager", "<distro-specific>"),
     ("postgres", "manager", "<distro-specific>"),
-
     # 5. Langs
     ("python", "manager", "python3"),
     ("node", "manager", "<distro-specific>"),
@@ -115,7 +111,6 @@ STANDARD_PACKAGES = [
         "curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y",
     ),
     ("uv", "binary", "curl -LsSf https://astral.sh/uv/install.sh | sh"),
-
     # 6. Dependent / Late Bound
     ("tealdeer", "binary", ". ~/.cargo/env && cargo install tealdeer"),
     ("lazygit", "binary", "go install github.com/jesseduffield/lazygit@latest"),

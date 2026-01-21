@@ -125,10 +125,20 @@ _G.packer_plugins = {
     path = "/home/kirill/.local/share/nvim/site/pack/packer/start/friendly-snippets",
     url = "https://github.com/rafamadriz/friendly-snippets"
   },
+  ["gen.nvim"] = {
+    loaded = true,
+    path = "/home/kirill/.local/share/nvim/site/pack/packer/start/gen.nvim",
+    url = "https://github.com/David-Kunz/gen.nvim"
+  },
   ["gitsigns.nvim"] = {
     loaded = true,
     path = "/home/kirill/.local/share/nvim/site/pack/packer/start/gitsigns.nvim",
     url = "https://github.com/lewis6991/gitsigns.nvim"
+  },
+  ["llm.nvim"] = {
+    loaded = true,
+    path = "/home/kirill/.local/share/nvim/site/pack/packer/start/llm.nvim",
+    url = "https://github.com/huggingface/llm.nvim"
   },
   ["lualine.nvim"] = {
     loaded = true,
