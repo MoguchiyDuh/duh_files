@@ -13,6 +13,7 @@ Features:
 import os
 import platform
 import subprocess
+import sys
 from abc import ABC, abstractmethod
 from typing import List, Optional, Tuple, Union
 
@@ -41,6 +42,28 @@ class DistroInstaller(ABC):
 
     def __init__(self) -> None:
         self.verbose: bool = False
+        self.force: bool = False
+        self._setup_env()
+
+    def _setup_env(self) -> None:
+        """Add Go, Cargo and local bin directories to PATH if they exist but are missing."""
+        home = os.path.expanduser("~")
+        extra_paths = [
+            os.path.join(home, "go/bin"),
+            "/usr/local/go/bin",
+            os.path.join(home, ".cargo/bin"),
+            os.path.join(home, ".local/bin"),
+        ]
+
+        current_path = os.environ.get("PATH", "").split(os.pathsep)
+        modified = False
+        for p in extra_paths:
+            if os.path.exists(p) and p not in current_path:
+                current_path.insert(0, p)
+                modified = True
+
+        if modified:
+            os.environ["PATH"] = os.pathsep.join(current_path)
 
     @staticmethod
     def command_exists(cmd: str) -> bool:
@@ -89,6 +112,8 @@ class DistroInstaller(ABC):
         self, name: str, method: str, content: Union[str, List, Tuple]
     ) -> bool:
         """Determine if installation should be skipped."""
+        if self.force:
+            return False
         # Check common command names
         cmd_map = {
             "git": "git",
@@ -313,7 +338,7 @@ class DistroInstaller(ABC):
                 continue
 
             try:
-                if method == "manager":
+                if method in ("manager"):
                     self.install(str(content))
                 elif method == "aur":
                     self.yay_install(str(content))
@@ -331,6 +356,20 @@ class DistroInstaller(ABC):
                         stdout=stdout,
                         stderr=stderr,
                     )
+                elif method == "script":
+                    if callable(content):
+                        content()
+                    else:
+                        self.log(f"  ⚠ Script content for {name} is not callable")
+                elif method == "github":
+                    if isinstance(content, (list, tuple)) and len(content) == 2:
+                        self.install_github_release(
+                            str(content[0]), str(content[1]), name
+                        )
+                elif method == "cargo":
+                    self.install_cargo_package(str(content))
+                elif method == "go":
+                    self.install_go_package(str(content))
                 elif method == "git":
                     if isinstance(content, (list, tuple)):
                         self.build_from_source(content[0], content[1])  # type: ignore
@@ -338,19 +377,51 @@ class DistroInstaller(ABC):
                     self.install_font(str(content))
                 self.log(f"  ✓ Installed {name}")
             except Exception as e:
+                import traceback
+
+                if self.verbose:
+                    traceback.print_exc()
                 self.log(f"  ✗ Failed to install {name}: {e}")
 
         # Restore configurations after installation
         self.restore_configs()
         self.link_scripts()
 
+    def _get_repo_root(self) -> str:
+        """Find the root directory of the project containing dotfiles/ and scripts/."""
+        # 1. Check current directory (most common if running from a copy/dist)
+        cwd = os.getcwd()
+        if os.path.exists(os.path.join(cwd, "dotfiles")):
+            return cwd
+
+        # 2. Check directory of the script/executable
+        if getattr(sys, "frozen", False):
+            # PyInstaller bundle
+            executable_dir = os.path.dirname(sys.executable)
+            if os.path.exists(os.path.join(executable_dir, "dotfiles")):
+                return executable_dir
+            # Fallback to _MEIPASS if files were bundled inside
+            meipass = getattr(sys, "_MEIPASS", "")
+            if meipass and os.path.exists(os.path.join(meipass, "dotfiles")):
+                return meipass
+        else:
+            # Source execution
+            script_dir = os.path.dirname(os.path.abspath(__file__))
+            # Check current dir or parent (base.py is usually in src/ or root)
+            for candidate in [script_dir, os.path.dirname(script_dir)]:
+                if os.path.exists(os.path.join(candidate, "dotfiles")):
+                    return candidate
+
+        # Last resort fallback to the original logic
+        return os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+
     def restore_configs(self) -> None:
         """Use GNU Stow to symlink dotfiles from repo to home."""
         self.log("Stowing dotfiles...")
 
         home = os.path.expanduser("~")
-        script_dir = os.path.dirname(os.path.abspath(__file__))
-        dotfiles_dir = os.path.join(os.path.dirname(script_dir), "dotfiles")
+        repo_root = self._get_repo_root()
+        dotfiles_dir = os.path.join(repo_root, "dotfiles")
 
         if not os.path.exists(dotfiles_dir):
             self.log(f"  ⚠ Dotfiles directory not found: {dotfiles_dir}")
@@ -360,7 +431,7 @@ class DistroInstaller(ABC):
         from datetime import datetime
 
         timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-        backup_dir = os.path.join(os.path.dirname(script_dir), f".backups/{timestamp}")
+        backup_dir = os.path.join(repo_root, f".backups/{timestamp}")
 
         # Stow packages (each subdirectory in dotfiles/)
         packages = ["zsh", "nvim", "tmux", "fastfetch"]
@@ -433,8 +504,8 @@ class DistroInstaller(ABC):
 
         home = os.path.expanduser("~")
         bin_dir = os.path.join(home, ".local/bin")
-        script_dir = os.path.dirname(os.path.abspath(__file__))
-        scripts_dir = os.path.join(os.path.dirname(script_dir), "scripts")
+        repo_root = self._get_repo_root()
+        scripts_dir = os.path.join(repo_root, "scripts")
 
         if not os.path.exists(scripts_dir):
             self.log(f"  ⚠ Scripts directory not found: {scripts_dir}")
@@ -560,6 +631,147 @@ class DistroInstaller(ABC):
         if system != "darwin":
             fc_args = ["fc-cache", "-fv"] if self.verbose else ["fc-cache", "-f"]
             subprocess.run(fc_args, check=True, stdout=stdout, stderr=stderr)
+
+    def install_cargo_package(self, package: str) -> None:
+        """Install package via cargo."""
+        # Detect binary name (usually last part of repo or package name)
+        binary_name = package.split("/")[-1].split("@")[0]
+        if binary_name == "du-dust":
+            binary_name = "dust"
+
+        cargo_bin = os.path.join(os.path.expanduser("~"), ".cargo/bin", binary_name)
+        if os.path.exists(cargo_bin) and not self.force:
+            return
+
+        self.log(f"  Installing {package} via cargo...")
+        stdout = None if self.verbose else subprocess.DEVNULL
+        stdout = None if self.verbose else subprocess.DEVNULL
+        try:
+            subprocess.run(
+                ["cargo", "install", package],
+                check=True,
+                stdout=stdout,
+                stderr=subprocess.PIPE,
+            )
+        except subprocess.CalledProcessError as e:
+            error_msg = e.stderr.decode() if e.stderr else str(e)
+            raise Exception(f"Cargo install failed: {error_msg}")
+
+    def install_go_package(self, package: str) -> None:
+        """Install package via go install."""
+        binary_name = package.split("/")[-1].split("@")[0]
+        go_bin = os.path.join(os.path.expanduser("~"), "go/bin", binary_name)
+        if os.path.exists(go_bin) and not self.force:
+            return
+
+        self.log(f"  Installing {package} via go...")
+        stdout = None if self.verbose else subprocess.DEVNULL
+        stdout = None if self.verbose else subprocess.DEVNULL
+        try:
+            subprocess.run(
+                ["go", "install", package],
+                check=True,
+                stdout=stdout,
+                stderr=subprocess.PIPE,
+            )
+        except subprocess.CalledProcessError as e:
+            error_msg = e.stderr.decode() if e.stderr else str(e)
+            raise Exception(f"Go install failed: {error_msg}")
+
+    def install_github_release(self, repo: str, pattern: str, binary_name: str) -> None:
+        """Install binary from GitHub releases."""
+        local_bin = os.path.join(os.path.expanduser("~"), ".local/bin")
+        install_path = os.path.join(local_bin, binary_name)
+        if os.path.exists(install_path) and not self.force:
+            return
+
+        self.log(f"  Installing {binary_name} from GitHub release ({repo})...")
+        archive_path = self._download_github_release(repo, pattern)
+        self._extract_and_install_binary(archive_path, binary_name)
+
+        # Cleanup temp archive
+        import shutil
+
+        if os.path.exists(os.path.dirname(archive_path)):
+            shutil.rmtree(os.path.dirname(archive_path))
+
+    def _download_github_release(self, repo: str, pattern: str) -> str:
+        """Download latest release from GitHub that matches pattern."""
+        import json
+        import re
+        import tempfile
+
+        # Get latest release info
+        api_url = f"https://api.github.com/repos/{repo}/releases/latest"
+        result = subprocess.run(
+            ["curl", "-sL", api_url], capture_output=True, text=True, check=True
+        )
+        release_data = json.loads(result.stdout)
+
+        # Find matching asset
+        import fnmatch
+
+        for asset in release_data.get("assets", []):
+            if fnmatch.fnmatch(asset["name"], pattern):
+                download_url = asset["browser_download_url"]
+                filename = asset["name"]
+
+                # Download to temp directory
+                temp_dir = tempfile.mkdtemp()
+                output_path = os.path.join(temp_dir, filename)
+
+                self.log(f"    Downloading {filename}...")
+                subprocess.run(
+                    ["curl", "-sL", "-o", output_path, download_url],
+                    check=True,
+                    stdout=subprocess.DEVNULL,
+                    stderr=subprocess.DEVNULL,
+                )
+                return output_path
+
+        raise Exception(f"No matching asset found for pattern: {pattern}")
+
+    def _extract_and_install_binary(self, archive_path: str, binary_name: str) -> None:
+        """Extract archive and install binary to ~/.local/bin."""
+        import shutil
+        import tempfile
+        from pathlib import Path
+
+        local_bin = os.path.join(os.path.expanduser("~"), ".local/bin")
+        os.makedirs(local_bin, exist_ok=True)
+
+        temp_dir = tempfile.mkdtemp()
+
+        # Extract based on file type
+        if archive_path.endswith(".tar.gz") or archive_path.endswith(".gz"):
+            subprocess.run(["tar", "xzf", archive_path, "-C", temp_dir], check=True)
+        elif archive_path.endswith(".tbz") or archive_path.endswith(".bz"):
+            subprocess.run(["tar", "xjf", archive_path, "-C", temp_dir], check=True)
+        elif archive_path.endswith(".zip"):
+            subprocess.run(["unzip", "-q", archive_path, "-d", temp_dir], check=True)
+        else:
+            # Assume it's a raw binary
+            dest = os.path.join(local_bin, binary_name)
+            shutil.copy2(archive_path, dest)
+            os.chmod(dest, 0o755)
+            shutil.rmtree(temp_dir)
+            return
+
+        # Find and install binary
+        found = False
+        for root, dirs, files in os.walk(temp_dir):
+            for f in files:
+                if f == binary_name:
+                    shutil.copy2(
+                        os.path.join(root, f), os.path.join(local_bin, binary_name)
+                    )
+                    os.chmod(os.path.join(local_bin, binary_name), 0o755)
+                    found = True
+                    break
+            if found:
+                break
+
+        shutil.rmtree(temp_dir)
 
     def brew_install(self, package: str) -> None:
         pass

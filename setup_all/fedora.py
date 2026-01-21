@@ -93,26 +93,51 @@ class FedoraInstaller(DistroInstaller):
             ),
             # 4. Helpers
             ("gh", "manager", "gh"),
-            ("zoxide", "manager", "zoxide"),
-            ("fzf", "manager", "fzf"),
-            ("eza", "manager", "eza"),
-            ("bat", "manager", "bat"),
-            ("fd", "manager", "fd-find"),
-            ("ripgrep", "manager", "ripgrep"),
-            ("rsync", "manager", "rsync"),
-            ("btop", "manager", "btop"),
-            ("fastfetch", "manager", "fastfetch"),
-            ("jq", "manager", "jq"),
-            ("yq", "manager", "yq"),
-            ("nnn", "manager", "nnn"),
-            ("direnv", "manager", "direnv"),
-            ("dust", "binary", 'PATH="$HOME/.cargo/bin:$PATH" cargo install du-dust'),
             (
-                "duf",
-                "binary",
-                'PATH="$HOME/go/bin:$PATH" go install github.com/muesli/duf@latest',
+                "zoxide",
+                "github",
+                ("ajeetdsouza/zoxide", "zoxide*x86_64-unknown-linux-musl.tar.gz"),
             ),
-            ("hyperfine", "manager", "hyperfine"),
+            ("fzf", "github", ("junegunn/fzf", "fzf*linux_amd64.tar.gz")),
+            ("eza", "manager", "eza"),
+            (
+                "bat",
+                "github",
+                ("sharkdp/bat", "bat*x86_64-unknown-linux-musl.tar.gz"),
+            ),
+            ("fd", "github", ("sharkdp/fd", "fd*x86_64-unknown-linux-musl.tar.gz")),
+            (
+                "ripgrep",
+                "github",
+                ("BurntSushi/ripgrep", "ripgrep*x86_64-unknown-linux-musl.tar.gz"),
+            ),
+            ("rsync", "manager", "rsync"),
+            (
+                "btop",
+                "github",
+                ("aristocratos/btop", "btop*x86_64*linux-musl.tbz"),
+            ),
+            (
+                "fastfetch",
+                "github",
+                ("fastfetch-cli/fastfetch", "fastfetch*linux-amd64.tar.gz"),
+            ),
+            ("jq", "manager", "jq"),
+            ("yq", "github", ("mikefarah/yq", "yq_linux_amd64.tar.gz")),
+            ("nnn", "manager", "nnn"),
+            ("direnv", "github", ("direnv/direnv", "direnv.linux-amd64")),
+            (
+                "delta",
+                "github",
+                ("dandavison/delta", "delta*x86_64-unknown-linux-musl.tar.gz"),
+            ),
+            ("dust", "cargo", "du-dust"),
+            ("duf", "go", "github.com/muesli/duf@latest"),
+            (
+                "hyperfine",
+                "github",
+                ("sharkdp/hyperfine", "hyperfine*x86_64-unknown-linux-musl.tar.gz"),
+            ),
             # Archive tools
             ("zip", "manager", "zip"),
             ("unzip", "manager", "unzip"),
@@ -121,9 +146,8 @@ class FedoraInstaller(DistroInstaller):
             (
                 "docker",
                 "binary",
-                "curl -fsSL https://get.docker.com -o get-docker.sh && sudo sh get-docker.sh && rm get-docker.sh",
+                "curl -fsSL https://get.docker.com -o get-docker.sh && sudo sh get-docker.sh && rm get-docker.sh && sudo usermod -aG docker $(whoami)",
             ),
-            ("docker-group", "binary", "sudo usermod -aG docker $(whoami)"),
             ("redis", "manager", "redis"),
             ("postgres", "manager", "postgresql-server"),
             # 6. Langs
@@ -138,25 +162,22 @@ class FedoraInstaller(DistroInstaller):
             ),
             ("uv", "binary", "curl -LsSf https://astral.sh/uv/install.sh | sh"),
             # 7. AUR-equivalent (Build from source / binary)
-            (
-                "tealdeer",
-                "binary",
-                'PATH="$HOME/.cargo/bin:$PATH" cargo install tealdeer',
-            ),
+            ("tealdeer", "cargo", "tealdeer"),
+            ("procs", "cargo", "procs"),
             (
                 "lazygit",
-                "binary",
-                'PATH="$HOME/go/bin:$PATH" go install github.com/jesseduffield/lazygit@latest',
+                "github",
+                ("jesseduffield/lazygit", "lazygit_*.linux_x86_64.tar.gz"),
             ),
             (
                 "lazydocker",
-                "binary",
-                'PATH="$HOME/go/bin:$PATH" go install github.com/jesseduffield/lazydocker@latest',
+                "github",
+                ("jesseduffield/lazydocker", "lazydocker_*.Linux_x86_64.tar.gz"),
             ),
             (
                 "lazysql",
-                "binary",
-                'PATH="$HOME/go/bin:$PATH" go install github.com/jorgerojas26/lazysql@latest',
+                "github",
+                ("jorgerojas26/lazysql", "lazysql_Linux_x86_64.tar.gz"),
             ),
             (
                 "neovim",
@@ -243,6 +264,9 @@ class FedoraInstaller(DistroInstaller):
     def install(self, package: str) -> None:
         # Check if already installed
         if self.is_package_installed(package):
+            if self.force:
+                self.log(f"  Force-reinstalling {package} via dnf...")
+                subprocess.run(["sudo", "dnf", "reinstall", "-y", package], check=True)
             return
 
         self.log(f"  Installing {package} via dnf...")

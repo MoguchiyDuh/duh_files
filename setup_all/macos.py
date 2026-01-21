@@ -106,6 +106,8 @@ class MacOSInstaller(DistroInstaller):
             ("yq", "brew", "yq"),
             ("nnn", "brew", "nnn"),
             ("direnv", "brew", "direnv"),
+            ("delta", "brew", "git-delta"),
+            ("procs", "brew", "procs"),
             ("dust", "brew", "dust"),
             ("duf", "brew", "duf"),
             ("hyperfine", "brew", "hyperfine"),
@@ -129,26 +131,10 @@ class MacOSInstaller(DistroInstaller):
             ),
             ("uv", "binary", "curl -LsSf https://astral.sh/uv/install.sh | sh"),
             # 7. AUR-equivalent (Build from source / binary)
-            (
-                "tealdeer",
-                "binary",
-                'env PATH="$HOME/.cargo/bin:$PATH" cargo install tealdeer',
-            ),
-            (
-                "lazygit",
-                "binary",
-                'env PATH="$HOME/go/bin:$PATH" go install github.com/jesseduffield/lazygit@latest',
-            ),
-            (
-                "lazydocker",
-                "binary",
-                'env PATH="$HOME/go/bin:$PATH" go install github.com/jesseduffield/lazydocker@latest',
-            ),
-            (
-                "lazysql",
-                "binary",
-                'env PATH="$HOME/go/bin:$PATH" go install github.com/jorgerojas26/lazysql@latest',
-            ),
+            ("tealdeer", "cargo", "tealdeer"),
+            ("lazygit", "go", "github.com/jesseduffield/lazygit@latest"),
+            ("lazydocker", "go", "github.com/jesseduffield/lazydocker@latest"),
+            ("lazysql", "go", "github.com/jorgerojas26/lazysql@latest"),
             (
                 "neovim",
                 "git",
@@ -231,6 +217,9 @@ class MacOSInstaller(DistroInstaller):
     def install(self, package: str) -> None:
         # Check if already installed
         if self.is_package_installed(package):
+            if self.force:
+                self.log(f"  Force-reinstalling {package} via brew...")
+                subprocess.run(["brew", "reinstall", package], check=True)
             return
 
         self.log(f"  Installing {package} via brew...")

@@ -66,7 +66,14 @@ def check_packages(installer: DistroInstaller) -> Tuple[List[str], List[str]]:
     print(f"{'PACKAGE':<30} | {'STATUS':<15} | DETAILS")
     print("-" * 100)
 
+    # Packages that should be installed but hidden from the pre-flight check report
+    SKIP_CHECK = {"docker-group", "bat-alias", "eza-repo", "fastfetch-repo"}
+
     for name, method, content in installer.PACKAGES:
+        # Skip checking for setup tasks, repo setups, or explicitly suppressed items
+        if name.startswith("_") or name.endswith("-repo") or name in SKIP_CHECK:
+            continue
+
         is_installed, details = checker.enhanced_check(name, method, content)
 
         status = "INSTALLED" if is_installed else "MISSING"
@@ -103,24 +110,32 @@ def print_summary(installed: List[str], missing: List[str]) -> None:
     )
 
 
-def request_approval(missing: List[str], auto_yes: bool = False) -> bool:
+def request_approval(
+    missing: List[str], auto_yes: bool = False, force: bool = False
+) -> bool:
     """
     Request user approval to install missing packages.
 
     Args:
         missing: List of missing package names
         auto_yes: Auto-approve without prompting
+        force: Force reinstallation of all packages
 
     Returns:
         True if user approved, False otherwise
     """
-    if not missing:
+    if not missing and not force:
         print(f"\n{Colors.GREEN}✓ All packages are already installed!{Colors.RESET}")
         return False
 
-    print(f"\n{Colors.YELLOW}Missing packages ({len(missing)}):{Colors.RESET}")
-    for pkg in missing:
-        print(f"  - {pkg}")
+    if force:
+        print(
+            f"\n{Colors.YELLOW}Force mode enabled: All packages will be reinstalled.{Colors.RESET}"
+        )
+    else:
+        print(f"\n{Colors.YELLOW}Missing packages ({len(missing)}):{Colors.RESET}")
+        for pkg in missing:
+            print(f"  - {pkg}")
 
     # Auto-approve if --yes flag
     if auto_yes:
@@ -145,9 +160,9 @@ def parse_args() -> argparse.Namespace:
         epilog="""
 Examples:
   python3 main.py                # Check packages, ask for approval, install
+  python3 main.py --force        # Force reinstallation by bypassing skip checks
   python3 main.py --dry-run      # Check packages only (no installation)
   python3 main.py --yes          # Auto-approve and install without prompt
-  python3 main.py -y --dry-run   # Check packages only (--dry-run overrides --yes)
         """,
     )
     parser.add_argument(
@@ -155,6 +170,12 @@ Examples:
         "-y",
         action="store_true",
         help="Auto-approve installation without prompting",
+    )
+    parser.add_argument(
+        "--force",
+        "-f",
+        action="store_true",
+        help="Force reinstallation of all packages by bypassing skip checks",
     )
     parser.add_argument(
         "--dry-run",
@@ -185,6 +206,7 @@ def main():
         print(f"{Colors.CYAN}🔍 Detecting system...{Colors.RESET}")
         installer = detect_distro()
         installer.verbose = args.verbose
+        installer.force = args.force
         if hasattr(installer, "hyprland"):
             setattr(installer, "hyprland", args.hyprland)
         print(f"Detected: {Colors.GREEN}{installer.log_id.upper()}{Colors.RESET}")
@@ -205,7 +227,7 @@ def main():
             sys.exit(0)
 
         # Step 4: Request approval
-        if not request_approval(missing, auto_yes=args.yes):
+        if not request_approval(missing, auto_yes=args.yes, force=args.force):
             print(f"\n{Colors.YELLOW}Installation aborted.{Colors.RESET}")
             sys.exit(0)
 

@@ -13,7 +13,8 @@ class DefensiveChecker:
 
     @staticmethod
     def get_command_path(cmd: str) -> Optional[str]:
-        """Get path of command if it exists."""
+        """Get path of command, checking both system PATH and local binaries."""
+        # 1. System PATH
         try:
             result = subprocess.run(
                 ["which", cmd],
@@ -24,7 +25,21 @@ class DefensiveChecker:
             )
             return result.stdout.strip()
         except (subprocess.CalledProcessError, FileNotFoundError):
-            return None
+            pass
+
+        # 2. Local Fallbacks (Common for manual/lang-specific installs)
+        local_bins = [
+            "~/go/bin",
+            "~/.cargo/bin",
+            "~/.local/bin",
+            "/usr/local/go/bin",
+        ]
+        for bin_dir in local_bins:
+            full_path = os.path.join(os.path.expanduser(bin_dir), cmd)
+            if os.path.exists(full_path):
+                return full_path
+
+        return None
 
     @staticmethod
     def path_exists(path: str) -> bool:
@@ -100,6 +115,10 @@ class DefensiveChecker:
             "node": ["node"],
             "python": ["python3", "python"],
             "tealdeer": ["tldr"],
+            "openssh": ["ssh", "sshd"],
+            "ninja": ["ninja", "ninja-build"],
+            "delta": ["delta"],
+            "procs": ["procs"],
         }
 
         cmds_to_test = cmd_alternatives.get(name.lower(), [name.lower()])
@@ -119,6 +138,7 @@ class DefensiveChecker:
             "tmux-cpu": "~/.config/tmux/plugins/tmux-cpu",
             "tmux-prefix-highlight": "~/.config/tmux/plugins/tmux-prefix-highlight",
             "tmux-resurrect": "~/.config/tmux/plugins/tmux-resurrect",
+            "tmux-plugins": "~/.config/tmux/plugins",
         }
 
         # Check for generic plugins
@@ -132,7 +152,7 @@ class DefensiveChecker:
                 return True, path_map[name]
 
         # 3. Font Check
-        if method == "font" or name == "font":
+        if method == "font" or name in ("font", "nerd-fonts"):
             font_dirs = [
                 "~/.local/share/fonts",
                 "~/.fonts",
