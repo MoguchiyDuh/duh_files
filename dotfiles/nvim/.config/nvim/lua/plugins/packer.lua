@@ -33,6 +33,14 @@ return require("packer").startup(function(use)
 	-- Syntax
 	use({ "nvim-treesitter/nvim-treesitter", run = ":TSUpdate" })
 
+	-- Sudo Save
+	use({
+		"lambdalisue/suda.vim",
+		config = function()
+			vim.g.suda_smart_edit = 1
+		end,
+	})
+
 	-- LSP
 	use("neovim/nvim-lspconfig")
 	use("williamboman/mason.nvim")
