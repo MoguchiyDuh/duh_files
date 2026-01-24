@@ -55,29 +55,39 @@ keymap("n", "<C-n>", function()
 end, { desc = "Toggle file tree" })
 
 -- ============================================================================
--- AI - Gen.nvim (Manual prompt-based generation)
+-- AI - CodeCompanion
 -- ============================================================================
-local function gen_cmd(cmd)
+local function codecompanion_cmd(cmd)
 	return function()
-		if vim.fn.exists(":Gen") == 2 then
-			vim.cmd("Gen " .. (cmd or ""))
+		if vim.fn.exists(":CodeCompanionChat") == 2 or vim.fn.exists(":CodeCompanionActions") == 2 then
+			vim.cmd(cmd)
 		else
-			vim.notify("Gen.nvim not loaded", vim.log.levels.ERROR)
+			vim.notify("CodeCompanion not loaded", vim.log.levels.WARN)
 		end
 	end
 end
 
-keymap({ "n", "v" }, "<leader>]", gen_cmd(), { desc = "Gen: Open menu" })
-keymap({ "n", "v" }, "<leader>gc", gen_cmd("Complete_Code"), { desc = "Gen: Complete code" })
-keymap({ "n", "v" }, "<leader>ge", gen_cmd("Explain_Code"), { desc = "Gen: Explain code" })
-keymap({ "n", "v" }, "<leader>gf", gen_cmd("Fix_Code"), { desc = "Gen: Fix code" })
-keymap({ "n", "v" }, "<leader>go", gen_cmd("Optimize_Code"), { desc = "Gen: Optimize code" })
+-- Chat
+keymap(
+	{ "n", "v" },
+	"<leader>cc",
+	codecompanion_cmd("CodeCompanionChat Toggle"),
+	{ desc = "CodeCompanion: Toggle chat" }
+)
+keymap({ "n", "v" }, "<leader>ca", codecompanion_cmd("CodeCompanionActions"), { desc = "CodeCompanion: Actions" })
+keymap("v", "ga", codecompanion_cmd("CodeCompanionChat Add"), { desc = "CodeCompanion: Add to chat" })
 
--- ============================================================================
--- AI - LLM.nvim (Inline completion)
--- ============================================================================
--- Manual trigger
-keymap({ "n", "i" }, "<A-l>", "<Cmd>LLMSuggestion<CR>", { desc = "LLM: Trigger completion" })
-
--- Toggle auto-suggestions on/off
-keymap("n", "<leader>la", "<Cmd>LLMToggleAutoSuggest<CR>", { desc = "LLM: Toggle auto-suggest" })
+-- Inline (gen.nvim style)
+keymap("v", "<leader>cf", codecompanion_cmd("CodeCompanion /fix_inline"), { desc = "CodeCompanion: Fix code" })
+keymap(
+	"v",
+	"<leader>co",
+	codecompanion_cmd("CodeCompanion /optimize_inline"),
+	{ desc = "CodeCompanion: Optimize code" }
+)
+keymap(
+	"v",
+	"<leader>cp",
+	codecompanion_cmd("CodeCompanion /complete_inline"),
+	{ desc = "CodeCompanion: Complete code" }
+)
