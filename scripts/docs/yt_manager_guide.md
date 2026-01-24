@@ -69,6 +69,7 @@ Generates an M3U playlist file for local media players, preserving the exact ord
 - `PLAYLIST_OR_NAME`: A YouTube playlist URL or saved name.
 - `DIRECTORY`: Directory containing the local MP3 files.
 - `-o, --output FILE`: Custom path for the resulting `.m3u` file. Default is `<directory_name>.m3u`.
+- `--abs`: Use absolute paths for file entries in the M3U file. By default, paths are relative to the M3U file's location.
 
 ---
 
