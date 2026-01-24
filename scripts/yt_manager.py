@@ -902,7 +902,15 @@ def cmd_m3u(args: Namespace) -> int:
         for url in playlist_urls:
             if url in local_urls:
                 filepath = local_urls[url]
-                f.write(f"{filepath.absolute()}\n")
+                if args.abs:
+                    path_str = str(filepath.absolute())
+                else:
+                    try:
+                        # Make relative to the M3U file's directory
+                        path_str = str(filepath.relative_to(output.parent))
+                    except ValueError:
+                        path_str = str(filepath.absolute())
+                f.write(f"{path_str}\n")
                 matched += 1
             else:
                 missing += 1
@@ -1119,6 +1127,7 @@ def build_parser() -> argparse.ArgumentParser:
     p_m3u.add_argument("playlist", help="playlist name or YouTube URL")
     p_m3u.add_argument("directory", type=Path, nargs="?", help="directory with MP3 files (optional if using saved playlist)")
     p_m3u.add_argument("-o", "--output", type=Path, metavar="FILE", help="output M3U file")
+    p_m3u.add_argument("--abs", action="store_true", help="use absolute paths in M3U (default: relative)")
     p_m3u.set_defaults(func=cmd_m3u)
 
     # view
