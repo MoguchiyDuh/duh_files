@@ -38,8 +38,7 @@ A collection of specialized Python and Shell utilities integrated into the user'
 - **yt_manager.py**: Advanced YouTube synchronization tool. Features parallel downloads, local library scanning, and M3U playlist generation.
 - **spotify-cli.py**: CLI interface for the Spotify API. Retrieves and formats track metadata from playlists and albums.
 - **claude_storage_manager.py**: Interactive maintenance utility for the Claude CLI. Manages session history, cached agents, and storage artifacts.
-- **setup_ssh_keys.py**: Automation script for bidirectional SSH key exchange between local and remote hosts.
-- **ssh_debian.py**: Security hardening utility for SSH servers. Enforces public-key authentication and standardizes `sshd_config`.
+- **ssh_tool.py**: Unified SSH security and automation suite for Linux (Debian, Arch, Fedora) and macOS; manages server hardening and bidirectional key exchange.
 - **fix-grub.sh**: Diagnostic and repair script for GRUB bootloaders, specifically enabling `os-prober` for dual-boot setups.
 - **crypt.sh**: OpenSSL wrapper for simplified AES-256 file encryption and decryption operations.
 
