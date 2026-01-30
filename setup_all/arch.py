@@ -91,7 +91,7 @@ class ArchInstaller(DistroInstaller):
             ),
             ("tmux", "aur", "tmux"),
             ("stow", "aur", "stow"),
-            ("font", "aur", "ttf-fira-code-nerd"),
+            ("ttf-firacode-nerd", "aur", "ttf-firacode-nerd"),
             # 3. Helpers
             ("gh", "aur", "github-cli"),
             ("zoxide", "aur", "zoxide"),
@@ -116,6 +116,8 @@ class ArchInstaller(DistroInstaller):
             ("zip", "aur", "zip"),
             ("unzip", "aur", "unzip"),
             ("p7zip", "aur", "p7zip"),
+            # Filesystem support
+            ("ntfs-3g", "aur", "ntfs-3g"),
             # 4. Tools
             ("docker", "aur", "docker"),
             ("docker-group", "binary", "sudo usermod -aG docker $(whoami)"),
@@ -193,6 +195,7 @@ class ArchInstaller(DistroInstaller):
             ("hypridle", "aur", "hypridle"),
             ("hyprlock", "aur", "hyprlock"),
             ("wallust", "aur", "wallust"),
+            ("imagemagick", "aur", "imagemagick"),
             # Wayland core tools
             ("wl-clipboard", "aur", "wl-clipboard"),
             ("cliphist", "aur", "cliphist"),
@@ -207,16 +210,39 @@ class ArchInstaller(DistroInstaller):
             ("tesseract-data-eng", "aur", "tesseract-data-eng"),
             ("tesseract-data-rus", "aur", "tesseract-data-rus"),
             # Audio/Media/System
+            ("pipewire", "aur", "pipewire"),
+            ("pipewire-pulse", "aur", "pipewire-pulse"),
             ("wireplumber", "aur", "wireplumber"),
+            ("pavucontrol", "aur", "pavucontrol"),
             ("playerctl", "aur", "playerctl"),
             ("brightnessctl", "aur", "brightnessctl"),
             ("libnotify", "aur", "libnotify"),
+            # Bluetooth
+            ("bluez", "aur", "bluez"),
+            ("bluez-utils", "aur", "bluez-utils"),
+            ("blueman", "aur", "blueman"),
+            ("bluetooth-enable", "binary", "sudo systemctl enable --now bluetooth"),
+            # Network/WiFi
+            ("networkmanager", "aur", "networkmanager"),
+            ("network-manager-applet", "aur", "network-manager-applet"),
+            ("nm-enable", "binary", "sudo systemctl enable --now NetworkManager"),
             # Qt/GTK theming
             ("qt5ct", "aur", "qt5ct"),
             ("kvantum", "aur", "kvantum"),
             # Apps
             ("nautilus", "aur", "nautilus"),
             ("flatpak", "aur", "flatpak"),
+            # NVIDIA drivers (DKMS for better compatibility)
+            ("nvidia-dkms", "aur", "nvidia-dkms"),
+            ("nvidia-utils", "aur", "nvidia-utils"),
+            ("nvidia-settings", "aur", "nvidia-settings"),
+            ("lib32-nvidia-utils", "aur", "lib32-nvidia-utils"),
+            # Fonts (comprehensive coverage)
+            ("ttf-firacode-nerd", "aur", "ttf-firacode-nerd"),
+            ("noto-fonts", "aur", "noto-fonts"),
+            ("noto-fonts-cjk", "aur", "noto-fonts-cjk"),
+            ("noto-fonts-emoji", "aur", "noto-fonts-emoji"),
+            ("noto-fonts-extra", "aur", "noto-fonts-extra"),
         ]
 
         return PACKAGES_CORE + PACKAGES_HYPRLAND if self.hyprland else PACKAGES_CORE

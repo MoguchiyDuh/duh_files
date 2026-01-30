@@ -24,11 +24,11 @@ echo "[2/4] Enabling os-prober in GRUB config..."
 if grep -q "^GRUB_DISABLE_OS_PROBER=false" /etc/default/grub; then
     echo "✓ os-prober already enabled"
 else
-    if grep -q "^#GRUB_DISABLE_OS_PROBER" /etc/default/grub; then
-        sed -i 's/^#GRUB_DISABLE_OS_PROBER=true/GRUB_DISABLE_OS_PROBER=false/' /etc/default/grub
-    elif grep -q "^GRUB_DISABLE_OS_PROBER" /etc/default/grub; then
-        sed -i 's/^GRUB_DISABLE_OS_PROBER=true/GRUB_DISABLE_OS_PROBER=false/' /etc/default/grub
+    if grep -q "^#*GRUB_DISABLE_OS_PROBER" /etc/default/grub; then
+        # Uncomment and set to false (handles both =true and =false cases)
+        sed -i 's/^#*GRUB_DISABLE_OS_PROBER=.*/GRUB_DISABLE_OS_PROBER=false/' /etc/default/grub
     else
+        # Line doesn't exist, add it
         echo "GRUB_DISABLE_OS_PROBER=false" >> /etc/default/grub
     fi
     echo "✓ os-prober enabled"
