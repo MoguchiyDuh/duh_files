@@ -197,6 +197,7 @@ class ArchInstaller(DistroInstaller):
             ("wallust", "aur", "wallust"),
             ("imagemagick", "aur", "imagemagick"),
             # Wayland core tools
+            ("xdg-desktop-portal-hyprland", "aur", "xdg-desktop-portal-hyprland-git"),
             ("wl-clipboard", "aur", "wl-clipboard"),
             ("cliphist", "aur", "cliphist"),
             ("grim", "aur", "grim"),
