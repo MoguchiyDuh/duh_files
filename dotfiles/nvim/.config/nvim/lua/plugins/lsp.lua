@@ -23,6 +23,31 @@ vim.lsp.config.lua_ls = {
 	},
 }
 
+-- JSON LSP with SchemaStore
+vim.lsp.config.jsonls = {
+	capabilities = capabilities,
+	settings = {
+		json = {
+			schemas = require("schemastore").json.schemas(),
+			validate = { enable = true },
+		},
+	},
+}
+
+-- YAML LSP with SchemaStore
+vim.lsp.config.yamlls = {
+	capabilities = capabilities,
+	settings = {
+		yaml = {
+			schemaStore = {
+				enable = false,
+				url = "",
+			},
+			schemas = require("schemastore").yaml.schemas(),
+		},
+	},
+}
+
 -- Pyright settings to auto-detect uv's .venv
 local function get_python_path(workspace)
 	-- 1. Check for .venv in the current project root

@@ -22,6 +22,9 @@ SERVERS = {
 	"html", -- HTML
 	"cssls", -- CSS
 	"ts_ls", -- TypeScripts / JavaScript
+	"jsonls", -- JSON
+	"yamlls", -- YAML
+	"taplo", -- TOML
 }
 
 require("mason-lspconfig").setup({
@@ -37,10 +40,13 @@ require("mason-tool-installer").setup({
 		"black",
 		"isort",
 		"clang-format",
+		"prettier",
 
 		-- Linters
 		"flake8",
 		"eslint",
+		"jsonlint",
+		"yamllint",
 	},
 	auto_update = true,
 	run_on_start = true,

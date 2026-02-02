@@ -7,6 +7,9 @@ lint.linters_by_ft = {
 	javascript = { "eslint" },
 	typescript = { "eslint" },
 	python = { "flake8" },
+	json = { "jsonlint" },
+	jsonc = { "jsonlint" },
+	yaml = { "yamllint" },
 }
 
 vim.api.nvim_create_autocmd({ "BufWritePost", "BufReadPost", "InsertLeave" }, {
