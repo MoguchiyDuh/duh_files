@@ -6,7 +6,7 @@ end
 lint.linters_by_ft = {
 	javascript = { "eslint" },
 	typescript = { "eslint" },
-	python = { "flake8" },
+	python = { "ruff" },
 	json = { "jsonlint" },
 	jsonc = { "jsonlint" },
 	yaml = { "yamllint" },

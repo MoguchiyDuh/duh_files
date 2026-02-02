@@ -34,16 +34,15 @@ require("mason-lspconfig").setup({
 
 require("mason-tool-installer").setup({
 	ensure_installed = {
-		"llm-ls",
+		-- "llm-ls", -- Unused
 		-- Formatters
 		"stylua",
-		"black",
-		"isort",
+		"ruff", -- Python formatter + linter (replaces black, isort, flake8)
 		"clang-format",
 		"prettier",
+		"taplo", -- TOML formatter
 
 		-- Linters
-		"flake8",
 		"eslint",
 		"jsonlint",
 		"yamllint",
