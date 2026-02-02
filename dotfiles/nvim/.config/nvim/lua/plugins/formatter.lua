@@ -9,7 +9,7 @@ conform.setup({
 		javascript = { "prettier" },
 		typescript = { "prettier" },
 		lua = { "stylua" },
-		python = { "black", "isort" },
+		python = { "ruff_format", "ruff_organize_imports" },
 		rust = { "rustfmt" },
 		cpp = { "clang-format" },
 		c = { "clang-format" },
@@ -22,7 +22,7 @@ conform.setup({
 		toml = { "taplo" },
 	},
 	format_on_save = {
-		timeout_ms = 500,
+		timeout_ms = 1500,
 		lsp_fallback = true,
 	},
 })

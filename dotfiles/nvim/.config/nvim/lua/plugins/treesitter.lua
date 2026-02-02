@@ -26,5 +26,5 @@ treesitter.setup({
 		"gitignore",
 	},
 	highlight = { enable = true },
-	indent = { enabled = true },
+	indent = { enable = true },
 })

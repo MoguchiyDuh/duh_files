@@ -1,1 +1,1 @@
--- write the bubble sort in lua
+-- Placeholder for miscellaneous plugin configurations

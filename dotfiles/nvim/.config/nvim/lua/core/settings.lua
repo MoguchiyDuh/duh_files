@@ -41,5 +41,5 @@ vim.opt.swapfile = false
 vim.opt.backup = false
 vim.opt.writebackup = false
 
--- Suppress LSP offset encoding warnings
-vim.lsp.set_log_level("ERROR")
+-- Set LSP log level (new API for nvim 0.11+)
+vim.lsp.log.set_level("ERROR")
