@@ -25,7 +25,7 @@ require("lazy").setup({
 	{ "goolord/alpha-nvim", dependencies = { "nvim-tree/nvim-web-devicons" } },
 
 	-- Fuzzy finder
-	{ "nvim-telescope/telescope.nvim", tag = "0.1.8", dependencies = { "nvim-lua/plenary.nvim" } },
+	{ "nvim-telescope/telescope.nvim", dependencies = { "nvim-lua/plenary.nvim" } },
 	{ "nvim-telescope/telescope-fzf-native.nvim", build = "make" },
 
 	-- Syntax
@@ -88,7 +88,6 @@ require("lazy").setup({
 	-- Editing
 	{
 		"kylechui/nvim-surround",
-		version = "*",
 		event = "VeryLazy",
 		config = function()
 			require("nvim-surround").setup({})

@@ -9,10 +9,12 @@ vim.g.mapleader = " "
 -- Standard keymaps
 -- ============================================================================
 -- Save/Quit
+keymap("n", "<C-s>", ":w<CR>", { noremap = true, silent = true, desc = "Save file" })
+keymap("n", "<C-q>", ":q<CR>", { noremap = true, silent = true, desc = "Quit file" })
 keymap("n", "<leader>w", ":w<CR>", { noremap = true, silent = true, desc = "Save file" })
 keymap("n", "<leader>W", ":w!<CR>", { noremap = true, silent = true, desc = "Force save file" })
 keymap("n", "<leader>q", ":q<CR>", { noremap = true, silent = true, desc = "Quit file" })
-keymap("n", "<leader>Q", ":q!<CR>", { noremap = true, silent = true, desc = "Force quit file" })
+keymap("n", "<leader>Q", ":qa!<CR>", { noremap = true, silent = true, desc = "Force quit all" })
 
 -- Clear search highlights
 keymap("n", "<Esc>", ":noh<CR>", { noremap = true, silent = true, desc = "Clear search highlights" })
@@ -28,8 +30,7 @@ keymap("n", "<C-l>", "<C-w>l", { noremap = true, silent = true, desc = "Move to 
 
 -- Split management
 keymap("n", "<leader>sv", ":vsplit<CR>", { noremap = true, silent = true, desc = "Vertical split" })
-keymap("n", "<leader>sh", ":split<CR>", { noremap = true, silent = true, desc = "Horizontal split" })
-keymap("n", "<leader>sx", ":close<CR>", { noremap = true, silent = true, desc = "Close split" })
+keymap("n", "<leader>sx", ":split<CR>", { noremap = true, silent = true, desc = "Horizontal split" })
 keymap("n", "<leader>se", "<C-w>=", { noremap = true, silent = true, desc = "Make splits equal size" })
 
 -- ============================================================================
@@ -44,6 +45,11 @@ keymap("v", "<A-k>", ":m '<-2<CR>gv=gv", { noremap = true, silent = true, desc =
 -- Stay in visual mode when indenting
 keymap("v", "<", "<gv", { noremap = true, silent = true, desc = "Indent left" })
 keymap("v", ">", ">gv", { noremap = true, silent = true, desc = "Indent right" })
+
+-- Comment (Ctrl+/ like VS Code)
+keymap("n", "<C-_>", "gcc", { remap = true, silent = true, desc = "Toggle comment" })
+keymap("v", "<C-_>", "gc", { remap = true, silent = true, desc = "Toggle comment" })
+keymap("i", "<C-_>", "<Esc>gcci", { remap = true, silent = true, desc = "Toggle comment" })
 
 -- ============================================================================
 -- Terminal
@@ -81,8 +87,12 @@ end
 
 keymap("n", "<leader>bn", ":bnext<CR>", { noremap = true, silent = true, desc = "Next buffer" })
 keymap("n", "<leader>bp", ":bprevious<CR>", { noremap = true, silent = true, desc = "Previous buffer" })
-keymap("n", "<leader>bd", function() smart_close_buffer(false) end, { noremap = true, silent = true, desc = "Close buffer" })
-keymap("n", "<leader>bD", function() smart_close_buffer(true) end, { noremap = true, silent = true, desc = "Force close buffer" })
+keymap("n", "<leader>bd", function()
+	smart_close_buffer(false)
+end, { noremap = true, silent = true, desc = "Close buffer" })
+keymap("n", "<leader>bD", function()
+	smart_close_buffer(true)
+end, { noremap = true, silent = true, desc = "Force close buffer" })
 keymap("n", "<Tab>", ":bnext<CR>", { noremap = true, silent = true, desc = "Next buffer" })
 keymap("n", "<S-Tab>", ":bprevious<CR>", { noremap = true, silent = true, desc = "Previous buffer" })
 
@@ -104,7 +114,6 @@ keymap("n", "gD", vim.lsp.buf.declaration, { silent = true, desc = "Go to declar
 keymap("n", "gi", vim.lsp.buf.implementation, { silent = true, desc = "Go to implementation" })
 keymap("n", "gt", vim.lsp.buf.type_definition, { silent = true, desc = "Go to type definition" })
 keymap("n", "<leader>ca", vim.lsp.buf.code_action, { silent = true, desc = "Code actions" })
-keymap("n", "<leader>rn", vim.lsp.buf.rename, { silent = true, desc = "Rename symbol" })
 keymap("n", "<leader>e", vim.diagnostic.open_float, { silent = true, desc = "Show diagnostics" })
 keymap("n", "[d", vim.diagnostic.goto_prev, { silent = true, desc = "Previous diagnostic" })
 keymap("n", "]d", vim.diagnostic.goto_next, { silent = true, desc = "Next diagnostic" })
@@ -120,7 +129,9 @@ if ts_ok then
 	keymap("n", "<leader>fs", function()
 		ts.grep_string({ search = vim.fn.input("Grep > ") })
 	end, { desc = "Live grep search" })
+	-- Buffer pocket management
 	keymap("n", "<leader>fb", ts.buffers, { desc = "Find buffers" })
+	keymap("n", "<C-b>", ts.buffers, { desc = "Buffer picker (pocket)" })
 	keymap("n", "gr", ts.lsp_references, { desc = "Show references" })
 end
 
@@ -140,6 +151,21 @@ if flash_ok then
 	keymap("o", "z", function()
 		flash.jump()
 	end, { desc = "Flash jump (operator mode)" })
+end
+
+-- ============================================================================
+-- Git - Gitsigns
+-- ============================================================================
+local gs_ok, gs = pcall(require, "gitsigns")
+if gs_ok then
+	keymap("n", "<leader>gd", gs.preview_hunk, { desc = "Preview hunk diff" })
+	keymap("n", "<leader>gD", gs.diffthis, { desc = "Diff split" })
+	keymap("n", "<leader>gb", gs.blame_line, { desc = "Blame line" })
+	keymap("n", "]h", gs.next_hunk, { desc = "Next hunk" })
+	keymap("n", "[h", gs.prev_hunk, { desc = "Previous hunk" })
+	keymap("n", "<leader>gs", gs.stage_hunk, { desc = "Stage hunk" })
+	keymap("n", "<leader>gu", gs.undo_stage_hunk, { desc = "Undo stage hunk" })
+	keymap("n", "<leader>gr", gs.reset_hunk, { desc = "Reset hunk" })
 end
 
 -- ============================================================================

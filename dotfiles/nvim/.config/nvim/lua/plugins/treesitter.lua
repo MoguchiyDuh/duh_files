@@ -4,13 +4,9 @@ if not status_ok then
 end
 
 treesitter.setup({
+	-- Exclude parsers bundled with nvim 0.12: lua, c, vim, vimdoc, query
 	ensure_installed = {
-		"c",
 		"cpp",
-		"lua",
-		"vim",
-		"vimdoc",
-		"query",
 		"markdown",
 		"markdown_inline",
 		"python",

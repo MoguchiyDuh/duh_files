@@ -75,6 +75,9 @@ alias h='history'
 alias hc='history -c'
 alias c='clear'
 alias venv='source .venv/bin/activate'
+alias lgit='lazygit'
+alias lsql='lazysql'
+alias ldoc='lazydocker'
 
 # --- Initializations ---
 eval "$(zoxide init zsh)"
