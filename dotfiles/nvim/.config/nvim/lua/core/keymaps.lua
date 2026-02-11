@@ -46,16 +46,10 @@ keymap("v", "<A-k>", ":m '<-2<CR>gv=gv", { noremap = true, silent = true, desc =
 keymap("v", "<", "<gv", { noremap = true, silent = true, desc = "Indent left" })
 keymap("v", ">", ">gv", { noremap = true, silent = true, desc = "Indent right" })
 
--- Comment (Ctrl+/ like VS Code)
-keymap("n", "<C-_>", "gcc", { remap = true, silent = true, desc = "Toggle comment" })
-keymap("v", "<C-_>", "gc", { remap = true, silent = true, desc = "Toggle comment" })
-keymap("i", "<C-_>", "<Esc>gcci", { remap = true, silent = true, desc = "Toggle comment" })
-
 -- ============================================================================
 -- Terminal
 -- ============================================================================
 keymap("n", "<C-t>", ":terminal<CR>", { noremap = true, silent = true, desc = "Open terminal" })
-keymap("t", "<Esc>", "<C-\\><C-n>", { noremap = true, silent = true, desc = "Exit terminal mode" })
 
 -- ============================================================================
 -- Buffer navigation
