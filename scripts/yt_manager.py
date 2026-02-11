@@ -73,6 +73,7 @@ class Config:
     file_type: FileType = "mp3"
     parallel: int = 1
     force: bool = False
+    segment: str | None = None
 
     @classmethod
     def from_args(cls, args: Namespace) -> Config:
@@ -82,6 +83,7 @@ class Config:
             file_type=getattr(args, "type", "mp3"),
             parallel=getattr(args, "parallel", 1),
             force=getattr(args, "force", False),
+            segment=getattr(args, "segment", None),
         )
 
 
@@ -241,9 +243,13 @@ def build_download_args(
     output: Path,
     file_type: FileType,
     cookies: Path | None = None,
+    segment: str | None = None,
 ) -> list[str]:
     """Build yt-dlp arguments for downloading."""
     args = ["--no-playlist", "-o", str(output)]
+
+    if segment:
+        args.extend(["--download-sections", f"*{segment}"])
 
     if file_type == "mp3":
         args.extend([
@@ -484,7 +490,7 @@ def download_track(track: Track, output_dir: Path, cfg: Config, filename: str | 
     temp_output = temp_dir / filename
 
     try:
-        args = build_download_args(track.url, temp_output, cfg.file_type, cfg.cookies)
+        args = build_download_args(track.url, temp_output, cfg.file_type, cfg.cookies, cfg.segment)
         run_ytdlp(args, capture=False, verbose=cfg.verbose)
 
         # Find downloaded file (extension might differ before conversion)
@@ -1106,6 +1112,7 @@ def build_parser() -> argparse.ArgumentParser:
     p_download = subparsers.add_parser("download", help="download single track or playlist")
     p_download.add_argument("url", help="YouTube URL or search query")
     p_download.add_argument("output", type=Path, nargs="?", default=Path("."), help="output directory or file (default: .)")
+    p_download.add_argument("--segment", help="download specific segment (e.g. '00:01:00-00:02:00')")
     add_common_flags(p_download)
     p_download.set_defaults(func=cmd_download)
 
