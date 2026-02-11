@@ -467,9 +467,11 @@ class DownloadResult:
     skipped: bool = False
 
 
-def download_track(track: Track, output_dir: Path, cfg: Config) -> DownloadResult:
+def download_track(track: Track, output_dir: Path, cfg: Config, filename: str | None = None) -> DownloadResult:
     """Download single track to directory."""
-    filename = track.filename(cfg.file_type)
+    if not filename:
+        filename = track.filename(cfg.file_type)
+    
     output_path = output_dir / filename
 
     # Skip if exists and not forcing
@@ -646,15 +648,18 @@ def cmd_download(args: Namespace) -> int:
         track = get_track_info(url, cfg.cookies)
         print(f"Track: {track.artist} - {track.title}")
 
-        if output.suffix:
+        if output.is_dir():
+            result = download_track(track, output, cfg)
+        elif output.suffix:
             output.parent.mkdir(parents=True, exist_ok=True)
-            result = download_track(track, output.parent, cfg)
+            result = download_track(track, output.parent, cfg, filename=output.name)
         else:
             output.mkdir(parents=True, exist_ok=True)
             result = download_track(track, output, cfg)
 
         if result.success:
-            print_success(f"Downloaded: {track.filename(cfg.file_type)}")
+            actual_filename = result.path.name if result.path else track.filename(cfg.file_type)
+            print_success(f"Downloaded: {actual_filename}")
         else:
             print_error(f"Failed: {result.error}")
             return 1
@@ -1100,7 +1105,7 @@ def build_parser() -> argparse.ArgumentParser:
     # download
     p_download = subparsers.add_parser("download", help="download single track or playlist")
     p_download.add_argument("url", help="YouTube URL or search query")
-    p_download.add_argument("output", type=Path, help="output directory or file")
+    p_download.add_argument("output", type=Path, nargs="?", default=Path("."), help="output directory or file (default: .)")
     add_common_flags(p_download)
     p_download.set_defaults(func=cmd_download)
 
