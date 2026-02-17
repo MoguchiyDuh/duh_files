@@ -59,9 +59,9 @@ def check_packages(installer: DistroInstaller) -> Tuple[List[str], List[str]]:
     installed = []
     missing = []
 
-    print(f"\n{Colors.CYAN}{'='*100}{Colors.RESET}")
+    print(f"\n{Colors.CYAN}{'=' * 100}{Colors.RESET}")
     print(f"{Colors.CYAN}CHECKING PACKAGES{Colors.RESET}")
-    print(f"{Colors.CYAN}{'='*100}{Colors.RESET}\n")
+    print(f"{Colors.CYAN}{'=' * 100}{Colors.RESET}\n")
 
     print(f"{'PACKAGE':<30} | {'STATUS':<15} | DETAILS")
     print("-" * 100)
@@ -106,7 +106,7 @@ def print_summary(installed: List[str], missing: List[str]) -> None:
         f"  {Colors.GREEN}✓ Installed:{Colors.RESET} {len(installed)}/{total} ({pct}%)"
     )
     print(
-        f"  {Colors.RED}✗ Missing:{Colors.RESET}   {len(missing)}/{total} ({100-pct}%)"
+        f"  {Colors.RED}✗ Missing:{Colors.RESET}   {len(missing)}/{total} ({100 - pct}%)"
     )
 
 
@@ -232,16 +232,16 @@ def main():
             sys.exit(0)
 
         # Step 5: Execute installation
-        print(f"\n{Colors.CYAN}{'='*100}{Colors.RESET}")
+        print(f"\n{Colors.CYAN}{'=' * 100}{Colors.RESET}")
         print(f"{Colors.CYAN}STARTING INSTALLATION{Colors.RESET}")
-        print(f"{Colors.CYAN}{'='*100}{Colors.RESET}\n")
+        print(f"{Colors.CYAN}{'=' * 100}{Colors.RESET}\n")
 
         installer.check_update()
         installer.install_all()
 
-        print(f"\n{Colors.GREEN}{'='*100}{Colors.RESET}")
+        print(f"\n{Colors.GREEN}{'=' * 100}{Colors.RESET}")
         print(f"{Colors.GREEN}✓ INSTALLATION COMPLETE{Colors.RESET}")
-        print(f"{Colors.GREEN}{'='*100}{Colors.RESET}\n")
+        print(f"{Colors.GREEN}{'=' * 100}{Colors.RESET}\n")
 
     except NotImplementedError:
         print(f"{Colors.RED}Error: Unsupported OS or Distribution{Colors.RESET}")

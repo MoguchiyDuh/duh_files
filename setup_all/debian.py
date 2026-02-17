@@ -57,32 +57,32 @@ class DebianInstaller(DistroInstaller):
             (
                 "zoxide",
                 "github",
-                ("ajeetdsouza/zoxide", "zoxide*x86_64-unknown-linux-musl.tar.gz"),
+                ("ajeetdsouza/zoxide", "zoxide-*-x86_64-unknown-linux-musl.tar.gz"),
             ),
-            ("fzf", "github", ("junegunn/fzf", "fzf*linux_amd64.tar.gz")),
+            ("fzf", "github", ("junegunn/fzf", "fzf-*-linux_amd64.tar.gz")),
             ("eza", "script", self._install_eza),
             (
                 "bat",
                 "github",
-                ("sharkdp/bat", "bat*x86_64-unknown-linux-musl.tar.gz"),
+                ("sharkdp/bat", "bat-v*-x86_64-unknown-linux-musl.tar.gz"),
             ),
             ("bat-alias", "script", self._create_bat_alias),
-            ("fd", "github", ("sharkdp/fd", "fd*x86_64-unknown-linux-musl.tar.gz")),
+            ("fd", "github", ("sharkdp/fd", "fd-v*-x86_64-unknown-linux-musl.tar.gz")),
             (
                 "ripgrep",
                 "github",
-                ("BurntSushi/ripgrep", "ripgrep*x86_64-unknown-linux-musl.tar.gz"),
+                ("BurntSushi/ripgrep", "ripgrep-*-x86_64-unknown-linux-musl.tar.gz"),
             ),
             ("rsync", "manager", "rsync"),
             (
                 "btop",
                 "github",
-                ("aristocratos/btop", "btop*x86_64*linux-musl.tbz"),
+                ("aristocratos/btop", "btop-x86_64-unknown-linux-musl.tbz"),
             ),
             (
                 "fastfetch",
                 "github",
-                ("fastfetch-cli/fastfetch", "fastfetch*linux-amd64.tar.gz"),
+                ("fastfetch-cli/fastfetch", "fastfetch-linux-amd64.tar.gz"),
             ),
             ("jq", "manager", "jq"),
             ("yq", "github", ("mikefarah/yq", "yq_linux_amd64.tar.gz")),
@@ -91,12 +91,12 @@ class DebianInstaller(DistroInstaller):
             (
                 "hyperfine",
                 "github",
-                ("sharkdp/hyperfine", "hyperfine*x86_64-unknown-linux-musl.tar.gz"),
+                ("sharkdp/hyperfine", "hyperfine-v*-x86_64-unknown-linux-musl.tar.gz"),
             ),
             (
                 "delta",
                 "github",
-                ("dandavison/delta", "delta*x86_64-unknown-linux-musl.tar.gz"),
+                ("dandavison/delta", "delta-*-x86_64-unknown-linux-musl.tar.gz"),
             ),
             # Archive tools
             ("zip", "manager", "zip"),
@@ -115,16 +115,15 @@ class DebianInstaller(DistroInstaller):
             # 8. Advanced Tools (built with language package managers)
             ("tealdeer", "cargo", "tealdeer"),
             ("dust", "cargo", "du-dust"),
-            ("procs", "cargo", "procs"),
             (
                 "lazygit",
                 "github",
-                ("jesseduffield/lazygit", "lazygit_*.linux_x86_64.tar.gz"),
+                ("jesseduffield/lazygit", "lazygit_*_linux_x86_64.tar.gz"),
             ),
             (
                 "lazydocker",
                 "github",
-                ("jesseduffield/lazydocker", "lazydocker_*.Linux_x86_64.tar.gz"),
+                ("jesseduffield/lazydocker", "lazydocker_*_Linux_x86_64.tar.gz"),
             ),
             (
                 "lazysql",
@@ -132,8 +131,8 @@ class DebianInstaller(DistroInstaller):
                 ("jorgerojas26/lazysql", "lazysql_Linux_x86_64.tar.gz"),
             ),
             ("duf", "go", "github.com/muesli/duf@latest"),
-            # 9. Neovim (build from source for latest stable)
-            ("neovim", "script", self._install_neovim),
+            # 9. Neovim (pre-built binary)
+            ("neovim", "script", self._install_neovim_binary),
         ]
 
     def check_update(self) -> None:
@@ -438,39 +437,45 @@ class DebianInstaller(DistroInstaller):
             stdout=subprocess.DEVNULL if not self.verbose else None,
         )
 
-    def _install_neovim(self) -> None:
-        """Build and install Neovim from source (stable)."""
+    def _install_neovim_binary(self) -> None:
+        """Install Neovim from pre-built binary."""
         if shutil.which("nvim"):
-            # Check if it's recent enough (optional: could check version)
             return
 
-        self.log("  Building and installing Neovim...")
+        self.log("  Installing Neovim from pre-built binary...")
         temp_dir = Path(tempfile.mkdtemp())
 
-        subprocess.run(
-            [
-                "git",
-                "clone",
-                "--depth=1",
-                "--branch=stable",
-                "https://github.com/neovim/neovim.git",
-                str(temp_dir),
-            ],
-            check=True,
-            stdout=subprocess.DEVNULL if not self.verbose else None,
-        )
+        # Download latest release
+        download_url = "https://github.com/neovim/neovim/releases/latest/download/nvim-linux-x86_64.tar.gz"
+        archive_path = temp_dir / "nvim.tar.gz"
 
         subprocess.run(
-            ["make", "CMAKE_BUILD_TYPE=RelWithDebInfo"],
-            cwd=temp_dir,
+            ["curl", "-sL", "-o", str(archive_path), download_url],
             check=True,
-            stdout=subprocess.DEVNULL if not self.verbose else None,
         )
+
+        # Extract
+        extract_dir = temp_dir / "nvim-extracted"
+        extract_dir.mkdir()
         subprocess.run(
-            ["sudo", "make", "install"],
-            cwd=temp_dir,
+            ["tar", "xzf", str(archive_path), "-C", str(extract_dir)],
             check=True,
-            stdout=subprocess.DEVNULL if not self.verbose else None,
         )
+
+        # Copy to ~/.local
+        local_dir = Path.home() / ".local"
+        nvim_dir = extract_dir / "nvim-linux-x86_64"
+
+        if nvim_dir.exists():
+            # Copy bin, lib, share directories
+            for subdir in ["bin", "lib", "share"]:
+                src = nvim_dir / subdir
+                dst = local_dir / subdir
+                if src.exists():
+                    dst.mkdir(parents=True, exist_ok=True)
+                    subprocess.run(
+                        ["cp", "-r", f"{src}/.", str(dst)],
+                        check=True,
+                    )
 
         shutil.rmtree(temp_dir)

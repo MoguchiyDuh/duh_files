@@ -108,7 +108,6 @@ class ArchInstaller(DistroInstaller):
             ("nnn", "aur", "nnn"),
             ("direnv", "aur", "direnv"),
             ("delta", "aur", "git-delta"),
-            ("procs", "aur", "procs"),
             ("dust", "aur", "dust"),
             ("duf", "aur", "duf"),
             ("hyperfine", "aur", "hyperfine"),

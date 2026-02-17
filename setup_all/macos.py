@@ -107,7 +107,6 @@ class MacOSInstaller(DistroInstaller):
             ("nnn", "brew", "nnn"),
             ("direnv", "brew", "direnv"),
             ("delta", "brew", "git-delta"),
-            ("procs", "brew", "procs"),
             ("dust", "brew", "dust"),
             ("duf", "brew", "duf"),
             ("hyperfine", "brew", "hyperfine"),
