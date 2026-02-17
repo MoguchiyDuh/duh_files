@@ -163,7 +163,6 @@ class FedoraInstaller(DistroInstaller):
             ("uv", "binary", "curl -LsSf https://astral.sh/uv/install.sh | sh"),
             # 7. AUR-equivalent (Build from source / binary)
             ("tealdeer", "cargo", "tealdeer"),
-            ("procs", "cargo", "procs"),
             (
                 "lazygit",
                 "github",

@@ -118,7 +118,6 @@ class DefensiveChecker:
             "openssh": ["ssh", "sshd"],
             "ninja": ["ninja", "ninja-build"],
             "delta": ["delta"],
-            "procs": ["procs"],
         }
 
         cmds_to_test = cmd_alternatives.get(name.lower(), [name.lower()])
