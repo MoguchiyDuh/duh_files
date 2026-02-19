@@ -1,5 +1,4 @@
--- Load packer
-require("plugins.packer")
+require("plugins.lazy")
 
 -- Load plugin configs
 require("plugins.line")

@@ -108,6 +108,7 @@ keymap("n", "gD", vim.lsp.buf.declaration, { silent = true, desc = "Go to declar
 keymap("n", "gi", vim.lsp.buf.implementation, { silent = true, desc = "Go to implementation" })
 keymap("n", "gt", vim.lsp.buf.type_definition, { silent = true, desc = "Go to type definition" })
 keymap("n", "<leader>ca", vim.lsp.buf.code_action, { silent = true, desc = "Code actions" })
+keymap("n", "<leader>rn", vim.lsp.buf.rename, { silent = true, desc = "Rename symbol" })
 keymap("n", "<leader>e", vim.diagnostic.open_float, { silent = true, desc = "Show diagnostics" })
 keymap("n", "[d", vim.diagnostic.goto_prev, { silent = true, desc = "Previous diagnostic" })
 keymap("n", "]d", vim.diagnostic.goto_next, { silent = true, desc = "Next diagnostic" })

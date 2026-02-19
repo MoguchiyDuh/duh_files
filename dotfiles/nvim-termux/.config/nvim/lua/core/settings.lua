@@ -50,3 +50,6 @@ vim.opt.undodir = vim.fn.stdpath("data") .. "/undo"
 vim.opt.swapfile = false
 vim.opt.backup = false
 vim.opt.writebackup = false
+
+-- Set LSP log level (new API for nvim 0.11+)
+vim.lsp.log.set_level("ERROR")

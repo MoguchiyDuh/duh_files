@@ -108,6 +108,7 @@ class DebianInstaller(DistroInstaller):
             ("postgres", "manager", "postgresql postgresql-contrib"),
             # 7. Programming Languages
             ("python3", "manager", "python3 python3-pip python3-venv"),
+            ("python-symlink", "script", self._create_python_symlink),
             ("nodejs", "script", self._install_nodejs),
             ("go", "script", self._install_go),
             ("rust", "script", self._install_rust),
@@ -326,6 +327,20 @@ class DebianInstaller(DistroInstaller):
         elif (local_bin / "batcat").exists():
             self.log("  Creating bat alias...")
             bat_link.symlink_to(local_bin / "batcat")
+
+    def _create_python_symlink(self) -> None:
+        """Create python -> python3 symlink in ~/.local/bin."""
+        local_bin = Path.home() / ".local" / "bin"
+        local_bin.mkdir(parents=True, exist_ok=True)
+
+        python_link = local_bin / "python"
+        if python_link.exists() or shutil.which("python"):
+            return
+
+        python3_path = shutil.which("python3")
+        if python3_path:
+            self.log("  Creating python -> python3 symlink...")
+            python_link.symlink_to(python3_path)
 
     def _install_eza(self) -> None:
         """Install eza from official apt repository."""
