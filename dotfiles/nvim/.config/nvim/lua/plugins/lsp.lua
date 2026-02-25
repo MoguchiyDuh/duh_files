@@ -105,7 +105,7 @@ vim.lsp.config.pyright = {
 -- Clangd
 vim.lsp.config.clangd = {
 	capabilities = capabilities,
-	cmd = { "clangd", "--background-index" },
+	cmd = { "clangd", "--background-index", "--offset-encoding=utf-16" },
 	root_markers = {
 		".clangd",
 		".clang-tidy",
