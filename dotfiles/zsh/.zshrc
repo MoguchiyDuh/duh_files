@@ -87,3 +87,5 @@ eval "$(zoxide init zsh)"
 
 # Startup info
 fastfetch
+
+export PATH="$HOME/.cargo/bin:$PATH"
