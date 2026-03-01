@@ -1,0 +1,59 @@
+@import "colors.css";
+
+* {
+    background-image: none;
+    box-shadow: none;
+}
+
+window {
+    background-color: @background;
+}
+
+button {
+    border-radius: 12px;
+    border: 2px solid transparent;
+    color: @foreground;
+    background-color: alpha(@color0, 0.6);
+    background-repeat: no-repeat;
+    background-position: center 16px;
+    background-size: 255px;
+    padding-top: 293px;
+    padding-bottom: 0;
+    margin: 8px;
+    font-size: 16px;
+    font-weight: bold;
+    font-family: "FiraCode Nerd Font";
+    transition: background-color 0.2s ease, border-color 0.2s ease;
+}
+
+button:focus,
+button:active,
+button:hover {
+    background-color: alpha(@color9, 0.35);
+    border-color: @color11;
+    outline: none;
+}
+
+#lock {
+    background-image: image(url("/home/kirill/.config/wlogout/icons/lock.svg"));
+}
+
+#logout {
+    background-image: image(url("/home/kirill/.config/wlogout/icons/logout.svg"));
+}
+
+#suspend {
+    background-image: image(url("/home/kirill/.config/wlogout/icons/suspend.svg"));
+}
+
+#hibernate {
+    background-image: image(url("/home/kirill/.config/wlogout/icons/hibernate.svg"));
+}
+
+#shutdown {
+    background-image: image(url("/home/kirill/.config/wlogout/icons/shutdown.svg"));
+}
+
+#reboot {
+    background-image: image(url("/home/kirill/.config/wlogout/icons/reboot.svg"));
+}
