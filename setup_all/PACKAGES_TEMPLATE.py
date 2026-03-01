@@ -180,4 +180,9 @@ STANDARD_PACKAGES = [
             ],
         ),
     ),
+    # 7. Hyprland / GUI (conditional, distro-specific)
+    ("rofi-wayland", "manager", "<distro-specific>"),
+    ("rofi-calc", "manager", "<distro-specific>"),
+    ("rofi-emoji", "manager", "<distro-specific>"),
+    ("swayimg", "manager", "<distro-specific>"),
 ]
