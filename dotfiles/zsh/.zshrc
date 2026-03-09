@@ -41,6 +41,7 @@ eval "$(register-python-argcomplete duh-yt_manager)"
 # --- Aliases: Core Remaps ---
 alias ls='eza --icons --git --header --group-directories-first'
 alias la='eza -la --icons --git --header --group-directories-first'
+alias tree='eza --tree --icons'
 
 # --- Aliases: Pacman ---
 alias pac='sudo pacman'
