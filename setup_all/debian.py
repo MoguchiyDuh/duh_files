@@ -48,7 +48,6 @@ class DebianInstaller(DistroInstaller):
             ),
             ("zsh-completions", "script", self._install_zsh_plugin("zsh-completions")),
             ("tmux", "manager", "tmux"),
-            ("tmux-plugins", "script", self._install_tmux_plugins),
             ("stow", "manager", "stow"),
             # 4. Fonts
             ("nerd-fonts", "script", self._install_nerd_fonts),
@@ -249,35 +248,6 @@ class DebianInstaller(DistroInstaller):
             )
 
         return install
-
-    def _install_tmux_plugins(self) -> None:
-        """Install common tmux plugins."""
-        plugins = [
-            "tmux-continuum",
-            "tmux-cpu",
-            "tmux-prefix-highlight",
-            "tmux-resurrect",
-        ]
-
-        for plugin in plugins:
-            plugin_dir = Path.home() / ".config" / "tmux" / "plugins" / plugin
-            if plugin_dir.exists():
-                continue
-
-            self.log(f"  Installing {plugin}...")
-            plugin_dir.parent.mkdir(parents=True, exist_ok=True)
-            subprocess.run(
-                [
-                    "git",
-                    "clone",
-                    "--depth=1",
-                    f"https://github.com/tmux-plugins/{plugin}.git",
-                    str(plugin_dir),
-                ],
-                check=True,
-                stdout=subprocess.DEVNULL if not self.verbose else None,
-                stderr=subprocess.DEVNULL if not self.verbose else None,
-            )
 
     def _install_nerd_fonts(self) -> None:
         """Install FiraCode Nerd Font."""

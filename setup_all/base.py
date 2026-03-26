@@ -421,6 +421,21 @@ class DistroInstaller(ABC):
 
         home = os.path.expanduser("~")
         repo_root = self._get_repo_root()
+
+        # Initialize submodules (e.g. tmux plugins)
+        if os.path.exists(os.path.join(repo_root, ".gitmodules")):
+            self.log("  Initializing git submodules...")
+            try:
+                subprocess.run(
+                    ["git", "submodule", "update", "--init", "--recursive"],
+                    cwd=repo_root,
+                    check=True,
+                    capture_output=not self.verbose,
+                )
+                self.log("  ✓ Submodules initialized")
+            except subprocess.CalledProcessError as e:
+                self.log(f"  ⚠ Failed to initialize submodules: {e}")
+
         dotfiles_dir = os.path.join(repo_root, "dotfiles")
 
         if not os.path.exists(dotfiles_dir):

@@ -1,0 +1,12 @@
+[submodule "dotfiles/tmux/.config/tmux/plugins/tmux-continuum"]
+	path = dotfiles/tmux/.config/tmux/plugins/tmux-continuum
+	url = https://github.com/tmux-plugins/tmux-continuum
+[submodule "dotfiles/tmux/.config/tmux/plugins/tmux-cpu"]
+	path = dotfiles/tmux/.config/tmux/plugins/tmux-cpu
+	url = https://github.com/tmux-plugins/tmux-cpu
+[submodule "dotfiles/tmux/.config/tmux/plugins/tmux-prefix-highlight"]
+	path = dotfiles/tmux/.config/tmux/plugins/tmux-prefix-highlight
+	url = https://github.com/tmux-plugins/tmux-prefix-highlight
+[submodule "dotfiles/tmux/.config/tmux/plugins/tmux-resurrect"]
+	path = dotfiles/tmux/.config/tmux/plugins/tmux-resurrect
+	url = https://github.com/tmux-plugins/tmux-resurrect

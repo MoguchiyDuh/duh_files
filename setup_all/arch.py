@@ -134,54 +134,6 @@ class ArchInstaller(DistroInstaller):
             ("lazydocker", "aur", "lazydocker"),
             ("lazysql", "aur", "lazysql-bin"),
             ("neovim", "aur", "neovim-git"),
-            (
-                "tmux-continuum",
-                "git",
-                (
-                    "https://github.com/tmux-plugins/tmux-continuum.git",
-                    [
-                        "rm -rf ~/.config/tmux/plugins/tmux-continuum",
-                        "mkdir -p ~/.config/tmux/plugins/tmux-continuum",
-                        "cp -r . ~/.config/tmux/plugins/tmux-continuum",
-                    ],
-                ),
-            ),
-            (
-                "tmux-cpu",
-                "git",
-                (
-                    "https://github.com/tmux-plugins/tmux-cpu.git",
-                    [
-                        "rm -rf ~/.config/tmux/plugins/tmux-cpu",
-                        "mkdir -p ~/.config/tmux/plugins/tmux-cpu",
-                        "cp -r . ~/.config/tmux/plugins/tmux-cpu",
-                    ],
-                ),
-            ),
-            (
-                "tmux-prefix-highlight",
-                "git",
-                (
-                    "https://github.com/tmux-plugins/tmux-prefix-highlight.git",
-                    [
-                        "rm -rf ~/.config/tmux/plugins/tmux-prefix-highlight",
-                        "mkdir -p ~/.config/tmux/plugins/tmux-prefix-highlight",
-                        "cp -r . ~/.config/tmux/plugins/tmux-prefix-highlight",
-                    ],
-                ),
-            ),
-            (
-                "tmux-resurrect",
-                "git",
-                (
-                    "https://github.com/tmux-plugins/tmux-resurrect.git",
-                    [
-                        "rm -rf ~/.config/tmux/plugins/tmux-resurrect",
-                        "mkdir -p ~/.config/tmux/plugins/tmux-resurrect",
-                        "cp -r . ~/.config/tmux/plugins/tmux-resurrect",
-                    ],
-                ),
-            ),
         ]
 
         PACKAGES_HYPRLAND = [
