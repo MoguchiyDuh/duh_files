@@ -19,6 +19,10 @@ keymap("n", "<leader>Q", ":qa!<CR>", { noremap = true, silent = true, desc = "Fo
 -- Clear search highlights
 keymap("n", "<Esc>", ":noh<CR>", { noremap = true, silent = true, desc = "Clear search highlights" })
 
+-- Comment toggle
+keymap("n", "<C-_>", "gcc", { remap = true, silent = true, desc = "Toggle comment" })
+keymap("v", "<C-_>", "gc", { remap = true, silent = true, desc = "Toggle comment" })
+
 -- ============================================================================
 -- Window/Split management
 -- ============================================================================
@@ -30,7 +34,7 @@ keymap("n", "<C-l>", "<C-w>l", { noremap = true, silent = true, desc = "Move to 
 
 -- Split management
 keymap("n", "<leader>sv", ":vsplit<CR>", { noremap = true, silent = true, desc = "Vertical split" })
-keymap("n", "<leader>sx", ":split<CR>", { noremap = true, silent = true, desc = "Horizontal split" })
+keymap("n", "<leader>ss", ":split<CR>", { noremap = true, silent = true, desc = "Horizontal split" })
 keymap("n", "<leader>se", "<C-w>=", { noremap = true, silent = true, desc = "Make splits equal size" })
 
 -- ============================================================================
@@ -49,7 +53,7 @@ keymap("v", ">", ">gv", { noremap = true, silent = true, desc = "Indent right" }
 -- ============================================================================
 -- Terminal
 -- ============================================================================
-keymap("n", "<C-t>", ":terminal<CR>", { noremap = true, silent = true, desc = "Open terminal" })
+keymap("n", "<leader>t", ":terminal<CR>", { noremap = true, silent = true, desc = "Open terminal" })
 
 -- ============================================================================
 -- Buffer navigation
@@ -87,8 +91,8 @@ end, { noremap = true, silent = true, desc = "Close buffer" })
 keymap("n", "<leader>bD", function()
 	smart_close_buffer(true)
 end, { noremap = true, silent = true, desc = "Force close buffer" })
-keymap("n", "<Tab>", ":bnext<CR>", { noremap = true, silent = true, desc = "Next buffer" })
-keymap("n", "<S-Tab>", ":bprevious<CR>", { noremap = true, silent = true, desc = "Previous buffer" })
+keymap("n", "<S-l>", ":bnext<CR>", { noremap = true, silent = true, desc = "Next buffer" })
+keymap("n", "<S-h>", ":bprevious<CR>", { noremap = true, silent = true, desc = "Previous buffer" })
 
 -- Jump to buffer by number
 for i = 1, 9 do
@@ -106,9 +110,9 @@ keymap("n", "K", vim.lsp.buf.hover, { silent = true, desc = "Show hover document
 keymap("n", "gd", vim.lsp.buf.definition, { silent = true, desc = "Go to definition" })
 keymap("n", "gD", vim.lsp.buf.declaration, { silent = true, desc = "Go to declaration" })
 keymap("n", "gi", vim.lsp.buf.implementation, { silent = true, desc = "Go to implementation" })
-keymap("n", "gt", vim.lsp.buf.type_definition, { silent = true, desc = "Go to type definition" })
+keymap("n", "gy", vim.lsp.buf.type_definition, { silent = true, desc = "Go to type definition" })
 keymap("n", "<leader>ca", vim.lsp.buf.code_action, { silent = true, desc = "Code actions" })
-keymap("n", "<leader>rn", vim.lsp.buf.rename, { silent = true, desc = "Rename symbol" })
+
 keymap("n", "<leader>e", vim.diagnostic.open_float, { silent = true, desc = "Show diagnostics" })
 keymap("n", "[d", vim.diagnostic.goto_prev, { silent = true, desc = "Previous diagnostic" })
 keymap("n", "]d", vim.diagnostic.goto_next, { silent = true, desc = "Next diagnostic" })
@@ -125,8 +129,8 @@ if ts_ok then
 		ts.grep_string({ search = vim.fn.input("Grep > ") })
 	end, { desc = "Live grep search" })
 	-- Buffer pocket management
-	keymap("n", "<leader>fb", ts.buffers, { desc = "Find buffers" })
-	keymap("n", "<C-b>", ts.buffers, { desc = "Buffer picker (pocket)" })
+	keymap("n", "<leader>bb", ts.buffers, { desc = "Find buffers" })
+
 	keymap("n", "gr", ts.lsp_references, { desc = "Show references" })
 end
 
@@ -209,7 +213,7 @@ keymap(
 	codecompanion_cmd("CodeCompanionChat Toggle"),
 	{ desc = "CodeCompanion: Toggle chat" }
 )
-keymap({ "n", "v" }, "<leader>ca", codecompanion_cmd("CodeCompanionActions"), { desc = "CodeCompanion: Actions" })
+keymap({ "n", "v" }, "<leader>ai", codecompanion_cmd("CodeCompanionActions"), { desc = "CodeCompanion: Actions" })
 keymap("v", "ga", codecompanion_cmd("CodeCompanionChat Add"), { desc = "CodeCompanion: Add to chat" })
 
 -- Inline (gen.nvim style)
