@@ -112,7 +112,6 @@ keymap("n", "gD", vim.lsp.buf.declaration, { silent = true, desc = "Go to declar
 keymap("n", "gi", vim.lsp.buf.implementation, { silent = true, desc = "Go to implementation" })
 keymap("n", "gy", vim.lsp.buf.type_definition, { silent = true, desc = "Go to type definition" })
 keymap("n", "<leader>ca", vim.lsp.buf.code_action, { silent = true, desc = "Code actions" })
-
 keymap("n", "<leader>e", vim.diagnostic.open_float, { silent = true, desc = "Show diagnostics" })
 keymap("n", "[d", vim.diagnostic.goto_prev, { silent = true, desc = "Previous diagnostic" })
 keymap("n", "]d", vim.diagnostic.goto_next, { silent = true, desc = "Next diagnostic" })
@@ -130,6 +129,8 @@ if ts_ok then
 	end, { desc = "Live grep search" })
 	-- Buffer pocket management
 	keymap("n", "<leader>bb", ts.buffers, { desc = "Find buffers" })
+	keymap("n", "<leader>fp", ts.commands, { desc = "Command palette" })
+	keymap("n", "<leader>fk", ts.keymaps, { desc = "Find keymaps" })
 
 	keymap("n", "gr", ts.lsp_references, { desc = "Show references" })
 end
