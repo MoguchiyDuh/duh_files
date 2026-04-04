@@ -115,6 +115,23 @@ def get_snapshots() -> List[Path]:
     )
 
 
+def get_session_name(path: Path) -> str:
+    """Return the last custom-title set via /rename, or empty string."""
+    last = ""
+    try:
+        with open(path, encoding="utf-8") as f:
+            for line in f:
+                try:
+                    entry = json.loads(line.strip())
+                    if entry.get("type") == "custom-title":
+                        last = entry.get("customTitle", "")
+                except json.JSONDecodeError:
+                    continue
+    except Exception:
+        pass
+    return last
+
+
 def get_first_message(path: Path) -> str:
     try:
         with open(path, encoding="utf-8") as f:
@@ -417,7 +434,9 @@ class ListScreen:
 
 def sessions_screen(stdscr, project: Path):
     def row(f: Path) -> str:
-        return f"{fmt_size(get_size(f)):>8}  {fmt_time(f)}  {get_first_message(f)}"
+        name = get_session_name(f)
+        label = f"[{name}] {get_first_message(f)}" if name else get_first_message(f)
+        return f"{fmt_size(get_size(f)):>8}  {fmt_time(f)}  {label}"
 
     ListScreen(
         stdscr,
