@@ -25,7 +25,7 @@ case "$wallpaper" in
         ;;
     
     *.jpg | *.jpeg | *.png | *.webp )
-        swww img "$wallpaper" -t center
+        awww img "$wallpaper" -t center
         ln -sf "$wallpaper" ~/.cache/current_wallpaper.png
         sleep 0.6
         wallust run "$wallpaper"
