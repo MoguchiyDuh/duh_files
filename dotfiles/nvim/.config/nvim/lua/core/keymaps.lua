@@ -91,8 +91,8 @@ end, { noremap = true, silent = true, desc = "Close buffer" })
 keymap("n", "<leader>bD", function()
 	smart_close_buffer(true)
 end, { noremap = true, silent = true, desc = "Force close buffer" })
-keymap("n", "<S-l>", ":bnext<CR>", { noremap = true, silent = true, desc = "Next buffer" })
-keymap("n", "<S-h>", ":bprevious<CR>", { noremap = true, silent = true, desc = "Previous buffer" })
+keymap("n", "<S-h>", ":bnext<CR>", { noremap = true, silent = true, desc = "Next buffer" })
+keymap("n", "<S-l>", ":bprevious<CR>", { noremap = true, silent = true, desc = "Previous buffer" })
 
 -- Jump to buffer by number
 for i = 1, 9 do
