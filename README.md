@@ -118,4 +118,102 @@ stow -v <package_name>
 
 ---
 
-Updated: 2026-01-24
+## Neovim Configuration
+
+Modern config rebuilt from scratch (May 2026). Located at `dotfiles/nvim/.config/nvim/`, symlinked to `~/.config/nvim`.
+
+### Structure
+
+```text
+nvim/
+├── init.lua                  # loads core.options, core.keymaps, core.lazy
+└── lua/
+    ├── core/
+    │   ├── options.lua       # vim settings
+    │   ├── keymaps.lua       # all keymaps
+    │   └── lazy.lua          # lazy.nvim bootstrap, auto-loads lua/plugins/
+    └── plugins/
+        ├── ui.lua            # colorschemes, snacks, lualine, bufferline, which-key
+        ├── editor.lua        # oil, treesitter, gitsigns, lazygit, flash, surround, autopairs, render-markdown
+        ├── lsp.lua           # mason, lspconfig, blink.cmp
+        └── format.lua        # conform, nvim-lint
+```
+
+### Plugin Stack
+
+| Category | Plugin | Notes |
+|---|---|---|
+| Plugin manager | lazy.nvim | auto-loads all files in `lua/plugins/` |
+| UI suite | snacks.nvim | dashboard, picker, notifier, indent, scratch, words |
+| Colorscheme | kanagawa (default) | hot-switch via `<leader>ct`; also: tokyonight, catppuccin, onedark, rose-pine |
+| Statusline | lualine | |
+| Bufferline | bufferline.nvim | ordinal numbers, LSP diagnostics |
+| File manager | oil.nvim | edit filesystem as buffer, `<C-n>` |
+| Syntax | nvim-treesitter | nvim 0.12+: highlight/indent via built-in vim.treesitter |
+| Git hunks | gitsigns.nvim | |
+| Git UI | lazygit.nvim | `<leader>gg` |
+| Jump nav | flash.nvim | `<leader>j` / `<leader>J` |
+| Surround | nvim-surround | |
+| Autopairs | nvim-autopairs | |
+| Completion | blink.cmp | Rust-based, replaces nvim-cmp |
+| LSP installer | mason + mason-lspconfig | |
+| Formatter | conform.nvim | format on save |
+| Linter | nvim-lint | lint on save/read/insert-leave |
+| Markdown | render-markdown.nvim | |
+| Which-key | which-key.nvim | |
+
+### LSP Servers
+
+| Server | Language |
+|---|---|
+| lua_ls | Lua |
+| basedpyright | Python (uv/.venv auto-detect) |
+| rust_analyzer | Rust (via rustup, not mason) |
+| clangd | C/C++ |
+| ts_ls | JS/TS |
+| html | HTML |
+| cssls | CSS |
+| taplo | TOML |
+| yamlls | YAML |
+
+### Formatters / Linters
+
+| Tool | Language | Via |
+|---|---|---|
+| stylua | Lua | mason |
+| ruff | Python (format + lint) | mason |
+| rustfmt | Rust | rustup |
+| clang-format | C/C++ | mason |
+| prettier | JS/TS/JSON/MD/YAML | mason |
+| taplo | TOML | mason |
+| eslint | JS/TS | mason |
+| yamllint | YAML | mason |
+| shfmt | Shell | brew |
+
+### Key Keymaps
+
+| Key | Action |
+|---|---|
+| `<leader>ff` | Find files |
+| `<leader>fg` | Live grep |
+| `<leader>fb` | Buffers |
+| `<leader>fr` | Recent files |
+| `<C-n>` | File explorer (oil) |
+| `<leader>gg` | LazyGit |
+| `<leader>ct` | Switch colorscheme |
+| `<leader>cb` | Toggle transparency |
+| `<leader>j` | Flash jump |
+| `<leader>F` | Format buffer |
+| `<S-h>` / `<S-l>` | Prev/next buffer |
+| `<leader>bd` | Close buffer |
+
+### Notes
+
+- Theme + transparency state persisted to `~/.local/share/nvim/theme_state.json`
+- `rust_analyzer` and `rustfmt` managed by rustup, not mason
+- `shfmt` installed via `brew install shfmt`
+- Backup of old config at `dotfiles/nvim/.config/nvim_backup_<timestamp>`
+
+---
+
+Updated: 2026-05-15

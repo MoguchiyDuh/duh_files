@@ -116,15 +116,15 @@ require("lazy").setup({
 		end,
 	},
 
-	-- AI/Ollama
-	{
-		"olimorris/codecompanion.nvim",
-		dependencies = {
-			"nvim-lua/plenary.nvim",
-			"nvim-treesitter/nvim-treesitter",
-			"nvim-telescope/telescope.nvim",
-		},
-	},
+	-- AI/Ollama (REMOVED)
+	-- {
+	-- 	"olimorris/codecompanion.nvim",
+	-- 	dependencies = {
+	-- 		"nvim-lua/plenary.nvim",
+	-- 		"nvim-treesitter/nvim-treesitter",
+	-- 		"nvim-telescope/telescope.nvim",
+	-- 	},
+	-- },
 }, {
 	-- Lazy.nvim options
 	ui = {

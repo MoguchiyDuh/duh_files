@@ -29,7 +29,7 @@ else
         sed -i 's/^#*GRUB_DISABLE_OS_PROBER=.*/GRUB_DISABLE_OS_PROBER=false/' /etc/default/grub
     else
         # Line doesn't exist, add it
-        echo "GRUB_DISABLE_OS_PROBER=false" >> /etc/default/grub
+        echo "GRUB_DISABLE_OS_PROBER=false" >>/etc/default/grub
     fi
     echo "✓ os-prober enabled"
 fi
@@ -37,7 +37,7 @@ echo
 
 # Run os-prober to detect other operating systems
 echo "[3/4] Running os-prober to detect other OS..."
-if command -v os-prober &> /dev/null; then
+if command -v os-prober &>/dev/null; then
     os-prober
     echo "✓ os-prober scan complete"
 else

@@ -15,7 +15,7 @@ mason.setup({
 
 SERVERS = {
 	"lua_ls", -- Lua
-	"pyright", -- Python
+	"basedpyright", -- Python
 	"gopls", -- Go
 	"rust_analyzer", -- Rust
 	"clangd", -- C/C++
