@@ -7,7 +7,7 @@
 
 import base64
 import sys
-from urllib.parse import urlparse, parse_qs, unquote
+from urllib.parse import parse_qs, unquote, urlparse
 
 import requests
 import yaml
@@ -131,8 +131,13 @@ def build_clash(proxies: list[dict]) -> dict:
         "proxies": proxies,
         "proxy-groups": [
             {"name": "Proxy", "type": "select", "proxies": names + ["DIRECT"]},
-            {"name": "Auto", "type": "url-test", "proxies": names,
-             "url": "http://www.gstatic.com/generate_204", "interval": 300},
+            {
+                "name": "Auto",
+                "type": "url-test",
+                "proxies": names,
+                "url": "http://www.gstatic.com/generate_204",
+                "interval": 300,
+            },
         ],
         "rules": RULES,
     }

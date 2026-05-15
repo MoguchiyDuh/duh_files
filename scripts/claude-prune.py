@@ -11,17 +11,18 @@ from typing import Callable, List, Optional, Set, Tuple
 CLAUDE_DIR = Path.home() / ".claude"
 
 CLEAR_TARGETS: List[Tuple[str, Path]] = [
-    ("history",      CLAUDE_DIR / "history.jsonl"),
-    ("todos",        CLAUDE_DIR / "todos"),
-    ("plans",        CLAUDE_DIR / "plans"),
-    ("session-env",  CLAUDE_DIR / "session-env"),
+    ("history", CLAUDE_DIR / "history.jsonl"),
+    ("todos", CLAUDE_DIR / "todos"),
+    ("plans", CLAUDE_DIR / "plans"),
+    ("session-env", CLAUDE_DIR / "session-env"),
     ("file-history", CLAUDE_DIR / "file-history"),
-    ("debug",        CLAUDE_DIR / "debug"),
-    ("statsig",      CLAUDE_DIR / "statsig"),
+    ("debug", CLAUDE_DIR / "debug"),
+    ("statsig", CLAUDE_DIR / "statsig"),
 ]
 
 
 # ── helpers ───────────────────────────────────────────────────────────────────
+
 
 def get_size(path: Path) -> int:
     if not path.exists():
@@ -75,6 +76,7 @@ def clear_path(path: Path):
 
 # ── data fetchers ─────────────────────────────────────────────────────────────
 
+
 def get_projects() -> List[Path]:
     d = CLAUDE_DIR / "projects"
     if not d.exists():
@@ -88,8 +90,11 @@ def get_projects() -> List[Path]:
 
 def get_sessions(project: Path) -> List[Path]:
     return sorted(
-        [f for f in project.iterdir()
-         if f.suffix == ".jsonl" and not f.stem.startswith("agent-")],
+        [
+            f
+            for f in project.iterdir()
+            if f.suffix == ".jsonl" and not f.stem.startswith("agent-")
+        ],
         key=lambda f: f.stat().st_mtime,
         reverse=True,
     )
@@ -97,8 +102,11 @@ def get_sessions(project: Path) -> List[Path]:
 
 def get_agents(project: Path) -> List[Path]:
     return sorted(
-        [f for f in project.iterdir()
-         if f.suffix == ".jsonl" and f.stem.startswith("agent-")],
+        [
+            f
+            for f in project.iterdir()
+            if f.suffix == ".jsonl" and f.stem.startswith("agent-")
+        ],
         key=lambda f: f.stat().st_mtime,
         reverse=True,
     )
@@ -162,11 +170,13 @@ def is_empty_session(path: Path) -> bool:
                     entry = json.loads(line.strip())
                     if entry.get("type") == "user" and not entry.get("isMeta"):
                         content = entry.get("message", {}).get("content", "").strip()
-                        if (content
-                                and not content.startswith("/")
-                                and not content.startswith("<")
-                                and "Caveat:" not in content
-                                and "DO NOT respond" not in content):
+                        if (
+                            content
+                            and not content.startswith("/")
+                            and not content.startswith("<")
+                            and "Caveat:" not in content
+                            and "DO NOT respond" not in content
+                        ):
                             return False
                 except Exception:
                     pass
@@ -179,30 +189,48 @@ def is_empty_session(path: Path) -> bool:
 # All pairs use -1 background so terminal transparency passes through.
 # -1 foreground = terminal default fg (works on both dark and light themes).
 
+
 def init_colors():
     curses.use_default_colors()
-    curses.init_pair(1, curses.COLOR_CYAN,  -1)  # cursor
-    curses.init_pair(2, curses.COLOR_YELLOW,-1)  # selected
-    curses.init_pair(3, -1,                 -1)  # title  (default fg, bold)
-    curses.init_pair(4, -1,                 -1)  # dim    (default fg, A_DIM)
-    curses.init_pair(5, curses.COLOR_RED,   -1)  # danger
+    curses.init_pair(1, curses.COLOR_CYAN, -1)  # cursor
+    curses.init_pair(2, curses.COLOR_YELLOW, -1)  # selected
+    curses.init_pair(3, -1, -1)  # title  (default fg, bold)
+    curses.init_pair(4, -1, -1)  # dim    (default fg, A_DIM)
+    curses.init_pair(5, curses.COLOR_RED, -1)  # danger
 
 
-def C_CURSOR()   : return curses.color_pair(1) | curses.A_BOLD
-def C_SELECTED() : return curses.color_pair(2)
-def C_TITLE()    : return curses.color_pair(3) | curses.A_BOLD
-def C_DIM()      : return curses.color_pair(4) | curses.A_DIM
-def C_DANGER()   : return curses.color_pair(5) | curses.A_BOLD
-def C_NORMAL()   : return curses.A_NORMAL
+def C_CURSOR():
+    return curses.color_pair(1) | curses.A_BOLD
+
+
+def C_SELECTED():
+    return curses.color_pair(2)
+
+
+def C_TITLE():
+    return curses.color_pair(3) | curses.A_BOLD
+
+
+def C_DIM():
+    return curses.color_pair(4) | curses.A_DIM
+
+
+def C_DANGER():
+    return curses.color_pair(5) | curses.A_BOLD
+
+
+def C_NORMAL():
+    return curses.A_NORMAL
 
 
 # ── TUI primitives ────────────────────────────────────────────────────────────
+
 
 def draw_title(stdscr, title: str):
     _, w = stdscr.getmaxyx()
     try:
         stdscr.attron(C_TITLE())
-        stdscr.addstr(0, 0, f"  {title}"[:w - 1])
+        stdscr.addstr(0, 0, f"  {title}"[: w - 1])
         stdscr.attroff(C_TITLE())
     except curses.error:
         pass
@@ -211,19 +239,19 @@ def draw_title(stdscr, title: str):
 def draw_statusbar(stdscr, hint: str, flash: str = ""):
     h, w = stdscr.getmaxyx()
     # flash on left (normal), hint on right (dim)
-    left  = f" {flash}  " if flash else ""
+    left = f" {flash}  " if flash else ""
     right = hint
-    bar   = (left + right)[:w - 1]
+    bar = (left + right)[: w - 1]
     try:
         if flash:
             stdscr.attron(C_NORMAL())
-            stdscr.addstr(h - 1, 0, f" {flash}  "[:w - 1])
+            stdscr.addstr(h - 1, 0, f" {flash}  "[: w - 1])
             stdscr.attroff(C_NORMAL())
             offset = min(len(f" {flash}  "), w - 1)
         else:
             offset = 0
         stdscr.attron(C_DIM())
-        stdscr.addstr(h - 1, offset, right[:w - 1 - offset])
+        stdscr.addstr(h - 1, offset, right[: w - 1 - offset])
         stdscr.attroff(C_DIM())
     except curses.error:
         pass
@@ -236,7 +264,7 @@ def confirm_dialog(stdscr, msg: str) -> bool:
     x = max(0, (w - len(text)) // 2)
     try:
         stdscr.attron(C_DANGER())
-        stdscr.addstr(y, x, text[:w - 1])
+        stdscr.addstr(y, x, text[: w - 1])
         stdscr.attroff(C_DANGER())
     except curses.error:
         pass
@@ -247,7 +275,7 @@ def confirm_dialog(stdscr, msg: str) -> bool:
 
 # ── ListScreen ────────────────────────────────────────────────────────────────
 
-HINT_NAV   = "j/k:move  spc:sel  a:all  d:del  h:back"
+HINT_NAV = "j/k:move  spc:sel  a:all  d:del  h:back"
 HINT_ENTER = "j/k:move  spc:sel  a:all  d:del  l:open  h:back"
 HINT_EMPTY = "j/k:move  spc:sel  a:all  d:del  e:empty  h:back"
 
@@ -272,23 +300,23 @@ class ListScreen:
         can_enter: bool = False,
         empty_pred: Optional[Callable[[Path], bool]] = None,
     ):
-        self.stdscr    = stdscr
-        self.title     = title
-        self.row_fn    = row_fn
-        self.hint      = hint
+        self.stdscr = stdscr
+        self.title = title
+        self.row_fn = row_fn
+        self.hint = hint
         self.can_enter = can_enter
         self.empty_pred = empty_pred
-        self.cursor    = 0
+        self.cursor = 0
         self.selected: Set[int] = set()
-        self.offset    = 0
-        self.flash     = ""
+        self.offset = 0
+        self.flash = ""
 
         self.items: List[Path] = []
         self._labels: List[str] = []
         self._set_items(items)
 
     def _set_items(self, items: List[Path]):
-        self.items   = list(items)
+        self.items = list(items)
         self._labels = [self.row_fn(p) for p in self.items]  # compute once
 
     def _lh(self) -> int:
@@ -312,14 +340,18 @@ class ListScreen:
         draw_title(self.stdscr, self.title)
 
         lh = self._lh()
-        for i, label in enumerate(self._labels[self.offset:self.offset + lh]):
+        for i, label in enumerate(self._labels[self.offset : self.offset + lh]):
             idx = i + self.offset
             sel = "*" if idx in self.selected else " "
             cur = ">" if idx == self.cursor else " "
-            line = f" {cur}[{sel}] {label}"[:w - 1]
-            row  = i + 1
+            line = f" {cur}[{sel}] {label}"[: w - 1]
+            row = i + 1
 
-            attrs = C_CURSOR() if idx == self.cursor else (C_SELECTED() if idx in self.selected else C_NORMAL())
+            attrs = (
+                C_CURSOR()
+                if idx == self.cursor
+                else (C_SELECTED() if idx in self.selected else C_NORMAL())
+            )
             try:
                 self.stdscr.attron(attrs)
                 self.stdscr.addstr(row, 0, line)
@@ -343,11 +375,15 @@ class ListScreen:
         self.stdscr.refresh()
 
     def _delete(self):
-        targets = sorted(self.selected) if self.selected else ([self.cursor] if self.items else [])
+        targets = (
+            sorted(self.selected)
+            if self.selected
+            else ([self.cursor] if self.items else [])
+        )
         if not targets:
             return
         if confirm_dialog(self.stdscr, f"Delete {len(targets)} item(s)?"):
-            paths   = [self.items[i] for i in targets if i < len(self.items)]
+            paths = [self.items[i] for i in targets if i < len(self.items)]
             deleted = delete_paths(paths)
             self.flash = f"Deleted {deleted}/{len(targets)}."
             for i in sorted(targets, reverse=True):
@@ -425,12 +461,19 @@ class ListScreen:
             elif ch == ord("e") and self.empty_pred:
                 self._select_empty()
 
-            elif ch in (curses.KEY_ENTER, ord("\n"), ord("\r"), ord("l"), curses.KEY_RIGHT):
+            elif ch in (
+                curses.KEY_ENTER,
+                ord("\n"),
+                ord("\r"),
+                ord("l"),
+                curses.KEY_RIGHT,
+            ):
                 if self.can_enter and self.items:
                     return self.items[self.cursor]
 
 
 # ── screen functions ──────────────────────────────────────────────────────────
+
 
 def sessions_screen(stdscr, project: Path):
     def row(f: Path) -> str:
@@ -463,8 +506,8 @@ def agents_screen(stdscr, project: Path):
 def projects_screen(stdscr):
     def row(p: Path) -> str:
         sessions = get_sessions(p)
-        agents   = get_agents(p)
-        total    = sum(get_size(f) for f in sessions + agents)
+        agents = get_agents(p)
+        total = sum(get_size(f) for f in sessions + agents)
         return f"{fmt_size(total):>8}  {fmt_time(p)}  {p.name}  ({len(sessions)}s {len(agents)}a)"
 
     ls = ListScreen(
@@ -484,14 +527,18 @@ def projects_screen(stdscr):
         prev_name = chosen.name
         ls._set_items(get_projects())
         names = [p.name for p in ls.items]
-        ls.cursor = names.index(prev_name) if prev_name in names else min(ls.cursor, len(ls.items) - 1)
+        ls.cursor = (
+            names.index(prev_name)
+            if prev_name in names
+            else min(ls.cursor, len(ls.items) - 1)
+        )
         ls.selected.clear()
 
 
 def agents_project_screen(stdscr):
     def row(p: Path) -> str:
         agents = get_agents(p)
-        total  = sum(get_size(f) for f in agents)
+        total = sum(get_size(f) for f in agents)
         return f"{fmt_size(total):>8}  {fmt_time(p)}  {p.name}  ({len(agents)} agents)"
 
     ls = ListScreen(
@@ -510,7 +557,11 @@ def agents_project_screen(stdscr):
         prev_name = chosen.name
         ls._set_items(get_projects())
         names = [p.name for p in ls.items]
-        ls.cursor = names.index(prev_name) if prev_name in names else min(ls.cursor, len(ls.items) - 1)
+        ls.cursor = (
+            names.index(prev_name)
+            if prev_name in names
+            else min(ls.cursor, len(ls.items) - 1)
+        )
         ls.selected.clear()
 
 
@@ -558,10 +609,10 @@ def clear_screen_ui(stdscr, name: str, path: Path):
 # ── main menu ─────────────────────────────────────────────────────────────────
 
 MENU: List[Tuple[str, object]] = [
-    ("Manage projects",  "projects"),
-    ("Manage agents",    "agents"),
+    ("Manage projects", "projects"),
+    ("Manage agents", "agents"),
     ("Manage snapshots", "snapshots"),
-    ("─" * 24,           None),
+    ("─" * 24, None),
     *[(f"Clear {name}", ("clear", path)) for name, path in CLEAR_TARGETS],
 ]
 
@@ -591,20 +642,20 @@ def menu_screen(stdscr):
             if i in _SEPARATORS:
                 try:
                     stdscr.attron(C_DIM())
-                    stdscr.addstr(row, 4, str(label)[:w - 5])
+                    stdscr.addstr(row, 4, str(label)[: w - 5])
                     stdscr.attroff(C_DIM())
                 except curses.error:
                     pass
             elif i == cursor:
                 try:
                     stdscr.attron(C_CURSOR())
-                    stdscr.addstr(row, 2, f"> {label}"[:w - 3])
+                    stdscr.addstr(row, 2, f"> {label}"[: w - 3])
                     stdscr.attroff(C_CURSOR())
                 except curses.error:
                     pass
             else:
                 try:
-                    stdscr.addstr(row, 4, str(label)[:w - 5])
+                    stdscr.addstr(row, 4, str(label)[: w - 5])
                 except curses.error:
                     pass
 
@@ -641,6 +692,7 @@ def menu_screen(stdscr):
 
 
 # ── entry ─────────────────────────────────────────────────────────────────────
+
 
 def _run(stdscr):
     init_colors()

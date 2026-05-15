@@ -1,5 +1,3 @@
-# --- Powerlevel10k Instant Prompt ---
-# Should stay on top
 typeset -g POWERLEVEL9K_INSTANT_PROMPT=off
 
 if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]; then
@@ -93,6 +91,19 @@ alias lgit='lazygit'
 alias lsql='lazysql'
 alias ldoc='lazydocker'
 
+# --- Aliases: opencode
+# Gemini
+alias o-gf='opencode -m "google/gemini-3-flash-preview"'
+alias o-gfl='opencode -m "google/gemini-3.1-flash-lite-preview"'
+alias o-gp='opencode -m "google/gemini-3.1-pro-preview"'
+# Claude
+alias o-cco='opencode -m "anthropic/claude-opus-4-7"'
+alias o-ccs='opencode -m "anthropic/claude-sonnet-4-6"'
+alias o-gccs='opencode -m "google/antigravity-claude-sonnet-4-6"'
+# GPT
+alias o-gpt='opencode -m "openai/gpt-5.5"'
+alias o-cop='opencode -m "github-copilot/gemini-3.1-pro-preview"'
+
 # --- Initializations ---
 eval "$(zoxide init zsh)"
 
@@ -103,3 +114,5 @@ eval "$(zoxide init zsh)"
 fastfetch
 
 export PATH="$HOME/.cargo/bin:$PATH"
+
+export OPENCODE_DISABLE_CLAUDE_CODE_PROMPT=1

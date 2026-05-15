@@ -1,233 +1,76 @@
--- ~/.config/nvim/lua/core/keymaps.lua
-local keymap = vim.keymap.set
-local opts = { noremap = true, silent = true }
+local map = vim.keymap.set
 
--- Leader key
-vim.g.mapleader = " "
+-- ── save / quit ───────────────────────────────────────────────────────────────
+map("n", "<C-s>", "<cmd>w<cr>", { desc = "Save" })
+map("n", "<C-q>", "<cmd>q<cr>", { desc = "Quit" })
+map("n", "<leader>w", "<cmd>w<cr>", { desc = "Save" })
+map("n", "<leader>q", "<cmd>q<cr>", { desc = "Quit" })
+map("n", "<leader>Q", "<cmd>qa!<cr>", { desc = "Force quit all" })
 
--- ============================================================================
--- Standard keymaps
--- ============================================================================
--- Save/Quit
-keymap("n", "<C-s>", ":w<CR>", { noremap = true, silent = true, desc = "Save file" })
-keymap("n", "<C-q>", ":q<CR>", { noremap = true, silent = true, desc = "Quit file" })
-keymap("n", "<leader>w", ":w<CR>", { noremap = true, silent = true, desc = "Save file" })
-keymap("n", "<leader>W", ":w!<CR>", { noremap = true, silent = true, desc = "Force save file" })
-keymap("n", "<leader>q", ":q<CR>", { noremap = true, silent = true, desc = "Quit file" })
-keymap("n", "<leader>Q", ":qa!<CR>", { noremap = true, silent = true, desc = "Force quit all" })
+-- ── clear search highlight ────────────────────────────────────────────────────
+map("n", "<Esc>", "<cmd>noh<cr>", { desc = "Clear highlights" })
 
--- Clear search highlights
-keymap("n", "<Esc>", ":noh<CR>", { noremap = true, silent = true, desc = "Clear search highlights" })
+-- ── splits ───────────────────────────────────────────────────────────────────
+map("n", "<C-h>", "<C-w>h", { desc = "Move to left split" })
+map("n", "<C-j>", "<C-w>j", { desc = "Move to split below" })
+map("n", "<C-k>", "<C-w>k", { desc = "Move to split above" })
+map("n", "<C-l>", "<C-w>l", { desc = "Move to right split" })
+map("n", "<leader>sv", "<cmd>vsplit<cr>", { desc = "Vertical split" })
+map("n", "<leader>ss", "<cmd>split<cr>", { desc = "Horizontal split" })
+map("n", "<leader>se", "<C-w>=", { desc = "Equal splits" })
 
--- Comment toggle
-keymap("n", "<C-_>", "gcc", { remap = true, silent = true, desc = "Toggle comment" })
-keymap("v", "<C-_>", "gc", { remap = true, silent = true, desc = "Toggle comment" })
+-- ── move lines ───────────────────────────────────────────────────────────────
+map("n", "<A-j>", "<cmd>m .+1<cr>==", { desc = "Move line down" })
+map("n", "<A-k>", "<cmd>m .-2<cr>==", { desc = "Move line up" })
+map("v", "<A-j>", ":m '>+1<cr>gv=gv", { desc = "Move selection down" })
+map("v", "<A-k>", ":m '<-2<cr>gv=gv", { desc = "Move selection up" })
 
--- ============================================================================
--- Window/Split management
--- ============================================================================
--- Navigate between splits
-keymap("n", "<C-h>", "<C-w>h", { noremap = true, silent = true, desc = "Move to left split" })
-keymap("n", "<C-j>", "<C-w>j", { noremap = true, silent = true, desc = "Move to split below" })
-keymap("n", "<C-k>", "<C-w>k", { noremap = true, silent = true, desc = "Move to split above" })
-keymap("n", "<C-l>", "<C-w>l", { noremap = true, silent = true, desc = "Move to right split" })
+-- ── indent keep selection ─────────────────────────────────────────────────────
+map("v", "<", "<gv", { desc = "Indent left" })
+map("v", ">", ">gv", { desc = "Indent right" })
 
--- Split management
-keymap("n", "<leader>sv", ":vsplit<CR>", { noremap = true, silent = true, desc = "Vertical split" })
-keymap("n", "<leader>ss", ":split<CR>", { noremap = true, silent = true, desc = "Horizontal split" })
-keymap("n", "<leader>se", "<C-w>=", { noremap = true, silent = true, desc = "Make splits equal size" })
-
--- ============================================================================
--- Better editing
--- ============================================================================
--- Move lines up/down
-keymap("n", "<A-j>", ":m .+1<CR>==", { noremap = true, silent = true, desc = "Move line down" })
-keymap("n", "<A-k>", ":m .-2<CR>==", { noremap = true, silent = true, desc = "Move line up" })
-keymap("v", "<A-j>", ":m '>+1<CR>gv=gv", { noremap = true, silent = true, desc = "Move selection down" })
-keymap("v", "<A-k>", ":m '<-2<CR>gv=gv", { noremap = true, silent = true, desc = "Move selection up" })
-
--- Stay in visual mode when indenting
-keymap("v", "<", "<gv", { noremap = true, silent = true, desc = "Indent left" })
-keymap("v", ">", ">gv", { noremap = true, silent = true, desc = "Indent right" })
-
--- ============================================================================
--- Terminal
--- ============================================================================
-keymap("n", "<leader>t", ":terminal<CR>", { noremap = true, silent = true, desc = "Open terminal" })
-
--- ============================================================================
--- Buffer navigation
--- ============================================================================
--- Smart buffer close (avoid jumping to nvim-tree)
-local function smart_close_buffer(force)
-	local current = vim.api.nvim_get_current_buf()
-	local buffers = vim.fn.getbufinfo({ buflisted = 1 })
-
-	-- Filter out current buffer and special buffers
-	local valid_buffers = {}
-	for _, buf in ipairs(buffers) do
-		if buf.bufnr ~= current and buf.name ~= "" and not buf.name:match("NvimTree") then
-			table.insert(valid_buffers, buf.bufnr)
-		end
-	end
-
-	-- Switch to next valid buffer before closing, or create new empty buffer
-	if #valid_buffers > 0 then
-		vim.cmd("buffer " .. valid_buffers[1])
+-- ── buffers ───────────────────────────────────────────────────────────────────
+map("n", "<S-h>", "<cmd>bprevious<cr>", { desc = "Prev buffer" })
+map("n", "<S-l>", "<cmd>bnext<cr>", { desc = "Next buffer" })
+map("n", "<leader>bd", function()
+	local cur = vim.api.nvim_get_current_buf()
+	local listed = vim.fn.getbufinfo({ buflisted = 1 })
+	local others = vim.tbl_filter(function(b)
+		return b.bufnr ~= cur and b.name ~= "" and not b.name:match("NvimTree")
+	end, listed)
+	if #others > 0 then
+		vim.cmd("buffer " .. others[1].bufnr)
 	else
 		vim.cmd("enew")
 	end
+	vim.cmd("bdelete " .. cur)
+end, { desc = "Close buffer" })
 
-	-- Close the original buffer
-	local cmd = force and "bdelete!" or "bdelete"
-	vim.cmd(cmd .. " " .. current)
-end
-
-keymap("n", "<leader>bn", ":bnext<CR>", { noremap = true, silent = true, desc = "Next buffer" })
-keymap("n", "<leader>bp", ":bprevious<CR>", { noremap = true, silent = true, desc = "Previous buffer" })
-keymap("n", "<leader>bd", function()
-	smart_close_buffer(false)
-end, { noremap = true, silent = true, desc = "Close buffer" })
-keymap("n", "<leader>bD", function()
-	smart_close_buffer(true)
-end, { noremap = true, silent = true, desc = "Force close buffer" })
-keymap("n", "<S-h>", ":bnext<CR>", { noremap = true, silent = true, desc = "Next buffer" })
-keymap("n", "<S-l>", ":bprevious<CR>", { noremap = true, silent = true, desc = "Previous buffer" })
-
--- Jump to buffer by number
+-- jump to buffer by ordinal (bufferline)
 for i = 1, 9 do
-	keymap("n", "<leader>" .. i, ":BufferLineGoToBuffer " .. i .. "<CR>", {
-		noremap = true,
-		silent = true,
-		desc = "Go to buffer " .. i,
-	})
+	map("n", "<leader>" .. i, "<cmd>BufferLineGoToBuffer " .. i .. "<cr>", { desc = "Buffer " .. i })
 end
 
--- ============================================================================
--- LSP keymaps
--- ============================================================================
-keymap("n", "K", vim.lsp.buf.hover, { silent = true, desc = "Show hover documentation" })
-keymap("n", "gd", vim.lsp.buf.definition, { silent = true, desc = "Go to definition" })
-keymap("n", "gD", vim.lsp.buf.declaration, { silent = true, desc = "Go to declaration" })
-keymap("n", "gi", vim.lsp.buf.implementation, { silent = true, desc = "Go to implementation" })
-keymap("n", "gy", vim.lsp.buf.type_definition, { silent = true, desc = "Go to type definition" })
-keymap("n", "<leader>ca", vim.lsp.buf.code_action, { silent = true, desc = "Code actions" })
-keymap("n", "<leader>e", vim.diagnostic.open_float, { silent = true, desc = "Show diagnostics" })
-keymap("n", "[d", vim.diagnostic.goto_prev, { silent = true, desc = "Previous diagnostic" })
-keymap("n", "]d", vim.diagnostic.goto_next, { silent = true, desc = "Next diagnostic" })
-keymap("i", "<C-k>", vim.lsp.buf.signature_help, { silent = true, desc = "Signature help" })
+-- ── lsp ───────────────────────────────────────────────────────────────────────
+map("n", "K", vim.lsp.buf.hover, { desc = "Hover docs" })
+map("n", "gd", vim.lsp.buf.definition, { desc = "Go to definition" })
+map("n", "gD", vim.lsp.buf.declaration, { desc = "Go to declaration" })
+map("n", "gi", vim.lsp.buf.implementation, { desc = "Go to implementation" })
+map("n", "gy", vim.lsp.buf.type_definition, { desc = "Go to type definition" })
+map("n", "<leader>ca", vim.lsp.buf.code_action, { desc = "Code action" })
+map("n", "<leader>rn", vim.lsp.buf.rename, { desc = "Rename" })
+map("n", "<leader>e", vim.diagnostic.open_float, { desc = "Show diagnostic" })
+map("n", "[d", vim.diagnostic.goto_prev, { desc = "Prev diagnostic" })
+map("n", "]d", vim.diagnostic.goto_next, { desc = "Next diagnostic" })
+map("i", "<C-k>", vim.lsp.buf.signature_help, { desc = "Signature help" })
 
--- ============================================================================
--- Telescope
--- ============================================================================
-local ts_ok, ts = pcall(require, "telescope.builtin")
-if ts_ok then
-	keymap("n", "<leader>ff", ts.find_files, { desc = "Find files" })
-	keymap("n", "<leader>fg", ts.git_files, { desc = "Find git files" })
-	keymap("n", "<leader>fs", function()
-		ts.grep_string({ search = vim.fn.input("Grep > ") })
-	end, { desc = "Live grep search" })
-	-- Buffer pocket management
-	keymap("n", "<leader>bb", ts.buffers, { desc = "Find buffers" })
-	keymap("n", "<leader>fp", ts.commands, { desc = "Command palette" })
-	keymap("n", "<leader>fk", ts.keymaps, { desc = "Find keymaps" })
+-- ── git ───────────────────────────────────────────────────────────────────────
+map("n", "<leader>gg", "<cmd>LazyGit<cr>", { desc = "LazyGit" })
 
-	keymap("n", "gr", ts.lsp_references, { desc = "Show references" })
-end
-
--- ============================================================================
--- Flash (navigation)
--- ============================================================================
-local flash_ok, flash = pcall(require, "flash")
-if flash_ok then
-	-- Don't map in operator-pending mode to avoid conflicts with nvim-surround
-	keymap({ "n", "x" }, "s", function()
-		flash.jump()
-	end, { desc = "Flash jump" })
-	keymap({ "n", "x" }, "S", function()
-		flash.treesitter()
-	end, { desc = "Flash treesitter" })
-	-- Alternative binding for operator-pending
-	keymap("o", "z", function()
-		flash.jump()
-	end, { desc = "Flash jump (operator mode)" })
-end
-
--- ============================================================================
--- Git - Gitsigns
--- ============================================================================
-local gs_ok, gs = pcall(require, "gitsigns")
-if gs_ok then
-	keymap("n", "<leader>gd", gs.preview_hunk, { desc = "Preview hunk diff" })
-	keymap("n", "<leader>gD", gs.diffthis, { desc = "Diff split" })
-	keymap("n", "<leader>gb", gs.blame_line, { desc = "Blame line" })
-	keymap("n", "]h", gs.next_hunk, { desc = "Next hunk" })
-	keymap("n", "[h", gs.prev_hunk, { desc = "Previous hunk" })
-	keymap("n", "<leader>gs", gs.stage_hunk, { desc = "Stage hunk" })
-	keymap("n", "<leader>gu", gs.undo_stage_hunk, { desc = "Undo stage hunk" })
-	keymap("n", "<leader>gr", gs.reset_hunk, { desc = "Reset hunk" })
-end
-
--- ============================================================================
--- Git - Lazygit
--- ============================================================================
-keymap("n", "<leader>gg", ":LazyGit<CR>", { noremap = true, silent = true, desc = "Open LazyGit" })
-
--- ============================================================================
--- Formatting (Conform)
--- ============================================================================
-keymap("n", "<leader>F", function()
-	local ok, conform = pcall(require, "conform")
-	if ok then
-		conform.format({ async = true, lsp_fallback = true })
-	else
-		vim.notify("Conform not found", vim.log.levels.WARN)
-	end
+-- ── format ───────────────────────────────────────────────────────────────────
+map("n", "<leader>F", function()
+	require("conform").format({ async = true, lsp_fallback = true })
 end, { desc = "Format buffer" })
 
--- ============================================================================
--- File tree (Nvim-tree)
--- ============================================================================
-keymap("n", "<C-n>", function()
-	if vim.fn.exists(":NvimTreeToggle") == 2 then
-		vim.cmd("NvimTreeToggle")
-	end
-end, { desc = "Toggle file tree" })
-
--- ============================================================================
--- AI - CodeCompanion
--- ============================================================================
-local function codecompanion_cmd(cmd)
-	return function()
-		if vim.fn.exists(":CodeCompanionChat") == 2 or vim.fn.exists(":CodeCompanionActions") == 2 then
-			vim.cmd(cmd)
-		else
-			vim.notify("CodeCompanion not loaded", vim.log.levels.WARN)
-		end
-	end
-end
-
--- Chat
-keymap(
-	{ "n", "v" },
-	"<leader>cc",
-	codecompanion_cmd("CodeCompanionChat Toggle"),
-	{ desc = "CodeCompanion: Toggle chat" }
-)
-keymap({ "n", "v" }, "<leader>ai", codecompanion_cmd("CodeCompanionActions"), { desc = "CodeCompanion: Actions" })
-keymap("v", "ga", codecompanion_cmd("CodeCompanionChat Add"), { desc = "CodeCompanion: Add to chat" })
-
--- Inline (gen.nvim style)
-keymap("v", "<leader>cf", codecompanion_cmd("CodeCompanion /fix_inline"), { desc = "CodeCompanion: Fix code" })
-keymap(
-	"v",
-	"<leader>co",
-	codecompanion_cmd("CodeCompanion /optimize_inline"),
-	{ desc = "CodeCompanion: Optimize code" }
-)
-keymap(
-	"v",
-	"<leader>cp",
-	codecompanion_cmd("CodeCompanion /complete_inline"),
-	{ desc = "CodeCompanion: Complete code" }
-)
+-- ── terminal ─────────────────────────────────────────────────────────────────
+map("n", "<leader>t", "<cmd>terminal<cr>", { desc = "Terminal" })

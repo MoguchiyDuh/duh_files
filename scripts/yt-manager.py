@@ -21,7 +21,8 @@ from pathlib import Path
 from typing import TYPE_CHECKING, Literal
 
 import argcomplete
-from colorama import Fore, Style, init as colorama_init
+from colorama import Fore, Style
+from colorama import init as colorama_init
 from mutagen.id3 import COMM, ID3, TIT2, TPE1
 from mutagen.mp3 import MP3
 
@@ -30,14 +31,17 @@ if TYPE_CHECKING:
 
 colorama_init(autoreset=True)
 
-FileType = Literal["mp3", "mp4"]
+# audio: native yt format (opus/m4a, best quality, no transcode)
+# mp3:   force mp3 transcode (portable but lossy conversion)
+# video: native yt video+audio (best quality, no transcode)
+AudioMode = Literal["audio", "mp3", "video"]
 
 # ============================================================================
 # Logging
 # ============================================================================
 
+
 def setup_logger(verbose: bool = False) -> logging.Logger:
-    """Configure logger. Only outputs with verbose flag."""
     logger = logging.getLogger("duh-ytdl")
     logger.handlers.clear()
     logger.propagate = False
@@ -46,7 +50,9 @@ def setup_logger(verbose: bool = False) -> logging.Logger:
         logger.setLevel(logging.DEBUG)
         handler = logging.StreamHandler(sys.stdout)
         handler.setFormatter(
-            logging.Formatter(f"{Fore.CYAN}[%(levelname)s]{Style.RESET_ALL} %(message)s")
+            logging.Formatter(
+                f"{Fore.CYAN}[%(levelname)s]{Style.RESET_ALL} %(message)s"
+            )
         )
         logger.addHandler(handler)
     else:
@@ -67,10 +73,9 @@ PLAYLISTS_FILE = Path(__file__).resolve().parent / "playlists.json"
 
 @dataclass
 class Config:
-    """Shared configuration for operations."""
     cookies: Path | None = None
     verbose: bool = False
-    file_type: FileType = "mp3"
+    mode: AudioMode = "audio"
     parallel: int = 1
     force: bool = False
     segment: str | None = None
@@ -80,20 +85,33 @@ class Config:
         return cls(
             cookies=args.cookies,
             verbose=args.verbose,
-            file_type=getattr(args, "type", "mp3"),
+            mode=getattr(args, "mode", "audio"),
             parallel=getattr(args, "parallel", 1),
             force=getattr(args, "force", False),
             segment=getattr(args, "segment", None),
         )
+
+    @property
+    def file_ext(self) -> str:
+        """File extension for the current mode."""
+        if self.mode == "mp3":
+            return "mp3"
+        elif self.mode == "video":
+            return "mp4"
+        else:
+            # Native audio: YT serves opus (webm) or m4a depending on the video.
+            # We prefer opus but can't guarantee it, so use 'opus' as the target
+            # extension — yt-dlp will pick the best and remux if needed.
+            return "opus"
 
 
 # ============================================================================
 # Saved Playlists
 # ============================================================================
 
+
 @dataclass
 class SavedPlaylist:
-    """A saved playlist configuration."""
     name: str
     url: str
     directory: Path
@@ -114,40 +132,30 @@ class SavedPlaylist:
 
 
 def load_playlists() -> dict[str, SavedPlaylist]:
-    """Load saved playlists from config file."""
     if not PLAYLISTS_FILE.exists():
         return {}
-
     with open(PLAYLISTS_FILE) as f:
         data = json.load(f)
-
     return {name: SavedPlaylist.from_dict(name, pl) for name, pl in data.items()}
 
 
 def save_playlists(playlists: dict[str, SavedPlaylist]) -> None:
-    """Save playlists to config file."""
     data = {name: pl.to_dict() for name, pl in playlists.items()}
-
     with open(PLAYLISTS_FILE, "w") as f:
         json.dump(data, f, indent=2)
 
 
 def get_playlist(name: str) -> SavedPlaylist | None:
-    """Get a saved playlist by name."""
-    playlists = load_playlists()
-    return playlists.get(name)
+    return load_playlists().get(name)
 
 
 def resolve_playlist(name_or_url: str) -> tuple[str, Path | None]:
-    """Resolve playlist name to URL and directory. Returns (url, directory)."""
+    """Resolve playlist name to (url, directory). URL passes through."""
     if is_url(name_or_url):
         return name_or_url, None
-
     playlist = get_playlist(name_or_url)
     if playlist:
         return playlist.url, playlist.directory
-
-    # Not a URL and not a saved playlist
     raise ValueError(f"Unknown playlist: {name_or_url}")
 
 
@@ -155,37 +163,31 @@ def resolve_playlist(name_or_url: str) -> tuple[str, Path | None]:
 # URL Utilities
 # ============================================================================
 
+
 def normalize_url(url: str) -> str:
-    """Normalize YouTube URL to standard watch format."""
     if "youtube.com" not in url and "youtu.be" not in url:
         return url
-
     video_id: str | None = None
-
     if "watch?v=" in url:
         video_id = url.split("watch?v=")[1].split("&")[0]
     elif "youtu.be/" in url:
         video_id = url.split("youtu.be/")[1].split("?")[0]
     elif "/watch/" in url:
         video_id = url.split("/watch/")[1].split("?")[0]
-
     if video_id:
         return f"https://www.youtube.com/watch?v={video_id}"
     return url
 
 
 def is_playlist_url(url: str) -> bool:
-    """Check if URL is a YouTube playlist."""
     return "list=" in url or "/playlist" in url
 
 
 def is_url(s: str) -> bool:
-    """Check if string is a URL."""
     return s.startswith(("http://", "https://"))
 
 
 def detect_input_type(input_str: str) -> Literal["url", "playlist", "search"]:
-    """Detect input type: single url, playlist, or search query."""
     if is_url(input_str):
         return "playlist" if is_playlist_url(input_str) else "url"
     return "search"
@@ -195,18 +197,16 @@ def detect_input_type(input_str: str) -> Literal["url", "playlist", "search"]:
 # Filesystem Utilities
 # ============================================================================
 
-INVALID_CHARS = "/\\:*?\"<>|"
+INVALID_CHARS = '/\\:*?"<>|'
 
 
 def sanitize_filename(name: str) -> str:
-    """Remove invalid filesystem characters."""
     for char in INVALID_CHARS:
         name = name.replace(char, "-")
     return name.strip(". ")
 
 
 def make_filename(artist: str, title: str, ext: str) -> str:
-    """Create sanitized filename from metadata."""
     return sanitize_filename(f"{artist} - {title}.{ext}")
 
 
@@ -214,16 +214,14 @@ def make_filename(artist: str, title: str, ext: str) -> str:
 # yt-dlp Wrapper
 # ============================================================================
 
+
 class YtdlpError(Exception):
-    """yt-dlp command failed."""
     pass
 
 
 def run_ytdlp(args: list[str], capture: bool = True, verbose: bool = False) -> str:
-    """Execute yt-dlp command."""
     cmd = ["yt-dlp", *args]
     log.debug(f"Running: {' '.join(cmd)}")
-
     try:
         if capture:
             result = subprocess.run(cmd, capture_output=True, text=True, check=True)
@@ -232,7 +230,12 @@ def run_ytdlp(args: list[str], capture: bool = True, verbose: bool = False) -> s
             if verbose:
                 subprocess.run(cmd, check=True)
             else:
-                subprocess.run(cmd, check=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+                subprocess.run(
+                    cmd,
+                    check=True,
+                    stdout=subprocess.DEVNULL,
+                    stderr=subprocess.DEVNULL,
+                )
             return ""
     except subprocess.CalledProcessError as e:
         raise YtdlpError(f"yt-dlp failed: {e.stderr or e}") from e
@@ -241,33 +244,58 @@ def run_ytdlp(args: list[str], capture: bool = True, verbose: bool = False) -> s
 def build_download_args(
     url: str,
     output: Path,
-    file_type: FileType,
-    cookies: Path | None = None,
-    segment: str | None = None,
+    cfg: Config,
 ) -> list[str]:
-    """Build yt-dlp arguments for downloading."""
+    """Build yt-dlp arguments for the given mode."""
     args = ["--no-playlist", "-o", str(output)]
 
-    if segment:
-        args.extend(["--download-sections", f"*{segment}"])
+    if cfg.segment:
+        args.extend(["--download-sections", f"*{cfg.segment}"])
 
-    if file_type == "mp3":
-        args.extend([
-            "--extract-audio",
-            "--audio-format", "mp3",
-            "--audio-quality", "0",
-            "--embed-thumbnail",
-            "--convert-thumbnails", "jpg",
-        ])
-    else:  # mp4
-        args.extend([
-            "-f", "bestvideo[ext=mp4]+bestaudio[ext=m4a]/best[ext=mp4]/best",
-            "--merge-output-format", "mp4",
-        ])
+    if cfg.mode == "audio":
+        # Pull best audio stream as-is (opus or m4a), remux into opus container.
+        # No transcoding — zero quality loss.
+        args.extend(
+            [
+                "-f",
+                "bestaudio",
+                "--extract-audio",
+                "--audio-format",
+                "opus",
+                "--audio-quality",
+                "0",
+            ]
+        )
 
-    if cookies and cookies.exists():
-        args.extend(["--cookies", str(cookies)])
-        log.debug(f"Using cookies: {cookies}")
+    elif cfg.mode == "mp3":
+        # Explicitly transcode to mp3. Portable but lossy conversion from opus.
+        args.extend(
+            [
+                "--extract-audio",
+                "--audio-format",
+                "mp3",
+                "--audio-quality",
+                "0",  # VBR ~245kbps (V0)
+                "--embed-thumbnail",
+                "--convert-thumbnails",
+                "jpg",
+            ]
+        )
+
+    else:  # video
+        # Best video + best audio, merged into mp4. No transcode.
+        args.extend(
+            [
+                "-f",
+                "bestvideo[ext=mp4]+bestaudio[ext=m4a]/best[ext=mp4]/best",
+                "--merge-output-format",
+                "mp4",
+            ]
+        )
+
+    if cfg.cookies and cfg.cookies.exists():
+        args.extend(["--cookies", str(cfg.cookies)])
+        log.debug(f"Using cookies: {cfg.cookies}")
 
     args.append(url)
     return args
@@ -277,16 +305,21 @@ def build_download_args(
 # Track Data
 # ============================================================================
 
+
 @dataclass
 class Track:
-    """Track metadata."""
     artist: str
     title: str
     url: str
-    id: int = 0  # Position in playlist
+    id: int = 0
 
     def to_dict(self) -> dict:
-        return {"id": self.id, "artist": self.artist, "title": self.title, "url": self.url}
+        return {
+            "id": self.id,
+            "artist": self.artist,
+            "title": self.title,
+            "url": self.url,
+        }
 
     @classmethod
     def from_dict(cls, data: dict) -> Track:
@@ -302,19 +335,16 @@ class Track:
 
 
 def search_youtube(query: str, cookies: Path | None = None) -> str:
-    """Search YouTube, return first result URL."""
     log.debug(f"Searching: {query}")
     args = [f"ytsearch1:{query}", "--get-id"]
     if cookies and cookies.exists():
         args.extend(["--cookies", str(cookies)])
-
     video_id = run_ytdlp(args)
     return f"https://www.youtube.com/watch?v={video_id}"
 
 
 @dataclass
 class TrackDetails:
-    """Extended track metadata for display."""
     artist: str
     title: str
     url: str
@@ -345,7 +375,6 @@ class TrackDetails:
 
     @property
     def duration_str(self) -> str:
-        """Format duration as MM:SS or HH:MM:SS."""
         if not self.duration:
             return "0:00"
         m, s = divmod(self.duration, 60)
@@ -354,28 +383,22 @@ class TrackDetails:
 
     @property
     def date_str(self) -> str:
-        """Format upload date as YYYY-MM-DD."""
         if not self.upload_date or len(self.upload_date) != 8:
             return "Unknown"
         return f"{self.upload_date[:4]}-{self.upload_date[4:6]}-{self.upload_date[6:]}"
 
 
 def get_track_info(url: str, cookies: Path | None = None) -> Track:
-    """Fetch single track metadata (minimal)."""
-    details = get_track_details(url, cookies)
-    return details.to_track()
+    return get_track_details(url, cookies).to_track()
 
 
 def get_track_details(url: str, cookies: Path | None = None) -> TrackDetails:
-    """Fetch detailed track metadata."""
     args = ["--dump-json"]
     if cookies and cookies.exists():
         args.extend(["--cookies", str(cookies)])
     args.append(url)
-
     log.debug(f"Fetching info: {url}")
     data = json.loads(run_ytdlp(args))
-
     return TrackDetails(
         artist=data.get("channel", "Unknown"),
         title=data.get("title", "Unknown"),
@@ -386,17 +409,15 @@ def get_track_details(url: str, cookies: Path | None = None) -> TrackDetails:
         like_count=data.get("like_count", 0),
         comment_count=data.get("comment_count", 0),
         categories=data.get("categories", []),
-        description=data.get("description", "")[:500],  # Truncate
+        description=data.get("description", "")[:500],
     )
 
 
 def get_playlist_info(url: str, cookies: Path | None = None) -> tuple[str, list[Track]]:
-    """Fetch playlist metadata. Returns (playlist_title, tracks)."""
     args = ["--flat-playlist", "--dump-json"]
     if cookies and cookies.exists():
         args.extend(["--cookies", str(cookies)])
     args.append(url)
-
     log.debug(f"Fetching playlist: {url}")
     output = run_ytdlp(args)
 
@@ -407,31 +428,30 @@ def get_playlist_info(url: str, cookies: Path | None = None) -> tuple[str, list[
         if not line.strip():
             continue
         data = json.loads(line)
-
-        # First entry might have playlist info
         if i == 1 and "playlist_title" in data:
             playlist_title = data["playlist_title"]
-
         video_id = data.get("id")
         if not video_id:
             continue
-
-        tracks.append(Track(
-            artist=data.get("channel", "Unknown"),
-            title=data.get("title", "Unknown"),
-            url=f"https://www.youtube.com/watch?v={video_id}",
-            id=i,
-        ))
+        tracks.append(
+            Track(
+                artist=data.get("channel", "Unknown"),
+                title=data.get("title", "Unknown"),
+                url=f"https://www.youtube.com/watch?v={video_id}",
+                id=i,
+            )
+        )
 
     return playlist_title, tracks
 
 
 # ============================================================================
-# ID3 Metadata
+# ID3 Metadata (mp3 only)
 # ============================================================================
 
+
 def get_mp3_url(filepath: Path) -> str | None:
-    """Extract YouTube URL from MP3 comment field."""
+    """Extract YouTube URL from MP3 COMM tag."""
     try:
         audio = MP3(filepath, ID3=ID3)
         for comment in audio.tags.getall("COMM"):
@@ -444,28 +464,54 @@ def get_mp3_url(filepath: Path) -> str | None:
 
 
 def set_mp3_metadata(filepath: Path, artist: str, title: str, url: str) -> None:
-    """Set ID3 tags on MP3 file."""
     log.debug(f"Setting metadata: {filepath}")
     audio = MP3(filepath, ID3=ID3)
-
     try:
         audio.add_tags()
     except Exception:
-        pass  # Tags already exist
-
+        pass
     audio.tags["TPE1"] = TPE1(encoding=3, text=artist)
     audio.tags["TIT2"] = TIT2(encoding=3, text=title)
     audio.tags["COMM"] = COMM(encoding=3, lang="eng", desc="", text=url)
     audio.save(v2_version=3)
 
 
+def get_opus_url(filepath: Path) -> str | None:
+    """Extract YouTube URL from opus/ogg COMMENT tag."""
+    try:
+        from mutagen.oggopus import OggOpus
+
+        audio = OggOpus(filepath)
+        for val in audio.get("comment", []):
+            if "youtube.com" in val or "youtu.be" in val:
+                return normalize_url(val)
+    except Exception:
+        pass
+    return None
+
+
+def set_opus_metadata(filepath: Path, artist: str, title: str, url: str) -> None:
+    """Set vorbis comment tags on opus file."""
+    try:
+        from mutagen.oggopus import OggOpus
+
+        audio = OggOpus(filepath)
+        audio["artist"] = artist
+        audio["title"] = title
+        audio["comment"] = url
+        audio.save()
+        log.debug(f"Set opus metadata: {filepath}")
+    except Exception as e:
+        log.debug(f"Opus metadata failed (non-fatal): {e}")
+
+
 # ============================================================================
 # Download
 # ============================================================================
 
+
 @dataclass
 class DownloadResult:
-    """Result of a download operation."""
     track: Track
     success: bool
     path: Path | None = None
@@ -473,36 +519,35 @@ class DownloadResult:
     skipped: bool = False
 
 
-def download_track(track: Track, output_dir: Path, cfg: Config, filename: str | None = None) -> DownloadResult:
-    """Download single track to directory."""
+def download_track(
+    track: Track, output_dir: Path, cfg: Config, filename: str | None = None
+) -> DownloadResult:
     if not filename:
-        filename = track.filename(cfg.file_type)
-    
+        filename = track.filename(cfg.file_ext)
+
     output_path = output_dir / filename
 
-    # Skip if exists and not forcing
     if output_path.exists() and not cfg.force:
         log.debug(f"Skipping (exists): {output_path}")
         return DownloadResult(track, success=True, path=output_path, skipped=True)
 
-    # Download to temp, then move (atomic)
     temp_dir = Path(tempfile.mkdtemp(prefix="duh-ytdl-"))
     temp_output = temp_dir / filename
 
     try:
-        args = build_download_args(track.url, temp_output, cfg.file_type, cfg.cookies, cfg.segment)
+        args = build_download_args(track.url, temp_output, cfg)
         run_ytdlp(args, capture=False, verbose=cfg.verbose)
 
-        # Find downloaded file (extension might differ before conversion)
-        downloaded = list(temp_dir.glob(f"*.{cfg.file_type}"))
+        downloaded = list(temp_dir.glob(f"*.{cfg.file_ext}"))
         if not downloaded:
-            raise YtdlpError(f"No {cfg.file_type} file found after download")
+            raise YtdlpError(f"No .{cfg.file_ext} file found after download")
 
         shutil.move(str(downloaded[0]), str(output_path))
 
-        # Set metadata for mp3
-        if cfg.file_type == "mp3":
+        if cfg.mode == "mp3":
             set_mp3_metadata(output_path, track.artist, track.title, track.url)
+        elif cfg.mode == "audio":
+            set_opus_metadata(output_path, track.artist, track.title, track.url)
 
         log.debug(f"Downloaded: {output_path}")
         return DownloadResult(track, success=True, path=output_path)
@@ -519,27 +564,22 @@ def download_tracks(
     cfg: Config,
     callback: callable | None = None,
 ) -> list[DownloadResult]:
-    """Download multiple tracks, optionally in parallel."""
     output_dir.mkdir(parents=True, exist_ok=True)
     results: list[DownloadResult] = []
 
     if cfg.parallel <= 1:
-        # Sequential download
         for track in tracks:
             result = download_track(track, output_dir, cfg)
             results.append(result)
             if callback:
                 callback(result)
     else:
-        # Parallel download
         print_lock = threading.Lock()
 
-        def download_with_lock(track: Track) -> DownloadResult:
-            return download_track(track, output_dir, cfg)
-
         with ThreadPoolExecutor(max_workers=min(cfg.parallel, 10)) as executor:
-            futures = {executor.submit(download_with_lock, t): t for t in tracks}
-
+            futures = {
+                executor.submit(download_track, t, output_dir, cfg): t for t in tracks
+            }
             for future in as_completed(futures):
                 result = future.result()
                 results.append(result)
@@ -553,6 +593,7 @@ def download_tracks(
 # ============================================================================
 # Output Helpers
 # ============================================================================
+
 
 def print_success(msg: str) -> None:
     print(f"{Fore.GREEN}✓ {msg}{Style.RESET_ALL}")
@@ -573,34 +614,46 @@ def print_track(track: Track, status: str = "") -> None:
 
 
 def print_result(result: DownloadResult, total: int = 0) -> None:
-    """Print download result with status."""
     track = result.track
-    prefix = f"[{track.id}/{total}] " if total else (f"[{track.id}] " if track.id else "")
-
+    prefix = (
+        f"[{track.id}/{total}] " if total else (f"[{track.id}] " if track.id else "")
+    )
     if result.skipped:
-        print(f"  {prefix}{track.artist} - {track.title} - {Fore.YELLOW}skipped{Style.RESET_ALL}")
+        print(
+            f"  {prefix}{track.artist} - {track.title} - {Fore.YELLOW}skipped{Style.RESET_ALL}"
+        )
     elif result.success:
-        print(f"  {prefix}{track.artist} - {track.title} - {Fore.GREEN}done{Style.RESET_ALL}")
+        print(
+            f"  {prefix}{track.artist} - {track.title} - {Fore.GREEN}done{Style.RESET_ALL}"
+        )
     else:
-        print(f"  {prefix}{track.artist} - {track.title} - {Fore.RED}failed: {result.error}{Style.RESET_ALL}")
+        print(
+            f"  {prefix}{track.artist} - {track.title} - {Fore.RED}failed: {result.error}{Style.RESET_ALL}"
+        )
 
 
 # ============================================================================
 # Local File Scanning
 # ============================================================================
 
-def scan_local_files(directory: Path, file_type: FileType) -> dict[str, Path]:
-    """Scan directory for files and extract URLs. Returns url -> path mapping."""
+
+def scan_local_files(directory: Path, ext: str) -> dict[str, Path]:
+    """Scan directory for audio files and extract embedded URLs. Returns url -> path."""
     url_to_file: dict[str, Path] = {}
 
     if not directory.exists():
         return url_to_file
 
-    for filepath in directory.glob(f"*.{file_type}"):
-        if file_type == "mp3":
+    for filepath in directory.glob(f"*.{ext}"):
+        if ext == "mp3":
             url = get_mp3_url(filepath)
-            if url:
-                url_to_file[url] = filepath
+        elif ext == "opus":
+            url = get_opus_url(filepath)
+        else:
+            url = None
+
+        if url:
+            url_to_file[url] = filepath
 
     return url_to_file
 
@@ -609,8 +662,8 @@ def scan_local_files(directory: Path, file_type: FileType) -> dict[str, Path]:
 # Commands
 # ============================================================================
 
+
 def cmd_download(args: Namespace) -> int:
-    """Download single track or playlist."""
     global log
     log = setup_logger(args.verbose)
     cfg = Config.from_args(args)
@@ -618,7 +671,6 @@ def cmd_download(args: Namespace) -> int:
     input_type = detect_input_type(args.url)
     output: Path = args.output.expanduser().resolve()
 
-    # Handle search query
     if input_type == "search":
         print(f"Searching: {args.url}")
         url = search_youtube(args.url, cfg.cookies)
@@ -628,7 +680,6 @@ def cmd_download(args: Namespace) -> int:
         url = args.url
 
     if input_type == "playlist":
-        # Playlist download
         print("Fetching playlist...")
         title, tracks = get_playlist_info(url, cfg.cookies)
         print(f"Playlist: {title} ({len(tracks)} tracks)")
@@ -638,11 +689,9 @@ def cmd_download(args: Namespace) -> int:
 
         total = len(tracks)
         results = download_tracks(
-            tracks, output, cfg,
-            callback=lambda r: print_result(r, total)
+            tracks, output, cfg, callback=lambda r: print_result(r, total)
         )
 
-        # Summary
         success = sum(1 for r in results if r.success and not r.skipped)
         skipped = sum(1 for r in results if r.skipped)
         failed = sum(1 for r in results if not r.success)
@@ -650,7 +699,6 @@ def cmd_download(args: Namespace) -> int:
         print(f"\nDownloaded: {success}, Skipped: {skipped}, Failed: {failed}")
         print_success(f"Output: {output}")
     else:
-        # Single track
         track = get_track_info(url, cfg.cookies)
         print(f"Track: {track.artist} - {track.title}")
 
@@ -664,7 +712,9 @@ def cmd_download(args: Namespace) -> int:
             result = download_track(track, output, cfg)
 
         if result.success:
-            actual_filename = result.path.name if result.path else track.filename(cfg.file_type)
+            actual_filename = (
+                result.path.name if result.path else track.filename(cfg.file_ext)
+            )
             print_success(f"Downloaded: {actual_filename}")
         else:
             print_error(f"Failed: {result.error}")
@@ -682,7 +732,6 @@ def sync_single_playlist(
     name: str | None = None,
     to_file: Path | None = None,
 ) -> int:
-    """Sync a single playlist. Returns exit code."""
     if name:
         print(f"\n{Fore.CYAN}=== {name} ==={Style.RESET_ALL}")
 
@@ -690,26 +739,21 @@ def sync_single_playlist(
         directory.mkdir(parents=True, exist_ok=True)
         print(f"Created directory: {directory}")
 
-    # Fetch playlist
     print("Fetching playlist...")
     title, tracks = get_playlist_info(url, cfg.cookies)
     playlist_urls = {t.url for t in tracks}
     print(f"Playlist: {title} ({len(tracks)} tracks)")
 
-    # Scan local files
     print(f"Scanning {directory}...")
-    local_urls = scan_local_files(directory, cfg.file_type)
+    local_urls = scan_local_files(directory, cfg.file_ext)
     print(f"Local files with URLs: {len(local_urls)}")
 
-    # Find missing (in playlist but not local)
     missing_urls = playlist_urls - set(local_urls.keys())
     missing_tracks = [t for t in tracks if t.url in missing_urls]
 
-    # Find orphaned (local but not in playlist)
     orphaned_urls = set(local_urls.keys()) - playlist_urls
     orphaned_files = [(local_urls[url], url) for url in orphaned_urls]
 
-    # Report
     if not missing_tracks and not orphaned_files:
         print_success("Already in sync!")
         return 0
@@ -732,7 +776,6 @@ def sync_single_playlist(
         print(f"\n{Fore.CYAN}Dry run - no changes made{Style.RESET_ALL}")
         return 0
 
-    # Save to file if requested (and exit)
     if to_file:
         data = [t.to_dict() for t in missing_tracks]
         with open(to_file, "w", encoding="utf-8") as f:
@@ -740,7 +783,6 @@ def sync_single_playlist(
         print_success(f"Saved {len(missing_tracks)} missing tracks to {to_file}")
         return 0
 
-    # Download missing
     if missing_tracks:
         print(f"\nDownloading {len(missing_tracks)} missing tracks...")
         if cfg.parallel > 1:
@@ -748,15 +790,13 @@ def sync_single_playlist(
 
         total = len(missing_tracks)
         results = download_tracks(
-            missing_tracks, directory, cfg,
-            callback=lambda r: print_result(r, total)
+            missing_tracks, directory, cfg, callback=lambda r: print_result(r, total)
         )
 
         success = sum(1 for r in results if r.success)
         failed = sum(1 for r in results if not r.success)
         print(f"Downloaded: {success}, Failed: {failed}")
 
-    # Prune orphaned
     if prune and orphaned_files:
         print(f"\nDeleting {len(orphaned_files)} orphaned files...")
         deleted = 0
@@ -774,7 +814,6 @@ def sync_single_playlist(
 
 
 def cmd_sync(args: Namespace) -> int:
-    """Sync playlist with local directory."""
     global log
     log = setup_logger(args.verbose)
     cfg = Config.from_args(args)
@@ -783,32 +822,26 @@ def cmd_sync(args: Namespace) -> int:
     prune = args.prune
     to_file = getattr(args, "to_file", None)
 
-    # Handle --all flag
     if getattr(args, "all", False):
         playlists = load_playlists()
         if not playlists:
             print_error("No saved playlists. Use 'add' command first.")
             return 1
-
         if to_file:
             print_error("--to-file not supported with --all")
             return 1
-
         print(f"Syncing {len(playlists)} playlists...")
         for name, pl in playlists.items():
             sync_single_playlist(pl.url, pl.directory, cfg, dry_run, prune, name, None)
-
         print_success(f"\nAll {len(playlists)} playlists synced!")
         return 0
 
-    # Resolve playlist name or URL
     try:
         url, saved_dir = resolve_playlist(args.playlist)
     except ValueError as e:
         print_error(str(e))
         return 1
 
-    # Use provided directory or saved directory
     if args.directory:
         directory = args.directory.expanduser().resolve()
     elif saved_dir:
@@ -821,7 +854,6 @@ def cmd_sync(args: Namespace) -> int:
 
 
 def cmd_batch(args: Namespace) -> int:
-    """Batch download from JSON file."""
     global log
     log = setup_logger(args.verbose)
     cfg = Config.from_args(args)
@@ -833,28 +865,23 @@ def cmd_batch(args: Namespace) -> int:
         print_error(f"JSON file not found: {json_file}")
         return 1
 
-    # Load tracks
     with open(json_file) as f:
         data = json.load(f)
 
     tracks = [Track.from_dict(d) for d in data]
-    # Assign IDs if missing
     for i, t in enumerate(tracks, 1):
         if not t.id:
             t.id = i
 
     print(f"Loaded {len(tracks)} tracks from {json_file.name}")
-
     if cfg.parallel > 1:
         print(f"Downloading with {min(cfg.parallel, 10)} workers...")
 
     total = len(tracks)
     results = download_tracks(
-        tracks, directory, cfg,
-        callback=lambda r: print_result(r, total)
+        tracks, directory, cfg, callback=lambda r: print_result(r, total)
     )
 
-    # Summary
     success = sum(1 for r in results if r.success and not r.skipped)
     skipped = sum(1 for r in results if r.skipped)
     failed = sum(1 for r in results if not r.success)
@@ -865,18 +892,15 @@ def cmd_batch(args: Namespace) -> int:
 
 
 def cmd_m3u(args: Namespace) -> int:
-    """Generate M3U playlist ordered by YouTube playlist."""
     global log
     log = setup_logger(args.verbose)
 
-    # Resolve playlist name or URL
     try:
         url, saved_dir = resolve_playlist(args.playlist)
     except ValueError as e:
         print_error(str(e))
         return 1
 
-    # Use provided directory or saved directory
     if args.directory:
         directory = args.directory.expanduser().resolve()
     elif saved_dir:
@@ -891,33 +915,32 @@ def cmd_m3u(args: Namespace) -> int:
         print_error(f"Directory not found: {directory}")
         return 1
 
-    # Fetch playlist for ordering
+    # Determine which extension to scan based on --mode (default audio = opus)
+    mode = getattr(args, "mode", "audio")
+    ext = "mp3" if mode == "mp3" else "opus"
+
     print("Fetching playlist...")
     title, tracks = get_playlist_info(url, args.cookies)
     playlist_urls = [t.url for t in tracks]
     print(f"Playlist: {title} ({len(tracks)} tracks)")
 
-    # Scan local files
     print(f"Scanning {directory}...")
-    local_urls = scan_local_files(directory, "mp3")
+    local_urls = scan_local_files(directory, ext)
     print(f"Local files with URLs: {len(local_urls)}")
 
-    # Build M3U in playlist order
     print(f"Creating M3U: {output}")
     matched = 0
     missing = 0
 
     with open(output, "w", encoding="utf-8") as f:
         f.write("#EXTM3U\n")
-
-        for url in playlist_urls:
-            if url in local_urls:
-                filepath = local_urls[url]
+        for track_url in playlist_urls:
+            if track_url in local_urls:
+                filepath = local_urls[track_url]
                 if args.abs:
                     path_str = str(filepath.absolute())
                 else:
                     try:
-                        # Make relative to the M3U file's directory
                         path_str = str(filepath.relative_to(output.parent))
                     except ValueError:
                         path_str = str(filepath.absolute())
@@ -935,19 +958,15 @@ def cmd_m3u(args: Namespace) -> int:
 
 
 def cmd_view(args: Namespace) -> int:
-    """View playlist or track info."""
     global log
     log = setup_logger(args.verbose)
 
-    # Check if it's a saved playlist name first
     saved = get_playlist(args.url)
     if saved:
         url = saved.url
         input_type = "playlist"
     else:
         input_type = detect_input_type(args.url)
-
-        # Handle search query
         if input_type == "search":
             print(f"Searching: {args.url}")
             url = search_youtube(args.url, args.cookies)
@@ -958,24 +977,18 @@ def cmd_view(args: Namespace) -> int:
 
     if input_type == "playlist":
         title, tracks = get_playlist_info(url, args.cookies)
-
         if args.to_file:
-            # Save to JSON
             data = [t.to_dict() for t in tracks]
             with open(args.to_file, "w", encoding="utf-8") as f:
                 json.dump(data, f, indent=2, ensure_ascii=False)
             print_success(f"Saved {len(tracks)} tracks to {args.to_file}")
         else:
-            # Print to console
             print(f"\n{Fore.CYAN}{title}{Style.RESET_ALL}")
             print(f"Tracks: {len(tracks)}\n")
-
             for track in tracks:
                 print(f"  [{track.id:3}] {track.artist} - {track.title}")
-
     else:
         details = get_track_details(url, args.cookies)
-
         if args.to_file:
             with open(args.to_file, "w", encoding="utf-8") as f:
                 json.dump([details.to_dict()], f, indent=2, ensure_ascii=False)
@@ -993,7 +1006,6 @@ def cmd_view(args: Namespace) -> int:
             print(f"  URL:       {details.url}")
             if details.description:
                 print(f"\n  {Fore.CYAN}Description:{Style.RESET_ALL}")
-                # Wrap description lines
                 for line in details.description.split("\n")[:5]:
                     if line.strip():
                         print(f"    {line[:80]}")
@@ -1005,10 +1017,9 @@ def cmd_view(args: Namespace) -> int:
 # Playlist Management Commands
 # ============================================================================
 
-def cmd_add(args: Namespace) -> int:
-    """Add a playlist to saved playlists."""
-    playlists = load_playlists()
 
+def cmd_add(args: Namespace) -> int:
+    playlists = load_playlists()
     name = args.name
     url = args.url
     directory = args.directory.expanduser().resolve()
@@ -1026,38 +1037,30 @@ def cmd_add(args: Namespace) -> int:
 
 
 def cmd_remove(args: Namespace) -> int:
-    """Remove a playlist from saved playlists."""
     playlists = load_playlists()
-
     name = args.name
     if name not in playlists:
         print_error(f"Playlist '{name}' not found")
         return 1
-
     del playlists[name]
     save_playlists(playlists)
-
     print_success(f"Removed playlist '{name}'")
     return 0
 
 
 def cmd_list(args: Namespace) -> int:
-    """List all saved playlists."""
     playlists = load_playlists()
-
     if not playlists:
         print("No saved playlists.")
-        print(f"Use 'duh-ytdl add <name> <url> <directory>' to add one.")
+        print("Use 'duh-ytdl add <name> <url> <directory>' to add one.")
         return 0
 
     print(f"\n{Fore.CYAN}Saved Playlists{Style.RESET_ALL} ({len(playlists)})\n")
-
     for name, pl in sorted(playlists.items()):
         print(f"  {Fore.GREEN}{name}{Style.RESET_ALL}")
         print(f"    URL: {pl.url}")
         print(f"    Dir: {pl.directory}")
         print()
-
     return 0
 
 
@@ -1065,43 +1068,51 @@ def cmd_list(args: Namespace) -> int:
 # CLI
 # ============================================================================
 
+
 def add_common_flags(parser: argparse.ArgumentParser) -> None:
-    """Add flags common to download/sync/batch."""
     parser.add_argument(
-        "-t", "--type",
-        choices=["mp3", "mp4"],
-        default="mp3",
-        help="output format (default: mp3)",
+        "-m",
+        "--mode",
+        choices=["audio", "mp3", "video"],
+        default="audio",
+        help=(
+            "download mode: "
+            "audio = native YT format, no transcode (default); "
+            "mp3 = force mp3 conversion; "
+            "video = native video+audio"
+        ),
     )
     parser.add_argument(
-        "-p", "--parallel",
+        "-p",
+        "--parallel",
         type=int,
         default=1,
         metavar="N",
         help="parallel downloads (default: 1)",
     )
     parser.add_argument(
-        "-f", "--force",
+        "-f",
+        "--force",
         action="store_true",
         help="re-download even if file exists",
     )
 
 
 def build_parser() -> argparse.ArgumentParser:
-    """Build argument parser with subcommands."""
     parser = argparse.ArgumentParser(
         prog="duh-ytdl",
         description="YouTube playlist manager: download, sync, and create M3U playlists",
     )
-
     parser.add_argument(
-        "-c", "--cookies",
+        "-c",
+        "--cookies",
         type=Path,
         metavar="FILE",
         help="cookies file for authentication",
     )
     parser.add_argument(
-        "-v", "--verbose",
+        "-v",
+        "--verbose",
         action="store_true",
         help="show yt-dlp output",
     )
@@ -1109,22 +1120,43 @@ def build_parser() -> argparse.ArgumentParser:
     subparsers = parser.add_subparsers(dest="command", required=True)
 
     # download
-    p_download = subparsers.add_parser("download", help="download single track or playlist")
+    p_download = subparsers.add_parser(
+        "download", help="download single track or playlist"
+    )
     p_download.add_argument("url", help="YouTube URL or search query")
-    p_download.add_argument("output", type=Path, nargs="?", default=Path("."), help="output directory or file (default: .)")
-    p_download.add_argument("--segment", help="download specific segment (e.g. '00:01:00-00:02:00')")
+    p_download.add_argument(
+        "output",
+        type=Path,
+        nargs="?",
+        default=Path("."),
+        help="output directory or file (default: .)",
+    )
+    p_download.add_argument(
+        "--segment", help="download specific segment (e.g. '00:01:00-00:02:00')"
+    )
     add_common_flags(p_download)
     p_download.set_defaults(func=cmd_download)
 
     # sync
     p_sync = subparsers.add_parser("sync", help="sync playlist with local directory")
     p_sync.add_argument("playlist", help="playlist name or YouTube URL")
-    p_sync.add_argument("directory", type=Path, nargs="?", help="local directory (optional if using saved playlist)")
+    p_sync.add_argument(
+        "directory",
+        type=Path,
+        nargs="?",
+        help="local directory (optional if using saved playlist)",
+    )
     add_common_flags(p_sync)
-    p_sync.add_argument("--prune", action="store_true", help="delete files not in playlist")
-    p_sync.add_argument("--dry-run", action="store_true", help="show what would be done")
+    p_sync.add_argument(
+        "--prune", action="store_true", help="delete files not in playlist"
+    )
+    p_sync.add_argument(
+        "--dry-run", action="store_true", help="show what would be done"
+    )
     p_sync.add_argument("--all", action="store_true", help="sync all saved playlists")
-    p_sync.add_argument("--to-file", type=Path, metavar="FILE", help="save missing tracks to JSON")
+    p_sync.add_argument(
+        "--to-file", type=Path, metavar="FILE", help="save missing tracks to JSON"
+    )
     p_sync.set_defaults(func=cmd_sync)
 
     # batch
@@ -1137,18 +1169,37 @@ def build_parser() -> argparse.ArgumentParser:
     # m3u
     p_m3u = subparsers.add_parser("m3u", help="generate M3U playlist")
     p_m3u.add_argument("playlist", help="playlist name or YouTube URL")
-    p_m3u.add_argument("directory", type=Path, nargs="?", help="directory with MP3 files (optional if using saved playlist)")
-    p_m3u.add_argument("-o", "--output", type=Path, metavar="FILE", help="output M3U file")
-    p_m3u.add_argument("--abs", action="store_true", help="use absolute paths in M3U (default: relative)")
+    p_m3u.add_argument(
+        "directory",
+        type=Path,
+        nargs="?",
+        help="directory with audio files (optional if using saved playlist)",
+    )
+    p_m3u.add_argument(
+        "-o", "--output", type=Path, metavar="FILE", help="output M3U file"
+    )
+    p_m3u.add_argument(
+        "--abs",
+        action="store_true",
+        help="use absolute paths in M3U (default: relative)",
+    )
+    p_m3u.add_argument(
+        "-m",
+        "--mode",
+        choices=["audio", "mp3"],
+        default="audio",
+        help="match the mode used when downloading (audio=opus, mp3=mp3)",
+    )
     p_m3u.set_defaults(func=cmd_m3u)
 
     # view
     p_view = subparsers.add_parser("view", help="view playlist or track info")
     p_view.add_argument("url", help="playlist name, YouTube URL, or search query")
-    p_view.add_argument("--to-file", type=Path, metavar="FILE", help="save output as JSON")
+    p_view.add_argument(
+        "--to-file", type=Path, metavar="FILE", help="save output as JSON"
+    )
     p_view.set_defaults(func=cmd_view)
 
-    # --- Playlist management ---
     # add
     p_add = subparsers.add_parser("add", help="save a playlist for quick access")
     p_add.add_argument("name", help="short name for the playlist")
@@ -1173,7 +1224,6 @@ def main() -> int:
     argcomplete.autocomplete(parser)
     args = parser.parse_args()
 
-    # Default cookies location
     if not args.cookies:
         default_cookies = Path.home() / ".config/scripts/cookies.txt"
         if default_cookies.exists():
