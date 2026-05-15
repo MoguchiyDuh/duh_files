@@ -87,33 +87,97 @@ return {
 				},
 			}
 
-			-- python: auto-detect uv .venv
-			local function get_python_path(workspace)
-				local venv = workspace .. "/.venv/bin/python"
+			-- ── python interpreter resolution ─────────────────────────────────
+			local function is_pep723_script(filepath)
+				if type(filepath) ~= "string" or filepath == "" then
+					return false
+				end
+				local f = io.open(filepath, "r")
+				if not f then
+					return false
+				end
+				local found = false
+				for _ = 1, 5 do
+					local line = f:read("*l")
+					if not line then
+						break
+					end
+					if line:match("^#%s*///%s*script") then
+						found = true
+						break
+					end
+				end
+				f:close()
+				return found
+			end
+
+			local function get_workspace_python(workspace)
+				local cwd = type(workspace) == "string" and workspace or vim.fn.getcwd()
+				if vim.fn.isdirectory(cwd) == 0 then
+					cwd = vim.fn.fnamemodify(cwd, ":p:h")
+				end
+				local venv = cwd .. "/.venv/bin/python"
 				if vim.fn.filereadable(venv) == 1 then
 					return venv
 				end
-				if
-					vim.fn.filereadable(workspace .. "/pyproject.toml") == 1
-					or vim.fn.filereadable(workspace .. "/uv.lock") == 1
-				then
-					local obj = vim.system(
-						{ "uv", "run", "--directory", workspace, "python", "-c", "import sys; print(sys.executable)" },
-						{ text = true }
-					):wait()
-					if obj.code == 0 and obj.stdout then
-						return vim.trim(obj.stdout)
-					end
+				local obj = vim.system({ "uv", "python", "find" }, { cwd = cwd, text = true }):wait()
+				if obj.code == 0 and obj.stdout then
+					return vim.trim(obj.stdout)
 				end
 				return vim.fn.exepath("python3") or vim.fn.exepath("python") or "python"
 			end
 
 			vim.lsp.config.basedpyright = {
 				capabilities = capabilities,
+				root_dir = function(bufnr, on_dir)
+					local filepath = vim.api.nvim_buf_get_name(bufnr)
+					if is_pep723_script(filepath) then
+						on_dir(filepath) -- Isolated server instance for PEP 723 scripts
+						return
+					end
+					local root = vim.fs.root(bufnr, {
+						"pyproject.toml",
+						"setup.py",
+						"setup.cfg",
+						"requirements.txt",
+						"Pipfile",
+						"pyrightconfig.json",
+						".git",
+					})
+					if root then
+						on_dir(root)
+					end
+				end,
 				before_init = function(_, config)
 					config.settings = config.settings or {}
 					config.settings.python = config.settings.python or {}
-					config.settings.python.pythonPath = get_python_path(config.root_dir or vim.fn.getcwd())
+					config.settings.python.pythonPath = get_workspace_python(config.root_dir)
+				end,
+				on_attach = function(client, bufnr)
+					local filepath = vim.api.nvim_buf_get_name(bufnr)
+					if not is_pep723_script(filepath) then
+						return
+					end
+
+					-- Asynchronously resolve/create the script environment safely
+					vim.system({ "uv", "sync", "--script", filepath }, { text = true }, function(sync_obj)
+						if sync_obj.code == 0 then
+							vim.system({ "uv", "python", "find", "--script", filepath }, { text = true }, function(obj)
+								if obj.code == 0 and obj.stdout then
+									local py = vim.trim(obj.stdout)
+									if client.settings.python.pythonPath ~= py then
+										client.settings.python.pythonPath = py
+										vim.schedule(function()
+											client.rpc.notify(
+												"workspace/didChangeConfiguration",
+												{ settings = client.settings }
+											)
+										end)
+									end
+								end
+							end)
+						end
+					end)
 				end,
 				settings = {
 					basedpyright = {
@@ -126,7 +190,6 @@ return {
 					},
 				},
 			}
-
 			-- clangd
 			vim.lsp.config.clangd = {
 				capabilities = capabilities,
