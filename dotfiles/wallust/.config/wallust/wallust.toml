@@ -36,3 +36,9 @@ gtk3.target = '~/.config/gtk-3.0/colors.css'
 
 qt5ct.template = 'qt5ct-colors.conf'
 qt5ct.target = '~/.config/qt5ct/colors/wallust.conf'
+
+tmux.template = 'tmux-colors.conf'
+tmux.target = '~/.config/tmux/colors.conf'
+
+gitmux.template = 'gitmux.conf'
+gitmux.target = '~/.config/tmux/gitmux.conf'

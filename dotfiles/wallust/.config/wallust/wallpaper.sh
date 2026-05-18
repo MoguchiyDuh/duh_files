@@ -43,3 +43,9 @@ hyprctl reload
 
 # Restart Waybar
 killall waybar && waybar &
+
+# Reload tmux config
+tmux info &>/dev/null && tmux source-file ~/.config/tmux/tmux.conf
+
+# Reload opencode TUI config via SIGUSR2
+pkill -SIGUSR2 -f "opencode" || true
