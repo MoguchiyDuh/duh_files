@@ -8,6 +8,7 @@ local servers = {
 	"taplo",
 	"yamlls",
 	"marksman",
+	"bashls",
 }
 
 return {
@@ -32,7 +33,7 @@ return {
 			-- rust_analyzer excluded: managed by rustup
 			-- basedpyright excluded: replaced by ty (installed via uv tool)
 			ensure_installed = {
-				"lua_ls", "clangd", "ts_ls", "html", "cssls", "taplo", "yamlls", "marksman" },
+				"lua_ls", "clangd", "ts_ls", "html", "cssls", "taplo", "yamlls", "marksman", "bashls" },
 			automatic_installation = { exclude = { "basedpyright", "rust_analyzer" } },
 		},
 	},
@@ -44,8 +45,9 @@ return {
 		config = function()
 			require("mason-tool-installer").setup({
 				ensure_installed = {
-					"shfmt",
-					"stylua", -- lua
+				"shfmt",
+				"shellcheck", -- sh/bash/zsh lint (used by bashls internally)
+				"stylua", -- lua
 					"ruff", -- python format + lint
 					"clang-format", -- c/cpp
 					"dprint", -- md/json/jsonc/yaml formatter
@@ -138,6 +140,12 @@ return {
 						check = { command = "clippy" },
 					},
 				},
+			}
+
+			-- bashls (shellcheck invoked automatically when on PATH)
+			vim.lsp.config.bashls = {
+				capabilities = capabilities,
+				filetypes = { "sh", "bash", "zsh" },
 			}
 
 			-- clangd

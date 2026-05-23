@@ -18,6 +18,8 @@ return {
 				toml = { "taplo" },
 				yaml = { "dprint" },
 				sh = { "shfmt" },
+				bash = { "shfmt" },
+				zsh = { "shfmt" },
 			},
 			formatters = {
 				dprint = {
