@@ -60,8 +60,8 @@ map("n", "gy", vim.lsp.buf.type_definition, { desc = "Go to type definition" })
 map("n", "<leader>ca", vim.lsp.buf.code_action, { desc = "Code action" })
 map("n", "<leader>rn", vim.lsp.buf.rename, { desc = "Rename" })
 map("n", "<leader>e", vim.diagnostic.open_float, { desc = "Show diagnostic" })
-map("n", "[d", vim.diagnostic.goto_prev, { desc = "Prev diagnostic" })
-map("n", "]d", vim.diagnostic.goto_next, { desc = "Next diagnostic" })
+map("n", "[d", function() vim.diagnostic.jump({ count = -1 }) end, { desc = "Prev diagnostic" })
+map("n", "]d", function() vim.diagnostic.jump({ count = 1 }) end, { desc = "Next diagnostic" })
 map("i", "<C-k>", vim.lsp.buf.signature_help, { desc = "Signature help" })
 
 -- ── git ───────────────────────────────────────────────────────────────────────
