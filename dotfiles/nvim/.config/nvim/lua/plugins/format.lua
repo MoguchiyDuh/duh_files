@@ -12,12 +12,18 @@ return {
 				cpp = { "clang-format" },
 				javascript = { "prettier" },
 				typescript = { "prettier" },
-				json = { "prettier" },
-				jsonc = { "prettier" },
-				markdown = { "prettier" },
+				json = { "dprint" },
+				jsonc = { "dprint" },
+				markdown = { "dprint" },
 				toml = { "taplo" },
-				yaml = { "prettier" },
+				yaml = { "dprint" },
 				sh = { "shfmt" },
+			},
+			formatters = {
+				dprint = {
+					-- always use global config so dprint works outside project roots
+					args = { "fmt", "--config", vim.fn.expand("~/.config/dprint/dprint.jsonc"), "--stdin", "$FILENAME" },
+				},
 			},
 			format_on_save = {
 				timeout_ms = 1500,

@@ -7,6 +7,7 @@ local servers = {
 	"cssls",
 	"taplo",
 	"yamlls",
+	"marksman",
 }
 
 return {
@@ -31,7 +32,7 @@ return {
 			-- rust_analyzer excluded: managed by rustup
 			-- basedpyright excluded: replaced by ty (installed via uv tool)
 			ensure_installed = {
-				"lua_ls", "clangd", "ts_ls", "html", "cssls", "taplo", "yamlls" },
+				"lua_ls", "clangd", "ts_ls", "html", "cssls", "taplo", "yamlls", "marksman" },
 			automatic_installation = { exclude = { "basedpyright", "rust_analyzer" } },
 		},
 	},
@@ -40,20 +41,47 @@ return {
 	{
 		"WhoIsSethDaniel/mason-tool-installer.nvim",
 		dependencies = { "williamboman/mason.nvim" },
-		opts = {
-			ensure_installed = {
-				"shfmt",
-				"stylua", -- lua
-				"ruff", -- python format + lint
-				"clang-format", -- c/cpp
-				"prettier", -- js/ts/json/md
-				"taplo", -- toml
-				"eslint", -- js/ts lint
-				"yamllint", -- yaml lint
-			},
-			auto_update = true,
-			run_on_start = true,
-		},
+		config = function()
+			require("mason-tool-installer").setup({
+				ensure_installed = {
+					"shfmt",
+					"stylua", -- lua
+					"ruff", -- python format + lint
+					"clang-format", -- c/cpp
+					"dprint", -- md/json/jsonc/yaml formatter
+					"taplo", -- toml
+					"eslint", -- js/ts lint
+					"yamllint", -- yaml lint
+				},
+				auto_update = true,
+				run_on_start = true,
+			})
+
+			-- after dprint is installed/updated, refresh global plugin versions once
+			vim.api.nvim_create_autocmd("User", {
+				pattern = "MasonToolsUpdateCompleted",
+				once = true,
+				callback = function(e)
+					local installed = e.data or {}
+					for _, pkg in ipairs(installed) do
+						if pkg == "dprint" then
+							vim.system(
+								{ "dprint", "config", "update", "--global" },
+								{ text = true },
+								function(obj)
+									if obj.code ~= 0 then
+										vim.schedule(function()
+											vim.notify("dprint config update failed:\n" .. (obj.stderr or ""), vim.log.levels.WARN)
+										end)
+									end
+								end
+							)
+							break
+						end
+					end
+				end,
+			})
+		end,
 	},
 
 	-- ── lspconfig ─────────────────────────────────────────────────────────────
