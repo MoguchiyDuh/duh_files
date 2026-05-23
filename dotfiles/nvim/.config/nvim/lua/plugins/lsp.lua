@@ -102,6 +102,16 @@ return {
 				},
 			})
 			vim.lsp.enable("ty")
+			-- rust-analyzer: use clippy instead of cargo check
+			vim.lsp.config.rust_analyzer = {
+				capabilities = capabilities,
+				settings = {
+					["rust-analyzer"] = {
+						check = { command = "clippy" },
+					},
+				},
+			}
+
 			-- clangd
 			vim.lsp.config.clangd = {
 				capabilities = capabilities,
