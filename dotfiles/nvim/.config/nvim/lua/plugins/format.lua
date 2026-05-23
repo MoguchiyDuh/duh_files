@@ -5,26 +5,19 @@ return {
 		event = "BufWritePre",
 		opts = {
 			formatters_by_ft = {
-				lua      = { "stylua" },
-				python   = { "ruff_format", "ruff_organize_imports" },
-				rust     = { "rustfmt" },
-				c        = { "clang-format" },
-				cpp      = { "clang-format" },
-				go       = { "goimports", "gofumpt" },
-				json     = { "dprint" },
-				jsonc    = { "dprint" },
-				markdown = { "dprint" },
-				toml     = { "taplo" },
-				yaml     = { "dprint" },
-				sh       = { "shfmt" },
-				bash     = { "shfmt" },
-				zsh      = { "shfmt" },
-			},
-			formatters = {
-				dprint = {
-					-- always use global config so dprint works outside project roots
-					args = { "fmt", "--config", vim.fn.expand("~/.config/dprint/dprint.jsonc"), "--stdin", "$FILENAME" },
-				},
+				lua        = { "stylua" },
+				python     = { "ruff_format", "ruff_organize_imports" },
+				rust       = { "rustfmt" },
+				c          = { "clang-format" },
+				cpp        = { "clang-format" },
+				javascript = { "prettier" },
+				typescript = { "prettier" },
+				json       = { "prettier" },
+				jsonc      = { "prettier" },
+				markdown   = { "prettier" },
+				toml       = { "taplo" },
+				yaml       = { "prettier" },
+				sh         = { "shfmt" },
 			},
 			format_on_save = {
 				timeout_ms = 1500,
@@ -40,8 +33,7 @@ return {
 		config = function()
 			local lint = require("lint")
 			lint.linters_by_ft = {
-				python = { "ruff" },
-				yaml   = { "yamllint" },
+				yaml = { "yamllint" },
 			}
 			vim.api.nvim_create_autocmd({ "BufWritePost", "BufReadPost", "InsertLeave" }, {
 				callback = function()

@@ -69,7 +69,7 @@ map("n", "<leader>gg", "<cmd>LazyGit<cr>", { desc = "LazyGit" })
 
 -- ── format ───────────────────────────────────────────────────────────────────
 map("n", "<leader>F", function()
-	require("conform").format({ async = true, lsp_fallback = true })
+	require("conform").format({ async = true, lsp_format = "fallback" })
 end, { desc = "Format buffer" })
 
 -- ── terminal ─────────────────────────────────────────────────────────────────

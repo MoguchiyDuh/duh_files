@@ -18,11 +18,19 @@ return {
 		dependencies = { "williamboman/mason.nvim" },
 		opts = {
 			ensure_installed = {
-				"lua_ls", "clangd", "taplo", "yamlls", "marksman", "bashls", "gopls",
+				"lua_ls",
+				"clangd",
+				"taplo",
+				"yamlls",
+				"marksman",
+				"bashls",
+				"gopls",
 			},
 			-- dprint excluded: used as formatter via conform, not as LSP
 			-- rust_analyzer and ty are not mason-managed; enabled manually below
-			automatic_enable = { exclude = { "dprint" } },
+			-- dprint: formatter only via conform, not an LSP
+			-- ruff: configured manually below (custom on_attach to disable hoverProvider)
+			automatic_enable = { exclude = { "dprint", "ruff" } },
 		},
 	},
 
@@ -30,48 +38,20 @@ return {
 	{
 		"WhoIsSethDaniel/mason-tool-installer.nvim",
 		dependencies = { "williamboman/mason.nvim" },
-		config = function()
-			require("mason-tool-installer").setup({
-				ensure_installed = {
-					"shfmt",        -- sh/bash/zsh formatter
-					"shellcheck",   -- sh/bash/zsh lint (used by bashls internally)
-					"stylua",       -- lua formatter
-					"ruff",         -- python formatter + linter
-					"clang-format", -- c/cpp formatter
-					"dprint",       -- md/json/jsonc/yaml formatter
-					"goimports",    -- go import formatter
-					"gofumpt",      -- go strict formatter
-					"yamllint",     -- yaml linter
-				},
-				auto_update = true,
-				run_on_start = true,
-			})
-
-			-- after dprint is installed/updated, refresh global plugin versions once
-			vim.api.nvim_create_autocmd("User", {
-				pattern = "MasonToolsUpdateCompleted",
-				once = true,
-				callback = function(e)
-					local installed = e.data or {}
-					for _, pkg in ipairs(installed) do
-						if pkg == "dprint" then
-							vim.system(
-								{ "dprint", "config", "update", "--global" },
-								{ text = true },
-								function(obj)
-									if obj.code ~= 0 then
-										vim.schedule(function()
-											vim.notify("dprint config update failed:\n" .. (obj.stderr or ""), vim.log.levels.WARN)
-										end)
-									end
-								end
-							)
-							break
-						end
-					end
-				end,
-			})
-		end,
+		opts = {
+			ensure_installed = {
+				"shfmt",        -- sh formatter
+				"stylua",       -- lua formatter
+				"ruff",         -- python formatter + linter
+				"clang-format", -- c/cpp formatter
+				"prettier",     -- js/ts/json/jsonc/md/yaml formatter
+				"taplo",        -- toml formatter
+				"eslint",       -- js/ts linter
+				"yamllint",     -- yaml linter
+			},
+			auto_update = true,
+			run_on_start = true,
+		},
 	},
 
 	-- ── lspconfig ─────────────────────────────────────────────────────────────
@@ -113,17 +93,31 @@ return {
 			}
 			vim.lsp.enable("rust_analyzer")
 
-			-- ── ty (python LSP) ───────────────────────────────────────────────
-			-- NOTE: PEP 723 script env resolution is not supported by ty LSP yet
-			-- (astral-sh/ty#691, milestone ty-1.1). ty does not implement
-			-- workspace/didChangeConfiguration or per-file server isolation.
-			vim.lsp.config("ty", {
+			-- ── ty (python type-checker LSP) ─────────────────────────────────
+			-- NOTE: PEP 723 script env resolution not supported yet (astral-sh/ty#691).
+			-- ty does not implement workspace/didChangeConfiguration or per-file isolation.
+			-- ty handles: types, completions, nav, inlay hints.
+			-- ruff server (below) handles: lint diagnostics + code actions.
+			vim.lsp.config.ty = {
 				capabilities = capabilities,
 				settings = {
 					ty = { diagnosticMode = "openFilesOnly" },
 				},
-			})
+			}
 			vim.lsp.enable("ty")
+
+			-- ── ruff server (python lint + code actions) ──────────────────────
+			-- Secondary Python LSP alongside ty. Provides: real-time lint diagnostics,
+			-- quick-fix code actions, organize-imports, fix-all, noqa hover.
+			-- Formatting is still handled by conform.nvim (ruff_format).
+			-- Disable hover so ty's hover takes precedence.
+			vim.lsp.config.ruff = {
+				capabilities = capabilities,
+				on_attach = function(client)
+					client.server_capabilities.hoverProvider = true
+				end,
+			}
+			vim.lsp.enable("ruff")
 
 			-- gopls: gofumpt formatting + full staticcheck suite
 			vim.lsp.config.gopls = {
