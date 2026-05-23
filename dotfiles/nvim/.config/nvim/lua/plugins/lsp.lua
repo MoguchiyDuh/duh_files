@@ -29,9 +29,10 @@ return {
 		dependencies = { "williamboman/mason.nvim" },
 		opts = {
 			-- rust_analyzer excluded: managed by rustup
+			-- basedpyright excluded: replaced by ty (installed via uv tool)
 			ensure_installed = {
 				"lua_ls", "clangd", "ts_ls", "html", "cssls", "taplo", "yamlls" },
-			automatic_installation = true,
+			automatic_installation = { exclude = { "basedpyright", "rust_analyzer" } },
 		},
 	},
 
@@ -89,8 +90,9 @@ return {
 			}
 
 			-- ── ty (python LSP) ───────────────────────────────────────────────
-			-- ty resolves uv venvs and PEP 723 script environments automatically
-			-- via VIRTUAL_ENV / .venv discovery; no manual interpreter wiring needed
+			-- NOTE: PEP 723 script env resolution is not supported by ty LSP yet
+			-- (astral-sh/ty#691, milestone ty-1.1). ty does not implement
+			-- workspace/didChangeConfiguration or per-file server isolation.
 			vim.lsp.config("ty", {
 				capabilities = capabilities,
 				settings = {
