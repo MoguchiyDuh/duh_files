@@ -30,7 +30,8 @@ return {
 		dependencies = { "williamboman/mason.nvim" },
 		opts = {
 			-- rust_analyzer excluded: managed by rustup
-			ensure_installed = { "lua_ls", "basedpyright", "clangd", "ts_ls", "html", "cssls", "taplo", "yamlls" },
+			ensure_installed = {
+				"shfmt", "lua_ls", "basedpyright", "clangd", "ts_ls", "html", "cssls", "taplo", "yamlls" },
 			automatic_installation = true,
 		},
 	},
@@ -41,6 +42,7 @@ return {
 		dependencies = { "williamboman/mason.nvim" },
 		opts = {
 			ensure_installed = {
+				"shfmt",
 				"stylua", -- lua
 				"ruff", -- python format + lint
 				"clang-format", -- c/cpp
