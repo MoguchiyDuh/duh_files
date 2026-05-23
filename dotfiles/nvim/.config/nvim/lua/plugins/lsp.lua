@@ -20,8 +20,9 @@ return {
 			ensure_installed = {
 				"lua_ls", "clangd", "taplo", "yamlls", "marksman", "bashls", "gopls",
 			},
-			-- automatic_enable = true (default): auto vim.lsp.enable() for all mason-installed servers
+			-- dprint excluded: used as formatter via conform, not as LSP
 			-- rust_analyzer and ty are not mason-managed; enabled manually below
+			automatic_enable = { exclude = { "dprint" } },
 		},
 	},
 
