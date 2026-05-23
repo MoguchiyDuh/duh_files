@@ -5,19 +5,20 @@ return {
 		event = "BufWritePre",
 		opts = {
 			formatters_by_ft = {
-				lua = { "stylua" },
-				python = { "ruff_format", "ruff_organize_imports" },
-				rust = { "rustfmt" },
-				c = { "clang-format" },
-				cpp = { "clang-format" },
-			json = { "dprint" },
-				jsonc = { "dprint" },
+				lua      = { "stylua" },
+				python   = { "ruff_format", "ruff_organize_imports" },
+				rust     = { "rustfmt" },
+				c        = { "clang-format" },
+				cpp      = { "clang-format" },
+				go       = { "goimports", "gofumpt" },
+				json     = { "dprint" },
+				jsonc    = { "dprint" },
 				markdown = { "dprint" },
-				toml = { "taplo" },
-				yaml = { "dprint" },
-				sh = { "shfmt" },
-				bash = { "shfmt" },
-				zsh = { "shfmt" },
+				toml     = { "taplo" },
+				yaml     = { "dprint" },
+				sh       = { "shfmt" },
+				bash     = { "shfmt" },
+				zsh      = { "shfmt" },
 			},
 			formatters = {
 				dprint = {
@@ -40,7 +41,7 @@ return {
 			local lint = require("lint")
 			lint.linters_by_ft = {
 				python = { "ruff" },
-			yaml = { "yamllint" },
+				yaml   = { "yamllint" },
 			}
 			vim.api.nvim_create_autocmd({ "BufWritePost", "BufReadPost", "InsertLeave" }, {
 				callback = function()

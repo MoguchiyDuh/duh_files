@@ -6,6 +6,7 @@ local servers = {
 	"yamlls",
 	"marksman",
 	"bashls",
+	"gopls",
 }
 
 return {
@@ -30,7 +31,8 @@ return {
 			-- rust_analyzer excluded: managed by rustup
 			-- basedpyright excluded: replaced by ty (installed via uv tool)
 			ensure_installed = {
-				"lua_ls", "clangd", "taplo", "yamlls", "marksman", "bashls" },
+				"lua_ls", "clangd", "taplo", "yamlls", "marksman", "bashls", "gopls",
+			},
 			automatic_installation = { exclude = { "basedpyright", "rust_analyzer" } },
 		},
 	},
@@ -42,14 +44,15 @@ return {
 		config = function()
 			require("mason-tool-installer").setup({
 				ensure_installed = {
-				"shfmt",
-				"shellcheck", -- sh/bash/zsh lint (used by bashls internally)
-				"stylua", -- lua
-					"ruff", -- python format + lint
-					"clang-format", -- c/cpp
-					"dprint", -- md/json/jsonc/yaml formatter
-					"taplo", -- toml
-				"yamllint", -- yaml lint
+					"shfmt",        -- sh/bash/zsh formatter
+					"shellcheck",   -- sh/bash/zsh lint (used by bashls internally)
+					"stylua",       -- lua formatter
+					"ruff",         -- python formatter + linter
+					"clang-format", -- c/cpp formatter
+					"dprint",       -- md/json/jsonc/yaml formatter
+					"goimports",    -- go import formatter
+					"gofumpt",      -- go strict formatter
+					"yamllint",     -- yaml linter
 				},
 				auto_update = true,
 				run_on_start = true,
@@ -128,6 +131,7 @@ return {
 				},
 			})
 			vim.lsp.enable("ty")
+
 			-- rust-analyzer: use clippy instead of cargo check
 			vim.lsp.config.rust_analyzer = {
 				capabilities = capabilities,
@@ -138,7 +142,22 @@ return {
 				},
 			}
 
-			-- bashls (shellcheck invoked automatically when on PATH)
+			-- gopls: gofumpt formatting + full staticcheck suite
+			vim.lsp.config.gopls = {
+				capabilities = capabilities,
+				settings = {
+					gopls = {
+						gofumpt = true,
+						staticcheck = true,
+						analyses = {
+							unusedparams = true,
+							shadow = true,
+						},
+					},
+				},
+			}
+
+			-- bashls: shellcheck invoked automatically when on PATH
 			vim.lsp.config.bashls = {
 				capabilities = capabilities,
 				filetypes = { "sh", "bash", "zsh" },
