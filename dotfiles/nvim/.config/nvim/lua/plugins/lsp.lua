@@ -1,14 +1,3 @@
-local servers = {
-	"lua_ls",
-	"rust_analyzer",
-	"clangd",
-	"taplo",
-	"yamlls",
-	"marksman",
-	"bashls",
-	"gopls",
-}
-
 return {
 	-- ── mason ─────────────────────────────────────────────────────────────────
 	{
@@ -28,12 +17,11 @@ return {
 		"williamboman/mason-lspconfig.nvim",
 		dependencies = { "williamboman/mason.nvim" },
 		opts = {
-			-- rust_analyzer excluded: managed by rustup
-			-- basedpyright excluded: replaced by ty (installed via uv tool)
 			ensure_installed = {
 				"lua_ls", "clangd", "taplo", "yamlls", "marksman", "bashls", "gopls",
 			},
-			automatic_installation = { exclude = { "basedpyright", "rust_analyzer" } },
+			-- automatic_enable = true (default): auto vim.lsp.enable() for all mason-installed servers
+			-- rust_analyzer and ty are not mason-managed; enabled manually below
 		},
 	},
 
@@ -96,11 +84,6 @@ return {
 		config = function()
 			local capabilities = require("blink.cmp").get_lsp_capabilities()
 
-			-- default capabilities for all servers
-			for _, server in ipairs(servers) do
-				vim.lsp.config(server, { capabilities = capabilities })
-			end
-
 			-- lua
 			vim.lsp.config.lua_ls = {
 				capabilities = capabilities,
@@ -118,20 +101,6 @@ return {
 				},
 			}
 
-			-- ── ty (python LSP) ───────────────────────────────────────────────
-			-- NOTE: PEP 723 script env resolution is not supported by ty LSP yet
-			-- (astral-sh/ty#691, milestone ty-1.1). ty does not implement
-			-- workspace/didChangeConfiguration or per-file server isolation.
-			vim.lsp.config("ty", {
-				capabilities = capabilities,
-				settings = {
-					ty = {
-						diagnosticMode = "openFilesOnly",
-					},
-				},
-			})
-			vim.lsp.enable("ty")
-
 			-- rust-analyzer: use clippy instead of cargo check
 			vim.lsp.config.rust_analyzer = {
 				capabilities = capabilities,
@@ -141,6 +110,19 @@ return {
 					},
 				},
 			}
+			vim.lsp.enable("rust_analyzer")
+
+			-- ── ty (python LSP) ───────────────────────────────────────────────
+			-- NOTE: PEP 723 script env resolution is not supported by ty LSP yet
+			-- (astral-sh/ty#691, milestone ty-1.1). ty does not implement
+			-- workspace/didChangeConfiguration or per-file server isolation.
+			vim.lsp.config("ty", {
+				capabilities = capabilities,
+				settings = {
+					ty = { diagnosticMode = "openFilesOnly" },
+				},
+			})
+			vim.lsp.enable("ty")
 
 			-- gopls: gofumpt formatting + full staticcheck suite
 			vim.lsp.config.gopls = {
@@ -169,10 +151,6 @@ return {
 				cmd = { "clangd", "--background-index", "--offset-encoding=utf-16" },
 				root_markers = { ".clangd", ".git", "compile_commands.json", "CMakeLists.txt", "Makefile" },
 			}
-
-			for _, server in ipairs(servers) do
-				vim.lsp.enable(server)
-			end
 		end,
 	},
 
