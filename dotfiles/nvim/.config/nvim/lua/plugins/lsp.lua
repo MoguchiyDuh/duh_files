@@ -2,9 +2,6 @@ local servers = {
 	"lua_ls",
 	"rust_analyzer",
 	"clangd",
-	"ts_ls",
-	"html",
-	"cssls",
 	"taplo",
 	"yamlls",
 	"marksman",
@@ -33,7 +30,7 @@ return {
 			-- rust_analyzer excluded: managed by rustup
 			-- basedpyright excluded: replaced by ty (installed via uv tool)
 			ensure_installed = {
-				"lua_ls", "clangd", "ts_ls", "html", "cssls", "taplo", "yamlls", "marksman", "bashls" },
+				"lua_ls", "clangd", "taplo", "yamlls", "marksman", "bashls" },
 			automatic_installation = { exclude = { "basedpyright", "rust_analyzer" } },
 		},
 	},
@@ -52,8 +49,7 @@ return {
 					"clang-format", -- c/cpp
 					"dprint", -- md/json/jsonc/yaml formatter
 					"taplo", -- toml
-					"eslint", -- js/ts lint
-					"yamllint", -- yaml lint
+				"yamllint", -- yaml lint
 				},
 				auto_update = true,
 				run_on_start = true,

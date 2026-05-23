@@ -10,9 +10,7 @@ return {
 				rust = { "rustfmt" },
 				c = { "clang-format" },
 				cpp = { "clang-format" },
-				javascript = { "prettier" },
-				typescript = { "prettier" },
-				json = { "dprint" },
+			json = { "dprint" },
 				jsonc = { "dprint" },
 				markdown = { "dprint" },
 				toml = { "taplo" },
@@ -42,9 +40,7 @@ return {
 			local lint = require("lint")
 			lint.linters_by_ft = {
 				python = { "ruff" },
-				javascript = { "eslint" },
-				typescript = { "eslint" },
-				yaml = { "yamllint" },
+			yaml = { "yamllint" },
 			}
 			vim.api.nvim_create_autocmd({ "BufWritePost", "BufReadPost", "InsertLeave" }, {
 				callback = function()
