@@ -1,15 +1,3 @@
-local servers = {
-	"lua_ls",
-	"basedpyright",
-	"rust_analyzer",
-	"clangd",
-	"ts_ls",
-	"html",
-	"cssls",
-	"taplo",
-	"yamlls",
-}
-
 return {
 	-- ── mason ─────────────────────────────────────────────────────────────────
 	{
@@ -29,10 +17,20 @@ return {
 		"williamboman/mason-lspconfig.nvim",
 		dependencies = { "williamboman/mason.nvim" },
 		opts = {
-			-- rust_analyzer excluded: managed by rustup
 			ensure_installed = {
-				"shfmt", "lua_ls", "basedpyright", "clangd", "ts_ls", "html", "cssls", "taplo", "yamlls" },
-			automatic_installation = true,
+				"lua_ls",
+				"clangd",
+				"taplo",
+				"yamlls",
+				"marksman",
+				"bashls",
+				"gopls",
+			},
+			-- dprint excluded: used as formatter via conform, not as LSP
+			-- rust_analyzer and ty are not mason-managed; enabled manually below
+			-- dprint: formatter only via conform, not an LSP
+			-- ruff: configured manually below (custom on_attach to disable hoverProvider)
+			automatic_enable = { exclude = { "dprint", "ruff" } },
 		},
 	},
 
@@ -42,14 +40,14 @@ return {
 		dependencies = { "williamboman/mason.nvim" },
 		opts = {
 			ensure_installed = {
-				"shfmt",
-				"stylua", -- lua
-				"ruff", -- python format + lint
-				"clang-format", -- c/cpp
-				"prettier", -- js/ts/json/md
-				"taplo", -- toml
-				"eslint", -- js/ts lint
-				"yamllint", -- yaml lint
+				"shfmt",        -- sh formatter
+				"stylua",       -- lua formatter
+				"ruff",         -- python formatter + linter
+				"clang-format", -- c/cpp formatter
+				"prettier",     -- js/ts/json/jsonc/md/yaml formatter
+				"taplo",        -- toml formatter
+				"eslint",       -- js/ts linter
+				"yamllint",     -- yaml linter
 			},
 			auto_update = true,
 			run_on_start = true,
@@ -66,11 +64,6 @@ return {
 		},
 		config = function()
 			local capabilities = require("blink.cmp").get_lsp_capabilities()
-
-			-- default capabilities for all servers
-			for _, server in ipairs(servers) do
-				vim.lsp.config(server, { capabilities = capabilities })
-			end
 
 			-- lua
 			vim.lsp.config.lua_ls = {
@@ -89,119 +82,70 @@ return {
 				},
 			}
 
-			-- ── python interpreter resolution ─────────────────────────────────
-			local function is_pep723_script(filepath)
-				if type(filepath) ~= "string" or filepath == "" then
-					return false
-				end
-				local f = io.open(filepath, "r")
-				if not f then
-					return false
-				end
-				local found = false
-				for _ = 1, 5 do
-					local line = f:read("*l")
-					if not line then
-						break
-					end
-					if line:match("^#%s*///%s*script") then
-						found = true
-						break
-					end
-				end
-				f:close()
-				return found
-			end
-
-			local function get_workspace_python(workspace)
-				local cwd = type(workspace) == "string" and workspace or vim.fn.getcwd()
-				if vim.fn.isdirectory(cwd) == 0 then
-					cwd = vim.fn.fnamemodify(cwd, ":p:h")
-				end
-				local venv = cwd .. "/.venv/bin/python"
-				if vim.fn.filereadable(venv) == 1 then
-					return venv
-				end
-				local obj = vim.system({ "uv", "python", "find" }, { cwd = cwd, text = true }):wait()
-				if obj.code == 0 and obj.stdout then
-					return vim.trim(obj.stdout)
-				end
-				return vim.fn.exepath("python3") or vim.fn.exepath("python") or "python"
-			end
-
-			vim.lsp.config.basedpyright = {
+			-- rust-analyzer: use clippy instead of cargo check
+			vim.lsp.config.rust_analyzer = {
 				capabilities = capabilities,
-				root_dir = function(bufnr, on_dir)
-					local filepath = vim.api.nvim_buf_get_name(bufnr)
-					if is_pep723_script(filepath) then
-						on_dir(filepath) -- Isolated server instance for PEP 723 scripts
-						return
-					end
-					local root = vim.fs.root(bufnr, {
-						"pyproject.toml",
-						"setup.py",
-						"setup.cfg",
-						"requirements.txt",
-						"Pipfile",
-						"pyrightconfig.json",
-						".git",
-					})
-					if root then
-						on_dir(root)
-					end
-				end,
-				before_init = function(_, config)
-					config.settings = config.settings or {}
-					config.settings.python = config.settings.python or {}
-					config.settings.python.pythonPath = get_workspace_python(config.root_dir)
-				end,
-				on_attach = function(client, bufnr)
-					local filepath = vim.api.nvim_buf_get_name(bufnr)
-					if not is_pep723_script(filepath) then
-						return
-					end
-
-					-- Asynchronously resolve/create the script environment safely
-					vim.system({ "uv", "sync", "--script", filepath }, { text = true }, function(sync_obj)
-						if sync_obj.code == 0 then
-							vim.system({ "uv", "python", "find", "--script", filepath }, { text = true }, function(obj)
-								if obj.code == 0 and obj.stdout then
-									local py = vim.trim(obj.stdout)
-									if client.settings.python.pythonPath ~= py then
-										client.settings.python.pythonPath = py
-										vim.schedule(function()
-											client.rpc.notify(
-												"workspace/didChangeConfiguration",
-												{ settings = client.settings }
-											)
-										end)
-									end
-								end
-							end)
-						end
-					end)
-				end,
 				settings = {
-					basedpyright = {
-						analysis = {
-							autoSearchPaths = true,
-							useLibraryCodeForTypes = true,
-							diagnosticMode = "openFilesOnly",
-							typeCheckingMode = "basic",
+					["rust-analyzer"] = {
+						check = { command = "clippy" },
+					},
+				},
+			}
+			vim.lsp.enable("rust_analyzer")
+
+			-- ── ty (python type-checker LSP) ─────────────────────────────────
+			-- NOTE: PEP 723 script env resolution not supported yet (astral-sh/ty#691).
+			-- ty does not implement workspace/didChangeConfiguration or per-file isolation.
+			-- ty handles: types, completions, nav, inlay hints.
+			-- ruff server (below) handles: lint diagnostics + code actions.
+			vim.lsp.config.ty = {
+				capabilities = capabilities,
+				settings = {
+					ty = { diagnosticMode = "openFilesOnly" },
+				},
+			}
+			vim.lsp.enable("ty")
+
+			-- ── ruff server (python lint + code actions) ──────────────────────
+			-- Secondary Python LSP alongside ty. Provides: real-time lint diagnostics,
+			-- quick-fix code actions, organize-imports, fix-all, noqa hover.
+			-- Formatting is still handled by conform.nvim (ruff_format).
+			-- Disable hover so ty's hover takes precedence.
+			vim.lsp.config.ruff = {
+				capabilities = capabilities,
+				on_attach = function(client)
+					client.server_capabilities.hoverProvider = true
+				end,
+			}
+			vim.lsp.enable("ruff")
+
+			-- gopls: gofumpt formatting + full staticcheck suite
+			vim.lsp.config.gopls = {
+				capabilities = capabilities,
+				settings = {
+					gopls = {
+						gofumpt = true,
+						staticcheck = true,
+						analyses = {
+							unusedparams = true,
+							shadow = true,
 						},
 					},
 				},
 			}
+
+			-- bashls: shellcheck invoked automatically when on PATH
+			vim.lsp.config.bashls = {
+				capabilities = capabilities,
+				filetypes = { "sh", "bash", "zsh" },
+			}
+
 			-- clangd
 			vim.lsp.config.clangd = {
 				capabilities = capabilities,
 				cmd = { "clangd", "--background-index", "--offset-encoding=utf-16" },
 				root_markers = { ".clangd", ".git", "compile_commands.json", "CMakeLists.txt", "Makefile" },
 			}
-
-			for _, server in ipairs(servers) do
-				vim.lsp.enable(server)
-			end
 		end,
 	},
 
