@@ -24,7 +24,25 @@ return {
 			indent = { enabled = true },
 			input = { enabled = true },
 			notifier = { enabled = true, timeout = 3000 },
-			picker = { enabled = true },
+			picker = {
+				enabled = true,
+				sources = {
+					buffers = {
+						win = {
+							input = {
+								keys = {
+									["<C-d>"] = { "bufdelete", mode = { "n", "i" } },
+								},
+							},
+							list = {
+								keys = {
+									["<C-d>"] = "bufdelete",
+								},
+							},
+						},
+					},
+				},
+			},
 			scope = { enabled = true },
 			scroll = { enabled = true },
 			statuscolumn = { enabled = true },
