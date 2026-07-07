@@ -1,0 +1,2 @@
+wayvnc-git
+wlogout

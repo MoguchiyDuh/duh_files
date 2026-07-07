@@ -1,0 +1,8 @@
+gnome-themes-extra
+kvantum
+noto-fonts
+noto-fonts-cjk
+noto-fonts-emoji
+noto-fonts-extra
+qt5ct
+ttf-firacode-nerd

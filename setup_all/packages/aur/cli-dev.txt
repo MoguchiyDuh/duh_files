@@ -1,0 +1,4 @@
+lazysql-bin
+neovim-git
+wallust
+yay

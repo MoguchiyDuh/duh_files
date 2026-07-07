@@ -1,0 +1,6 @@
+hostname: archlinux
+kernel: 7.1.2-arch3-1
+arch: x86_64
+os: arch rolling
+shell: /usr/bin/zsh
+generated: 2026-07-07T16:36:22+02:00

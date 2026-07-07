@@ -1,0 +1,16 @@
+clang
+cmake
+docker
+docker-compose
+flatpak
+ninja
+nodejs
+npm
+postgresql
+rustup
+tesseract
+tesseract-data-eng
+tesseract-data-rus
+tree-sitter-cli
+uv
+valkey

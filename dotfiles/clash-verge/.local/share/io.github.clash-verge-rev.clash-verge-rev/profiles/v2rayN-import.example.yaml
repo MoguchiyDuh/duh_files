@@ -1,0 +1,41 @@
+mixed-port: 7897
+allow-lan: false
+mode: rule
+log-level: info
+ipv6: true
+find-process-mode: strict
+
+proxies:
+  - name: "v2rayN import"
+    type: vless
+    server: "example.com"
+    port: 443
+    uuid: "00000000-0000-0000-0000-000000000000"
+    udp: true
+    tls: true
+    network: "tcp"
+    flow: "xtls-rprx-vision"
+    servername: "example.com"
+    client-fingerprint: "chrome"
+    reality-opts:
+      public-key: "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
+      short-id: "0000000000000000"
+
+proxy-groups:
+  - name: Proxy
+    type: select
+    proxies:
+      - "v2rayN import"
+      - DIRECT
+
+rules:
+  - GEOSITE,private,DIRECT
+  - GEOIP,private,DIRECT,no-resolve
+  - DOMAIN-SUFFIX,local,DIRECT
+  - DOMAIN-SUFFIX,lan,DIRECT
+  - PROCESS-NAME,qbittorrent,DIRECT
+  - PROCESS-NAME,qbittorrent-nox,DIRECT
+  - DST-PORT,6881-6999,DIRECT
+  - GEOSITE,category-ads-all,REJECT
+  - AND,((NETWORK,udp),(DST-PORT,443)),REJECT
+  - MATCH,Proxy

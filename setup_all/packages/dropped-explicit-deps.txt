@@ -1,0 +1,10 @@
+aquamarine
+hyprcursor
+hyprgraphics
+hyprlang
+hyprutils
+hyprwayland-scanner
+libayatana-appindicator
+libpulse
+webkit2gtk-4.1
+yay-debug

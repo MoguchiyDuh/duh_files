@@ -1,0 +1,17 @@
+amd-ucode
+base
+base-devel
+cronie
+efibootmgr
+grub
+iwd
+linux
+linux-firmware
+linux-headers
+networkmanager
+ntfs-3g
+openssh
+os-prober
+pacman-contrib
+sddm
+zram-generator

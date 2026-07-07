@@ -1,0 +1,9 @@
+brave-bin
+clash-verge-rev-bin
+lazysql-bin
+neovim-git
+tor-browser-bin
+wallust
+wayvnc-git
+wlogout
+yay

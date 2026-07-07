@@ -1,0 +1,5 @@
+node-gyp
+nopt
+npm
+opencode-ai
+semver

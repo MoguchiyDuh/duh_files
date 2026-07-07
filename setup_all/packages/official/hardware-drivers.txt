@@ -1,0 +1,10 @@
+blueman
+bluez
+bluez-utils
+brightnessctl
+network-manager-applet
+nvidia-open-dkms
+nvidia-settings
+nvidia-utils
+ydotool
+zerotier-one

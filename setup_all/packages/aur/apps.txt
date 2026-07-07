@@ -1,0 +1,3 @@
+brave-bin
+clash-verge-rev-bin
+tor-browser-bin

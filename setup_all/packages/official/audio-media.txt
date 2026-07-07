@@ -1,0 +1,11 @@
+audacious
+cava
+gst-plugin-pipewire
+pavucontrol
+pipewire
+pipewire-alsa
+pipewire-jack
+pipewire-pulse
+playerctl
+vlc
+wireplumber

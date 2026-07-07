@@ -1,0 +1,11 @@
+bitwarden
+firefox
+gimp
+inkscape
+libreoffice-fresh
+moonlight-qt
+nautilus
+obs-studio
+obsidian
+potrace
+zed

@@ -1,0 +1,13 @@
+/etc/fstab
+/etc/default/grub
+/etc/mkinitcpio.conf
+/etc/pacman.conf
+/etc/locale.gen
+/etc/locale.conf
+/etc/vconsole.conf
+/etc/hostname
+/etc/hosts
+/etc/systemd/zram-generator.conf
+/etc/sysctl.d/99-zram.conf
+/etc/sysctl.d/90-network-performance.conf
+/etc/modules-load.d/network-performance.conf
