@@ -31,6 +31,7 @@ window#waybar {
 #custom-weather,
 #clock,
 #battery,
+#custom-coffee,
 #custom-power {
     padding: 0 12px;
     margin: 5px;
@@ -281,6 +282,41 @@ window#waybar {
     50% {
         opacity: 0.6;
     }
+}
+
+/* coffee / awake + power-profile toggle */
+#custom-coffee {
+    color: @color8;
+    font-size: 15px;
+    background: alpha(@color8, 0.35);
+    padding: 0 12px;
+    transition: all 0.3s ease;
+}
+
+#custom-coffee:hover {
+    background: alpha(@color8, 0.5);
+}
+
+/* per-profile accent: the module color always reflects the power profile,
+   while the mug icon (filled vs off) reflects awake state. */
+#custom-coffee.profile-balanced {
+    color: @color4;
+    background: alpha(@color4, 0.4);
+}
+
+#custom-coffee.profile-performance {
+    color: @color1;
+    background: alpha(@color1, 0.4);
+}
+
+#custom-coffee.profile-eco {
+    color: @color2;
+    background: alpha(@color2, 0.4);
+}
+
+/* awake mode: add a warm glow on top of the profile color as a second cue */
+#custom-coffee.awake {
+    text-shadow: 0 0 9px alpha(@color3, 0.75);
 }
 
 #custom-power {
