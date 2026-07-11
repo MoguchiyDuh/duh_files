@@ -17,6 +17,7 @@ cliphist
 cmake
 croc
 cronie
+ddcutil
 direnv
 docker
 docker-compose
@@ -44,6 +45,7 @@ hyprland-guiutils
 hyprlock
 hyprpicker
 hyprshot
+i2c-tools
 imagemagick
 inkscape
 iwd
@@ -86,6 +88,7 @@ pipewire-pulse
 playerctl
 postgresql
 potrace
+power-profiles-daemon
 procs
 qt5ct
 qt6-wayland

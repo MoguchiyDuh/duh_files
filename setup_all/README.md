@@ -24,6 +24,7 @@ Recreate the working environment from:
 - `systemd-enabled.txt`: enabled system services
 - `systemd-user-enabled.txt`: enabled user services
 - `etc-restore-candidates.txt`: system config files worth inspecting/restoring
+- `etc/`: verbatim mirror of the tracked `/etc` files listed in `etc-restore-candidates.txt`. Layout mirrors real paths (`etc/sysctl.d/99-zram.conf` -> `/etc/sysctl.d/99-zram.conf`). Machine-specific files (`etc/fstab`, `etc/hostname`) are stored for reference only and MUST be adapted, never copied blindly (they contain this machine's disk UUIDs / hostname).
 - `machine.txt`: source-machine metadata
 - `power-management.md`: suspend fix and hibernation safeguard notes
 - `clash-verge-v2rayn-profile.txt`: sanitized manual Clash Verge profile template
@@ -94,11 +95,27 @@ Clash Verge profiles are not stowed or installed automatically. Review and impor
 
 12. Review `/etc` candidates:
 
+Most tracked files have a verbatim copy under `setup_all/etc/`. Diff the stored
+copy against the live system before deciding to restore:
+
 ```bash
-while read -r file; do test -e "$file" && echo "$file"; done < ~/duh_files/setup_all/etc-restore-candidates.txt
+cd ~/duh_files/setup_all
+while read -r file; do
+    src="etc/${file#/etc/}"
+    [ -f "$src" ] || { echo "NOT STORED: $file"; continue; }
+    diff -q "$src" "$file" >/dev/null 2>&1 && echo "OK (same): $file" || echo "REVIEW: $file"
+done < etc-restore-candidates.txt
 ```
 
-Restore these manually from backups or recreate them. Do not copy them blindly across machines.
+Safe to copy verbatim on a fresh install: `zram-generator.conf`, both
+`sysctl.d/*`, `modules-load.d/network-performance.conf`, `mkinitcpio.conf`,
+`default/grub`, `locale.conf`, `locale.gen`, `vconsole.conf`, `hosts`,
+`pacman.conf`, `modprobe.d/nvidia-power-management.conf`, and the two
+`systemd/` units.
+
+Must be ADAPTED, never copied blindly: `fstab` (disk UUIDs) and `hostname`.
+After copying `mkinitcpio.conf` or `default/grub`, regenerate: `mkinitcpio -P`
+and `grub-mkconfig -o /boot/grub/grub.cfg`.
 
 13. Re-enable services selectively:
 

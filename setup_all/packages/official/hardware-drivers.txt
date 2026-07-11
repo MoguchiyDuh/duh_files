@@ -2,8 +2,11 @@ blueman
 bluez
 bluez-utils
 brightnessctl
+ddcutil
+i2c-tools
 network-manager-applet
 nvidia-open-dkms
+power-profiles-daemon
 nvidia-settings
 nvidia-utils
 ydotool
