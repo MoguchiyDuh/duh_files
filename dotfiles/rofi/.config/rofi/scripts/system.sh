@@ -7,7 +7,7 @@ options=(
     "󰌾 Lock"
     "󰗽 Logout"
     "󰒲 Suspend"
-    "󰜛 Hibernate (disabled)"
+    "󰜛 Hibernate"
     "󰜉 Reboot"
     "󰐥 Shutdown"
 )
