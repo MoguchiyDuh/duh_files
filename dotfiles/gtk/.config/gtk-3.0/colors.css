@@ -2,27 +2,27 @@
 * GTK Colors
 * Generated with Wallust
 */
-@define-color accent_color #956D9A;
-@define-color accent_fg_color #F9F1FF;
-@define-color accent_bg_color #956D9A;
-@define-color window_bg_color #393A40;
-@define-color window_fg_color #F9F1FF;
-@define-color headerbar_bg_color #111218;
-@define-color headerbar_fg_color #F9F1FF;
-@define-color popover_bg_color #393A40;
-@define-color popover_fg_color #F9F1FF;
-@define-color view_bg_color #393A40;
-@define-color view_fg_color #F9F1FF;
-@define-color card_bg_color #393A40;
-@define-color card_fg_color #F9F1FF;
-@define-color sidebar_bg_color #111218;
-@define-color sidebar_fg_color #F9F1FF;
-@define-color sidebar_border_color #A69EAD;
-@define-color sidebar_backdrop_color #111218;
+@define-color accent_color #959D91;
+@define-color accent_fg_color #F1F3ED;
+@define-color accent_bg_color #959D91;
+@define-color window_bg_color #403E3E;
+@define-color window_fg_color #F1F3ED;
+@define-color headerbar_bg_color #191717;
+@define-color headerbar_fg_color #F1F3ED;
+@define-color popover_bg_color #403E3E;
+@define-color popover_fg_color #F1F3ED;
+@define-color view_bg_color #403E3E;
+@define-color view_fg_color #F1F3ED;
+@define-color card_bg_color #403E3E;
+@define-color card_fg_color #F1F3ED;
+@define-color sidebar_bg_color #191717;
+@define-color sidebar_fg_color #F1F3ED;
+@define-color sidebar_border_color #9EA09B;
+@define-color sidebar_backdrop_color #191717;
 
 /* Additional hover states */
-@define-color card_bg_color_hover #A69EAD;
-@define-color view_bg_color_hover #A69EAD;
+@define-color card_bg_color_hover #9EA09B;
+@define-color view_bg_color_hover #9EA09B;
 
 .large-title { font-weight: 300; font-size: 24pt; }
 

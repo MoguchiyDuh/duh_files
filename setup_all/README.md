@@ -26,6 +26,7 @@ Recreate the working environment from:
 - `etc-restore-candidates.txt`: system config files worth inspecting/restoring
 - `machine.txt`: source-machine metadata
 - `power-management.md`: suspend fix and hibernation safeguard notes
+- `clash-verge-v2rayn-profile.txt`: sanitized manual Clash Verge profile template
 
 ## Rebuild Flow
 
@@ -88,6 +89,8 @@ stow zsh kitty hypr waybar rofi tmux wallust wlogout zed gtk qt5 fastfetch nvim 
 ```
 
 Only stow directories that make sense on the target machine.
+
+Clash Verge profiles are not stowed or installed automatically. Review and import `setup_all/clash-verge-v2rayn-profile.txt` manually, replacing its placeholder connection values with private values from an encrypted source.
 
 12. Review `/etc` candidates:
 
