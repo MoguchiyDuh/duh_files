@@ -8,6 +8,8 @@
 /etc/hostname
 /etc/hosts
 /etc/systemd/zram-generator.conf
+/etc/systemd/sleep.conf.d/disable-hibernation.conf
+/etc/systemd/system/disable-acpi-wakeup-gpp0.service
 /etc/sysctl.d/99-zram.conf
 /etc/sysctl.d/90-network-performance.conf
 /etc/modules-load.d/network-performance.conf

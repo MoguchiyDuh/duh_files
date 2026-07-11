@@ -2,10 +2,13 @@ bluetooth.service
 clash-verge-service.service
 cronie.service
 docker.service
+disable-acpi-wakeup-gpp0.service
 getty@.service
 NetworkManager-dispatcher.service
 NetworkManager-wait-online.service
 NetworkManager.service
+nvidia-resume.service
+nvidia-suspend.service
 sddm.service
 sshd.service
 systemd-oomd.service

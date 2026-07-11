@@ -25,6 +25,7 @@ Recreate the working environment from:
 - `systemd-user-enabled.txt`: enabled user services
 - `etc-restore-candidates.txt`: system config files worth inspecting/restoring
 - `machine.txt`: source-machine metadata
+- `power-management.md`: suspend fix and hibernation safeguard notes
 
 ## Rebuild Flow
 
@@ -106,6 +107,8 @@ systemctl --user enable --now pipewire.service pipewire-pulse.service wireplumbe
 ```
 
 Use `systemd-enabled.txt` and `systemd-user-enabled.txt` as references, not commands to execute blindly.
+
+Power-management state is machine-specific. Read `setup_all/power-management.md` before enabling suspend/hibernate behavior.
 
 14. Restore secrets from encrypted backup only:
 

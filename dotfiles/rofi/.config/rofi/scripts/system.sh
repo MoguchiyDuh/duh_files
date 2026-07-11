@@ -7,7 +7,7 @@ options=(
     "󰌾 Lock"
     "󰗽 Logout"
     "󰒲 Suspend"
-    "󰜛 Hibernate"
+    "󰜛 Hibernate (disabled)"
     "󰜉 Reboot"
     "󰐥 Shutdown"
 )
@@ -29,7 +29,7 @@ case "$selected" in
     *"Suspend")
         "$SCRIPT_DIR/power.sh" suspend
         ;;
-    *"Hibernate")
+    *"Hibernate"*)
         "$SCRIPT_DIR/power.sh" hibernate
         ;;
     *"Reboot")

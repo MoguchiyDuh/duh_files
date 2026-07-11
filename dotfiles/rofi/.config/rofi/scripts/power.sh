@@ -14,8 +14,8 @@ case "$1" in
         systemctl suspend
         ;;
     4|hibernate)
-        sleep 0.5
-        systemctl hibernate
+        notify-send "Hibernate disabled" "This machine has no safe resume configuration; use suspend." -u critical
+        exit 1
         ;;
     5|reboot)
         sleep 0.5
@@ -30,7 +30,7 @@ case "$1" in
         echo "1 - lock"
         echo "2 - logout" 
         echo "3 - suspend"
-        echo "4 - hibernate"
+        echo "4 - hibernate disabled"
         echo "5 - reboot"
         echo "6 - shutdown"
         exit 1

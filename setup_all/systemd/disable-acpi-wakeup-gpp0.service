@@ -1,0 +1,10 @@
+[Unit]
+Description=Disable GPP0 ACPI wake source
+After=multi-user.target
+
+[Service]
+Type=oneshot
+ExecStart=/bin/sh -c "grep -q '^GPP0.*enabled' /proc/acpi/wakeup && echo GPP0 > /proc/acpi/wakeup || true"
+
+[Install]
+WantedBy=multi-user.target
