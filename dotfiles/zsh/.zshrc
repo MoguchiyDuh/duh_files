@@ -1,12 +1,13 @@
 typeset -g POWERLEVEL9K_INSTANT_PROMPT=off
 
 if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]; then
-  source "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh"
+    source "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh"
 fi
 
 # --- Exports & Environment ---
 export ZSH="$HOME/.oh-my-zsh"
 export PATH="$HOME/.local/bin:$PATH"
+export PATH="$HOME/.cargo/bin:$PATH"
 export TERMINAL=$terminal
 export XDG_TERMINAL_EMULATOR=$terminal
 export EDITOR="nvim"
@@ -33,21 +34,14 @@ n() {
     export NNN_TMPFILE="${XDG_CONFIG_HOME:-$HOME/.config}/nnn/.lastd"
     nnn "$@"
     if [ -f "$NNN_TMPFILE" ]; then
-            . "$NNN_TMPFILE"
-            rm -f "$NNN_TMPFILE" > /dev/null
+        . "$NNN_TMPFILE"
+        rm -f "$NNN_TMPFILE" >/dev/null
     fi
 }
 
 # --- Completion Settings ---
 fpath=(~/.zsh/completions $fpath)
 autoload -U compinit && compinit -u
-
-compdef _uv uv.exe
-compdef _cargo cargo.exe
-compdef _go go.exe
-compdef _pip pip.exe
-compdef _python python.exe
-eval "$(register-python-argcomplete duh-yt_manager)"
 
 # --- Aliases: Core Remaps ---
 alias ls='eza --icons --git --header --group-directories-first'
@@ -99,7 +93,3 @@ eval "$(zoxide init zsh)"
 
 # Startup info
 fastfetch
-
-export PATH="$HOME/.cargo/bin:$PATH"
-
-export OPENCODE_DISABLE_CLAUDE_CODE_PROMPT=1

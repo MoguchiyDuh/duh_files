@@ -7,7 +7,7 @@ Machine-specific state for this Arch/Hyprland desktop (Ryzen 7 5700X, RTX 3060 T
 
 Suspend uses S3/deep sleep and is known-good on this machine.
 
-Two pieces are required for a *correct* resume, not just a working-looking one:
+Two pieces are required for a _correct_ resume, not just a working-looking one:
 
 1. Systemd services (VRAM save/restore hooks):
 
@@ -24,7 +24,7 @@ Two pieces are required for a *correct* resume, not just a working-looking one:
    options nvidia_drm modeset=1 fbdev=1
    ```
 
-   - `NVreg_PreserveVideoMemoryAllocations=1` saves *all* VRAM on suspend and
+   - `NVreg_PreserveVideoMemoryAllocations=1` saves _all_ VRAM on suspend and
      restores it on resume. Without it the nvidia-suspend/resume services are
      effectively useless: resume under GPU load risks a black screen or
      corrupted framebuffers. This is the fix for the previously-latent bug where
@@ -48,16 +48,16 @@ wake enabled; the keyboard was tested and was not the root cause.
 
 `~/.config/hypr/hypridle.conf` implements a progressive, macOS/Windows-style
 "balanced, plugged-in" escalation. Each visible stage restores itself on
-activity, and the screen is locked *before* the display turns off so waking
+activity, and the screen is locked _before_ the display turns off so waking
 never reveals the unlocked desktop.
 
-| Stage        | Timeout   | Action                                           |
-| ------------ | --------- | ------------------------------------------------ |
-| notify       | 8 min     | warning toast                                    |
-| dim          | 9 min 50s | `idle-dim.sh dim` (hardware backlight/DDC + LEDs) |
-| lock         | 10 min    | `loginctl lock-session`                          |
-| display off  | 10 min    | `hyprctl dispatch dpms off` (1s after lock)      |
-| suspend      | 30 min    | `power.sh suspend` (honours awake mode + gating) |
+| Stage       | Timeout   | Action                                            |
+| ----------- | --------- | ------------------------------------------------- |
+| notify      | 8 min     | warning toast                                     |
+| dim         | 9 min 50s | `idle-dim.sh dim` (hardware backlight/DDC + LEDs) |
+| lock        | 10 min    | `loginctl lock-session`                           |
+| display off | 10 min    | `hyprctl dispatch dpms off` (1s after lock)       |
+| suspend     | 30 min    | `power.sh suspend` (honours awake mode + gating)  |
 
 Timings mirror the Windows "Balanced, plugged-in" plan: display off at 10 min,
 sleep at 30 min, with a short dim ~10 s before the display goes dark.
@@ -125,7 +125,7 @@ and `power.sh`, whose `check_hibernate` refuses UI-triggered hibernation so it
 fails safely.
 
 Note: `NVreg_PreserveVideoMemoryAllocations=1` is known to break
-resume-from-*hibernate* on some setups. Since only S3 suspend is used here, `=1`
+resume-from-_hibernate_ on some setups. Since only S3 suspend is used here, `=1`
 is safe. Revisit this if hibernation is ever enabled.
 
 Re-enable hibernation only after creating a real disk swap target >= RAM, adding

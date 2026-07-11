@@ -11,7 +11,6 @@ bluez
 bluez-utils
 brightnessctl
 btop
-cava
 clang
 cliphist
 cmake
@@ -54,6 +53,7 @@ kitty
 kvantum
 lazydocker
 lazygit
+lact
 libreoffice-fresh
 linux
 linux-firmware
@@ -104,7 +104,6 @@ slurp
 stow
 swayimg
 swaync
-tealdeer
 tesseract
 tesseract-data-eng
 tesseract-data-rus

@@ -15,3 +15,4 @@
 /etc/sysctl.d/90-network-performance.conf
 /etc/modules-load.d/network-performance.conf
 /etc/modules-load.d/i2c-dev.conf
+/etc/lact/config.yaml
