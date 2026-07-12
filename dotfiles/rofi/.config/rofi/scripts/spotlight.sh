@@ -9,7 +9,6 @@ options=(
     "󰖯 Windows"
     "󰃬 Calculator"
     "󰊿 Translate"
-    "󰝰 Files"
     "󰖟 Web Search"
     "󰅌 Clipboard"
     " Emoji"
@@ -38,9 +37,6 @@ case "$selected" in
         ;;
     *"Translate")
         "$SCRIPT_DIR/translate.sh"
-        ;;
-    *"Files")
-        "$SCRIPT_DIR/file_search.sh"
         ;;
     *"Web Search")
         "$SCRIPT_DIR/web_search.sh"

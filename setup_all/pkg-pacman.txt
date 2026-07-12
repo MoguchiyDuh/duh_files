@@ -35,6 +35,7 @@ git-delta
 github-cli
 gnome-themes-extra
 grim
+gpu-screen-recorder
 grub
 gst-plugin-pipewire
 hyperfine
@@ -116,6 +117,7 @@ unzip
 uv
 valkey
 vlc
+vlc-plugin-ffmpeg
 waybar
 wireplumber
 wl-clipboard

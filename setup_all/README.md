@@ -27,6 +27,7 @@ Recreate the working environment from:
 - `etc/`: verbatim mirror of the tracked `/etc` files listed in `etc-restore-candidates.txt`. Layout mirrors real paths (`etc/sysctl.d/99-zram.conf` -> `/etc/sysctl.d/99-zram.conf`). Machine-specific files (`etc/fstab`, `etc/hostname`) are stored for reference only and MUST be adapted, never copied blindly (they contain this machine's disk UUIDs / hostname).
 - `machine.txt`: source-machine metadata
 - `power-management.md`: suspend fix and hibernation safeguard notes
+- `screen-recording.md`: Nvidia recording keybind, output, and VLC decoder notes
 - `clash-verge-v2rayn-profile.txt`: sanitized manual Clash Verge profile template
 
 ## Rebuild Flow

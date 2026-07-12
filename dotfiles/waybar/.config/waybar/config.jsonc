@@ -48,7 +48,7 @@
     },
     "custom/gpu": {
         "interval": 5,
-        "format": " {}%",
+        "format": "󰢮 {}%",
         "exec": "~/.config/waybar/scripts/nvidia.sh",
         "return-type": "json",
         "tooltip": true

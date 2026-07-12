@@ -1,6 +1,7 @@
 awww
 cliphist
 grim
+gpu-screen-recorder
 hypridle
 hyprland
 hyprland-guiutils

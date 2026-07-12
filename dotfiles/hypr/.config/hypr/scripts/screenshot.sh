@@ -3,10 +3,16 @@ case "$1" in
         hyprshot -m output
         ;;
     area)
-        hyprshot -m region --clipboard
+        hyprshot -m region --clipboard-only
+        ;;
+    window)
+        hyprshot -m window --clipboard-only
+        ;;
+    active)
+        hyprshot -m window -m active --clipboard-only
         ;;
     *)
-        echo "Invalid argument: $1"
+        echo "Usage: $0 {fullscreen|area|window|active}"
         exit 1
         ;;
 esac

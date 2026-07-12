@@ -8,4 +8,5 @@ pipewire-jack
 pipewire-pulse
 playerctl
 vlc
+vlc-plugin-ffmpeg
 wireplumber
