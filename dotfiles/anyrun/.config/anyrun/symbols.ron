@@ -1,0 +1,12 @@
+Config(
+  // Prefix keeps unicode/emoji noise out of the default results.
+  // Dedicated Super+. bind launches anyrun with only this plugin.
+  prefix: ":",
+  symbols: {
+    "shrug": "¯\\_(ツ)_/¯",
+    "tableflip": "(╯°□°)╯︵ ┻━┻",
+    "unflip": "┬─┬ ノ( ゜-゜ノ)",
+    "lenny": "( ͡° ͜ʖ ͡°)",
+  },
+  max_entries: 6,
+)

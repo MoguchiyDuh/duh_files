@@ -1,3 +1,4 @@
+anyrun
 brave-bin
 clash-verge-rev-bin
 lazysql-bin

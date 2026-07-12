@@ -1,0 +1,7 @@
+Config(
+  // Usage: >en текст   or   >ru>en text
+  // Dedicated Super+Shift+W bind launches anyrun with only this plugin.
+  prefix: ">",
+  language_delimiter: ">",
+  max_entries: 3,
+)

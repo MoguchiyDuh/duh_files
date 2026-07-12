@@ -4,6 +4,7 @@ bluez-utils
 brightnessctl
 ddcutil
 i2c-tools
+lact
 network-manager-applet
 nvidia-open-dkms
 power-profiles-daemon

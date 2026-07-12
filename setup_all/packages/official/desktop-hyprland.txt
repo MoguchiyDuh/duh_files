@@ -10,9 +10,6 @@ hyprpicker
 hyprshot
 kitty
 qt6-wayland
-rofi
-rofi-calc
-rofi-emoji
 slurp
 swayimg
 swaync

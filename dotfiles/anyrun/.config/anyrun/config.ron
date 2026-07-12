@@ -1,0 +1,41 @@
+Config(
+  // Centered, top-anchored spotlight-style window.
+  x: Fraction(0.5),
+  y: Fraction(0.3),
+  width: Absolute(720),
+  height: Absolute(1),
+
+  hide_icons: false,
+  hide_plugin_info: false,
+  ignore_exclusive_zones: false,
+  layer: Overlay,
+  close_on_click: true,
+  show_results_immediately: false,
+  max_entries: Some(12),
+
+  // Load order == result priority.
+  // Custom plugins (window/clipboard/actions) are appended in later phases.
+  plugins: [
+    "libapplications.so",
+    "libactions.so",
+    "libsysctl.so",
+    "libwindows.so",
+    "libclipboard.so",
+    "librink.so",
+    "libsymbols.so",
+    "libtransform.so",
+    "libwebsearch.so",
+    "libtranslate.so",
+    "libdictionary.so",
+    "libbinds.so",
+  ],
+
+  keybinds: [
+    Keybind(key: "Return", action: Select),
+    Keybind(key: "Up", action: Up),
+    Keybind(key: "Down", action: Down),
+    Keybind(key: "Tab", action: Down),
+    Keybind(key: "ISO_Left_Tab", action: Up, shift: true),
+    Keybind(key: "Escape", action: Close),
+  ],
+)

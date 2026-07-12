@@ -24,7 +24,6 @@ rclone
 ripgrep
 rsync
 stow
-tealdeer
 tmux
 trash-cli
 tree

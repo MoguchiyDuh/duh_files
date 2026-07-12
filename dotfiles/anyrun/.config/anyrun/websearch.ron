@@ -1,0 +1,10 @@
+Config(
+  prefix: "?",
+  engines: [
+    Custom(
+      name: "DuckDuckGo",
+      url: "duckduckgo.com/?q={}",
+    ),
+    Google,
+  ],
+)

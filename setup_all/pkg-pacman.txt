@@ -95,9 +95,6 @@ qt5ct
 qt6-wayland
 rclone
 ripgrep
-rofi
-rofi-calc
-rofi-emoji
 rsync
 rustup
 sddm

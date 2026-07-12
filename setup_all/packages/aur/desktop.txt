@@ -1,2 +1,3 @@
+anyrun
 wayvnc-git
 wlogout

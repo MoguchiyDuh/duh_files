@@ -1,5 +1,4 @@
 audacious
-cava
 gst-plugin-pipewire
 pavucontrol
 pipewire
