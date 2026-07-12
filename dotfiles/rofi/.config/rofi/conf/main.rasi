@@ -44,7 +44,7 @@ icon-search, entry, element-icon, element-text {
 
 entry {
     font: inherit;
-    placeholder: "kensaku...";
+    placeholder: "Search...";
     placeholder-color: @scrollbar-filled;
     text-color: @normal-text;
 }
