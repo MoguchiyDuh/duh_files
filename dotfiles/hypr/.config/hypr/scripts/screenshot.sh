@@ -1,3 +1,7 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
 case "$1" in
     fullscreen)
         hyprshot -m output
@@ -12,7 +16,7 @@ case "$1" in
         hyprshot -m window -m active --clipboard-only
         ;;
     *)
-        echo "Usage: $0 {fullscreen|area|window|active}"
+        printf 'Usage: %s {fullscreen|area|window|active}\n' "$0" >&2
         exit 1
         ;;
 esac

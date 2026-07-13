@@ -36,8 +36,7 @@
     "custom/distro-icon": {
         "exec": "~/.config/waybar/scripts/distro_icon.sh",
         "interval": "once",
-        "tooltip-format": "<b>Application launcher</b>\n\nLMB  AnyRun\nRMB  Session menu",
-        "on-click": "anyrun",
+        "tooltip-format": "<b>Session menu</b>\n\nRMB  Open",
         "on-click-right": "wlogout"
     },
     "custom/cpu": {
@@ -66,8 +65,7 @@
         "active-first": true,
         "tooltip-format": "{title}\n\nLMB  Focus\nMMB  Close",
         "on-click": "activate",
-        "on-click-middle": "close",
-        "ignore-list": ["anyrun"]
+        "on-click-middle": "close"
     },
 
     "hyprland/workspaces": {
@@ -92,7 +90,6 @@
         "interval": "once",
         "signal": 2,
         "format": "󰅍",
-        "on-click": "anyrun --plugins libclipboard.so --show-results-immediately true",
         "on-click-middle": "~/.config/waybar/scripts/clipboard.sh wipe",
         "on-click-right": "~/.config/waybar/scripts/clipboard.sh wipe"
     },

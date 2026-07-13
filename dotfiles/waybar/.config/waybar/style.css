@@ -154,9 +154,9 @@ window#waybar {
 }
 
 #custom-mic.mic-active {
-    color: @color9;
-    background: alpha(@color9, 0.4);
-    text-shadow: 0 0 9px alpha(@color9, 0.75);
+    color: @color11;
+    background: alpha(@color11, 0.4);
+    text-shadow: 0 0 9px alpha(@color11, 0.75);
 }
 
 #custom-mic.muted,

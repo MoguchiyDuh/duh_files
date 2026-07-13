@@ -6,6 +6,12 @@ state_dir="${XDG_STATE_HOME:-$HOME/.local/state}/power"
 state_file="$state_dir/states"
 awake_unit="awake-inhibit.service"
 
+# custom/awake and custom/profile in waybar's config.jsonc declare
+# "signal": 8 to avoid polling; this is what actually fires it.
+refresh_waybar() {
+    pkill -RTMIN+1 waybar 2>/dev/null || true
+}
+
 state() {
     awk -F= -v mode="$1" '$1 == mode { print $2; exit }' "$state_file" 2>/dev/null || true
 }
@@ -164,6 +170,7 @@ profile() {
             target=$(profile_to_ppd "$action")
             powerprofilesctl set "$target"
             notify-send "Power profile" "$action" -u low -t 2000 2>/dev/null || true
+            refresh_waybar
             ;;
         status)
             printf '%s\n' "$(ppd_to_profile "$(powerprofilesctl get)")"
@@ -178,6 +185,7 @@ profile() {
             esac
             powerprofilesctl set "$target"
             notify-send "Power profile" "$(ppd_to_profile "$target")" -u low -t 2000 2>/dev/null || true
+            refresh_waybar
             ;;
         *)
             printf 'Usage: %s profile {eco|balanced|performance|status|cycle}\n' "$0" >&2
@@ -200,10 +208,12 @@ enable_awake() {
         --who=awake \
         --why="Awake mode enabled" \
         sleep infinity
+    refresh_waybar
 }
 
 disable_awake() {
     systemctl --user stop "$awake_unit" 2>/dev/null || true
+    refresh_waybar
 }
 
 awake() {

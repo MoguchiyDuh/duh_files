@@ -14,15 +14,15 @@ fi
 case "${1:-}" in
     awake)
         if [[ "$awake" == enabled ]]; then
-            jq -cn '{text:"󰅶", class:["active"], tooltip:"Idle inhibition  active\n\nManage in AnyRun"}'
+            jq -cn '{text:"󰅶", class:["active"], tooltip:"Idle inhibition  active"}'
         else
             jq -cn '{text:"", class:["hidden"], tooltip:""}'
         fi
         ;;
     profile)
         case "$profile" in
-            eco) jq -cn '{text:"󰌪", class:["eco"], tooltip:"Power profile  eco\n\nManage in AnyRun"}' ;;
-            performance) jq -cn '{text:"󰓅", class:["performance"], tooltip:"Power profile  performance\n\nManage in AnyRun"}' ;;
+            eco) jq -cn '{text:"󰌪", class:["eco"], tooltip:"Power profile  eco"}' ;;
+            performance) jq -cn '{text:"󰓅", class:["performance"], tooltip:"Power profile  performance"}' ;;
             *) jq -cn '{text:"", class:["hidden"], tooltip:""}' ;;
         esac
         ;;

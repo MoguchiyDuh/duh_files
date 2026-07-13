@@ -1,0 +1,12 @@
+[package]
+name = "soundbar"
+version.workspace = true
+edition.workspace = true
+
+[dependencies]
+libpulse-binding.workspace = true
+serde.workspace = true
+serde_json.workspace = true
+
+[lints]
+workspace = true

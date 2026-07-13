@@ -24,21 +24,19 @@ zsh
 kitty
 hypr
 waybar
-rofi
 wallust
 wlogout
 zed
 qt5
 fastfetch
 nvim
-clash-verge
 ```
 
 Deploy from the repo root like this:
 
 ```bash
 cd ~/duh_files/dotfiles
-stow zsh kitty hypr waybar rofi tmux wallust wlogout zed gtk qt5 fastfetch nvim clash-verge
+stow zsh kitty hypr waybar tmux wallust wlogout zed gtk qt5 fastfetch nvim
 ```
 
 Preview first when unsure:

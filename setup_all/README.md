@@ -87,7 +87,7 @@ while read -r app; do flatpak install -y flathub "$app"; done < setup_all/pkg-fl
 
 ```bash
 cd ~/duh_files/dotfiles
-stow zsh kitty hypr waybar rofi tmux wallust wlogout zed gtk qt5 fastfetch nvim clash-verge
+stow zsh kitty hypr waybar tmux wallust wlogout zed gtk qt5 fastfetch nvim
 ```
 
 Only stow directories that make sense on the target machine.
