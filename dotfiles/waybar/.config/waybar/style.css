@@ -1,97 +1,81 @@
 @import "colors.css";
 
 * {
+    min-height: 0;
     border: none;
     border-radius: 0;
     font-family: "FiraCode Nerd Font Propo";
     font-size: 13px;
     font-weight: 500;
-    min-height: 0;
 }
 
 window#waybar {
-    background-color: transparent;
+    background: transparent;
     color: @foreground;
 }
 
-/* All modules */
-#workspaces,
 #custom-distro-icon,
-#cpu,
-#memory,
+#custom-cpu,
+#custom-memory,
 #custom-gpu,
-#taskbar,
 #custom-cliphist,
 #tray,
 #custom-notifications,
-#pulseaudio,
+#custom-mic,
+#custom-volume,
 #bluetooth,
-#network,
+#custom-network,
 #language,
 #custom-weather,
 #clock,
 #battery,
-#custom-coffee,
-#custom-power {
-    padding: 0 12px;
+#custom-awake,
+#custom-profile {
+    min-height: 36px;
     margin: 5px;
-    background: alpha(@color0, 0.8);
+    padding: 0 12px;
     border-radius: 10px;
+    background: alpha(@color0, 0.8);
     text-shadow: 0 1px 3px rgba(0, 0, 0, 0.8);
 }
 
-/* LEFT */
 #custom-distro-icon {
-    font-size: 20px;
+    min-width: 20px;
+    padding: 0 9px;
     color: @color12;
     background: linear-gradient(135deg, alpha(@color12, 0.4), alpha(@color11, 0.3));
-    padding: 0 14px;
-    font-weight: bold;
-    transition: all 0.3s ease;
+    font-size: 20px;
+    font-weight: 700;
 }
 
-#custom-distro-icon:hover {
-    background: linear-gradient(135deg, alpha(@color12, 0.55), alpha(@color11, 0.45));
-}
-
-#cpu,
-#memory,
+#custom-cpu,
+#custom-memory,
 #custom-gpu {
+    min-width: 44px;
+    padding: 0 6px;
     color: @color9;
     background: alpha(@color9, 0.4);
-    padding: 0 12px;
-    transition: all 0.3s ease;
-}
-
-#cpu:hover,
-#memory:hover,
-#custom-gpu:hover {
-    background: alpha(@color9, 0.55);
 }
 
 #taskbar {
     padding: 0;
-    background-color: transparent;
+    background: transparent;
 }
 
 #taskbar button {
+    min-width: 0;
+    min-height: 36px;
+    margin: 5px 3px;
     padding: 0 12px;
-    margin: 0 3px;
-    background: alpha(@color0, 0.75);
-    color: @color7;
     border-radius: 10px;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    color: @color7;
+    background: alpha(@color0, 0.75);
     text-shadow: 0 1px 2px rgba(0, 0, 0, 0.7);
 }
 
 #taskbar button.active {
-    background: linear-gradient(135deg, alpha(@color12, 0.8), alpha(@color11, 0.7));
     color: @color0;
-    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
-}
-
-#taskbar button:hover {
-    background: alpha(@color12, 0.6);
+    background: linear-gradient(135deg, alpha(@color12, 0.8), alpha(@color11, 0.7));
 }
 
 #taskbar button.minimized {
@@ -99,65 +83,38 @@ window#waybar {
     background: alpha(@color0, 0.5);
 }
 
-/* MIDDLE */
 #workspaces {
+    margin: 5px 0;
     padding: 0 4px;
-    background-color: transparent;
+    background: transparent;
 }
 
 #workspaces button {
-    padding: 0 12px;
+    min-height: 36px;
     margin: 0 3px;
-    background: alpha(@color0, 0.8);
-    color: @color7;
+    padding: 0 12px;
     border-radius: 10px;
+    color: @color7;
+    background: alpha(@color0, 0.8);
     font-weight: 600;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     text-shadow: 0 1px 3px rgba(0, 0, 0, 0.8);
 }
 
 #workspaces button.active {
-    background: linear-gradient(135deg, @color12, @color11);
     color: @color0;
-    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
-}
-
-#workspaces button:hover {
-    background: alpha(@color12, 0.6);
+    background: linear-gradient(135deg, @color12, @color11);
 }
 
 #workspaces button.urgent {
     background: linear-gradient(135deg, @color1, @color9);
-    animation: urgent-pulse 1.5s ease-in-out infinite;
 }
 
-@keyframes urgent-pulse {
-
-    0% {
-        opacity: 1;
-    }
-
-    100% {
-        opacity: 1;
-    }
-
-    50% {
-        opacity: 0.7;
-    }
-}
-
-/* RIGHT */
 #custom-cliphist,
 #custom-notifications {
-    padding: 0 12px;
+    min-width: 20px;
+    padding: 0 9px;
     color: @color15;
     background: alpha(@color14, 0.4);
-    transition: all 0.3s ease;
-}
-
-#custom-cliphist:hover,
-#custom-notifications:hover {
-    background: alpha(@color14, 0.55);
 }
 
 #tray {
@@ -165,95 +122,76 @@ window#waybar {
     background: alpha(@color0, 0.7);
 }
 
-#tray>.passive {
+#tray > .passive {
     opacity: 0.6;
 }
 
-#tray>.needs-attention {
+#tray > .needs-attention {
     background: alpha(@color1, 0.4);
-    animation: attention-blink 1s ease-in-out infinite;
 }
 
-@keyframes attention-blink {
+#custom-mic,
+#custom-volume,
+#bluetooth,
+#custom-network {
+    color: @color13;
+    background: alpha(@color13, 0.4);
+}
 
-    0% {
-        opacity: 1;
-    }
-
-    100% {
-        opacity: 1;
-    }
-
-    50% {
-        opacity: 0.5;
-    }
+#custom-mic,
+#custom-volume {
+    min-width: 44px;
+    padding: 0 6px;
 }
 
 #bluetooth,
-#network,
-#pulseaudio.source,
-#pulseaudio.sink {
-    color: @color13;
-    background: alpha(@color13, 0.4);
-    padding: 0 12px;
-    transition: all 0.3s ease;
+#custom-network,
+#language,
+#custom-awake,
+#custom-profile {
+    min-width: 20px;
+    padding: 0 9px;
 }
 
-#bluetooth:hover,
-#network:hover,
-#pulseaudio.source:hover,
-#pulseaudio.sink:hover {
-    background: alpha(@color13, 0.55);
+#custom-mic.mic-active {
+    color: @color9;
+    background: alpha(@color9, 0.4);
+    text-shadow: 0 0 9px alpha(@color9, 0.75);
 }
 
+#custom-mic.muted,
+#custom-volume.muted,
 #bluetooth.disabled,
-#network.disconnected,
-#pulseaudio.source.source-muted,
-#pulseaudio.sink.muted {
+#bluetooth.off,
+#custom-network.disconnected {
     color: @color8;
     background: alpha(@color8, 0.4);
     opacity: 0.6;
 }
 
 #language {
-    padding: 0 12px;
     color: @color3;
     background: alpha(@color3, 0.4);
     font-weight: 600;
-    transition: all 0.3s ease;
-}
-
-#language:hover {
-    background: alpha(@color3, 0.55);
 }
 
 #custom-weather,
 #clock {
-    font-family: "JetBrainsMono Nerd Font";
     color: @color5;
     background: linear-gradient(135deg, alpha(@color5, 0.4), alpha(@color6, 0.35));
+    font-family: "JetBrainsMono Nerd Font";
     font-weight: 700;
-    padding: 0 12px;
-    transition: all 0.3s ease;
-}
-
-#custom-weather:hover,
-#clock:hover {
-    background: linear-gradient(135deg, alpha(@color5, 0.55), alpha(@color6, 0.5));
 }
 
 #battery {
+    min-width: 44px;
+    padding: 0 6px;
     color: @color2;
     background: alpha(@color2, 0.4);
-    padding: 0 12px;
-    transition: all 0.3s ease;
 }
 
-#battery:hover {
-    background: alpha(@color2, 0.55);
-}
-
-#battery.charging {
+#battery.charging,
+#battery.plugged {
     color: @color10;
     background: alpha(@color10, 0.4);
 }
@@ -266,82 +204,67 @@ window#waybar {
 #battery.critical:not(.charging) {
     color: @color1;
     background: alpha(@color1, 0.6);
-    animation: battery-critical 2s ease-in-out infinite;
 }
 
-@keyframes battery-critical {
-
-    0% {
-        opacity: 1;
-    }
-
-    100% {
-        opacity: 1;
-    }
-
-    50% {
-        opacity: 0.6;
-    }
-}
-
-/* coffee / awake + power-profile toggle */
-#custom-coffee {
+#custom-awake,
+#custom-profile {
     color: @color8;
-    font-size: 15px;
     background: alpha(@color8, 0.35);
-    padding: 0 12px;
-    transition: all 0.3s ease;
 }
 
-#custom-coffee:hover {
-    background: alpha(@color8, 0.5);
+#custom-awake.active {
+    color: @color3;
+    background: alpha(@color3, 0.4);
+    text-shadow: 0 0 9px alpha(@color3, 0.75);
 }
 
-/* per-profile accent: the module color always reflects the power profile,
-   while the mug icon (filled vs off) reflects awake state. */
-#custom-coffee.profile-balanced {
-    color: @color4;
-    background: alpha(@color4, 0.4);
-}
-
-#custom-coffee.profile-performance {
-    color: @color1;
-    background: alpha(@color1, 0.4);
-}
-
-#custom-coffee.profile-eco {
+#custom-profile.eco {
     color: @color2;
     background: alpha(@color2, 0.4);
 }
 
-/* awake mode: add a warm glow on top of the profile color as a second cue */
-#custom-coffee.awake {
-    text-shadow: 0 0 9px alpha(@color3, 0.75);
-}
-
-#custom-power {
+#custom-profile.performance {
     color: @color1;
-    font-size: 18px;
-    background: linear-gradient(135deg, alpha(@color1, 0.4), alpha(@color9, 0.3));
-    padding: 0 14px;
-    font-weight: bold;
-    transition: all 0.3s ease;
+    background: alpha(@color1, 0.4);
 }
 
-#custom-power:hover {
-    background: linear-gradient(135deg, alpha(@color1, 0.55), alpha(@color9, 0.45));
+#custom-awake.hidden,
+#custom-profile.hidden {
+    min-width: 0;
+    margin: 0;
+    padding: 0;
+    background: transparent;
 }
 
-/* Tooltip */
+#custom-distro-icon:hover,
+#custom-cpu:hover,
+#custom-memory:hover,
+#custom-gpu:hover,
+#custom-cliphist:hover,
+#custom-notifications:hover,
+#custom-mic:hover,
+#custom-volume:hover,
+#bluetooth:hover,
+#custom-network:hover,
+#language:hover,
+#custom-weather:hover,
+#clock:hover,
+#battery:hover,
+#taskbar button:hover,
+#workspaces button:hover {
+    box-shadow: inset 0 0 0 1px alpha(@foreground, 0.18);
+}
+
 tooltip {
-    background: alpha(@color0, 0.95);
+    padding: 10px 14px;
     border: 2px solid alpha(@color12, 0.6);
     border-radius: 10px;
-    padding: 10px 14px;
+    background: alpha(@color0, 0.95);
 }
 
 tooltip label {
     color: @foreground;
+    font-family: "JetBrainsMono Nerd Font";
     font-weight: 500;
     text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
 }

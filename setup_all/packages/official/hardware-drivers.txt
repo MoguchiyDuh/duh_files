@@ -3,6 +3,7 @@ bluez
 bluez-utils
 brightnessctl
 ddcutil
+dmidecode
 i2c-tools
 lact
 network-manager-applet

@@ -18,6 +18,7 @@ croc
 cronie
 ddcutil
 direnv
+dmidecode
 docker
 docker-compose
 duf
