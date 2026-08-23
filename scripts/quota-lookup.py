@@ -12,15 +12,26 @@ import urllib.error
 import urllib.parse
 import urllib.request
 from dataclasses import dataclass
-from datetime import UTC, datetime
+from datetime import UTC, datetime, timedelta
 from pathlib import Path
 from typing import Any, Literal
 
 Json = dict[str, Any]
-Provider = Literal["claude", "gpt", "gemini", "copilot"]
+Provider = Literal["claude", "gpt", "gemini", "copilot", "opencode-go"]
 Source = Literal["auto", "opencode", "native"]
-ProviderArg = Literal["claude", "gpt", "codex", "gemini", "agy", "copilot", "gh"]
-DEFAULT_PROVIDER_ARGS: list[ProviderArg] = ["claude", "gpt", "gemini", "copilot"]
+ProviderArg = Literal[
+    "claude", "gpt", "codex", "gemini", "agy", "copilot", "gh", "opencode-go", "go"
+]
+DEFAULT_PROVIDER_ARGS: list[ProviderArg] = [
+    "claude",
+    "gpt",
+    "gemini",
+    "copilot",
+    "opencode-go",
+]
+
+ACCESS_KEYS = {"access", "access_token", "accessToken"}
+REFRESH_KEYS = {"refresh", "refresh_token", "refreshToken"}
 
 USER_AGENT = "quota-lookup/0.1"
 OPENCODE_AUTH = Path.home() / ".local/share/opencode/auth.json"
@@ -34,6 +45,7 @@ CLAUDE_USAGE_URLS = [
     "https://api.anthropic.com/api/oauth/usage",
     "https://claude.ai/api/oauth/usage",
 ]
+CLAUDE_PROFILE_URL = "https://api.anthropic.com/api/oauth/profile"
 CLAUDE_KEYCHAIN_SERVICE = "Claude Code-credentials"
 
 OPENAI_CLIENT_ID = "app_EMoamEEZ73f0CkXaXp7hrann"
@@ -52,6 +64,17 @@ GOOGLE_USERINFO_URL = "https://www.googleapis.com/oauth2/v2/userinfo"
 ANTIGRAVITY_FILE_RE = re.compile(r"antigravity.*\.json$")
 
 COPILOT_USER_URL = "https://api.github.com/copilot_internal/user"
+
+OPENCODE_GO_DASHBOARD_URL = "https://opencode.ai/workspace/{workspace_id}/go"
+OPENCODE_GO_CREDENTIALS = (
+    Path(os.environ.get("XDG_DATA_HOME", Path.home() / ".local/share"))
+    / "opencode/opencode-go.json"
+)
+OPENCODE_GO_LIMITS = {
+    "rolling": {"label": "session 5h", "dollars": 12},
+    "weekly": {"label": "week 7d", "dollars": 30},
+    "monthly": {"label": "month", "dollars": 60},
+}
 
 
 @dataclass(frozen=True)
@@ -79,6 +102,10 @@ def read_json(path: Path) -> Json | None:
 
 def compact(data: Json) -> Json:
     return {key: value for key, value in data.items() if value not in (None, [], {})}
+
+
+def as_dict(value: Any) -> Json:
+    return value if isinstance(value, dict) else {}
 
 
 def now_iso() -> str:
@@ -145,7 +172,7 @@ def account_name(*values: Any) -> str | None:
     return None
 
 
-def request_json(
+def http_request(
     url: str,
     *,
     method: str = "GET",
@@ -153,7 +180,7 @@ def request_json(
     headers: dict[str, str] | None = None,
     data: Json | bytes | None = None,
     timeout: int = 20,
-) -> Json:
+) -> bytes:
     body = None
     request_headers = dict(headers or {})
     if token:
@@ -163,20 +190,48 @@ def request_json(
         request_headers.setdefault("Content-Type", "application/json")
     elif isinstance(data, bytes):
         body = data
-    request_headers.setdefault("Accept", "application/json")
 
     request = urllib.request.Request(
         url, data=body, headers=request_headers, method=method
     )
     try:
         with urllib.request.urlopen(request, timeout=timeout) as response:
-            parsed = json.loads(response.read())
+            return response.read()
     except urllib.error.HTTPError as exc:
         detail = exc.read().decode(errors="replace")[:500]
         raise RuntimeError(f"HTTP {exc.code}: {detail}") from exc
+
+
+def request_json(
+    url: str,
+    *,
+    method: str = "GET",
+    token: str | None = None,
+    headers: dict[str, str] | None = None,
+    data: Json | bytes | None = None,
+    timeout: int = 20,
+) -> Json:
+    request_headers = dict(headers or {})
+    request_headers.setdefault("Accept", "application/json")
+    parsed = json.loads(
+        http_request(
+            url,
+            method=method,
+            token=token,
+            headers=request_headers,
+            data=data,
+            timeout=timeout,
+        )
+    )
     if not isinstance(parsed, dict):
         raise RuntimeError("response was not a JSON object")
     return parsed
+
+
+def request_text(
+    url: str, *, headers: dict[str, str] | None = None, timeout: int = 20
+) -> str:
+    return http_request(url, headers=headers, timeout=timeout).decode(errors="replace")
 
 
 def post_form(url: str, payload: dict[str, str]) -> Json:
@@ -246,15 +301,20 @@ def claude_auth(src: Source) -> Auth | None:
     return None
 
 
+def claude_account_email(token: str) -> str | None:
+    try:
+        raw = request_json(
+            CLAUDE_PROFILE_URL, token=token, headers={"User-Agent": USER_AGENT}
+        )
+    except Exception:
+        return None
+    account = raw.get("account")
+    return account.get("email") if isinstance(account, dict) else None
+
+
 def lookup_claude(src: Source) -> Result:
     auth = claude_auth(src)
-    token = (
-        find_string(
-            auth.data, {"access", "access_token", "accessToken", "oauth_token", "token"}
-        )
-        if auth
-        else None
-    )
+    token = find_string(auth.data, ACCESS_KEYS | {"oauth_token", "token"}) if auth else None
     if not auth or not token:
         return Result(
             "claude", False, error=f"no Claude OAuth token found for --src {src}"
@@ -271,6 +331,7 @@ def lookup_claude(src: Source) -> Result:
                     "User-Agent": USER_AGENT,
                 },
             )
+            account = account_name(auth.data, raw) or claude_account_email(token)
             return Result(
                 "claude",
                 True,
@@ -279,7 +340,7 @@ def lookup_claude(src: Source) -> Result:
                         "source": url,
                         "auth_source": auth.src,
                         "auth_path": path_str(auth.path),
-                        "account": account_name(auth.data, raw),
+                        "account": account,
                         "updated_at": now_iso(),
                         "raw": raw,
                     }
@@ -308,7 +369,7 @@ def gpt_auth(native_first: bool) -> Auth | None:
 
 
 def refresh_openai_token(auth: Auth) -> str:
-    refresh = find_string(auth.data, {"refresh", "refresh_token", "refreshToken"})
+    refresh = find_string(auth.data, REFRESH_KEYS)
     if not refresh:
         raise RuntimeError(f"{auth.path} has no OpenAI refresh token")
     data = post_form(
@@ -325,11 +386,11 @@ def refresh_openai_token(auth: Auth) -> str:
     return token
 
 
-def lookup_gpt(src: Source, *, native_first: bool = False) -> Result:
-    auth = gpt_auth(native_first or src == "native")
+def lookup_gpt(src: Source) -> Result:
+    auth = gpt_auth(src == "native")
     if not auth:
         return Result("gpt", False, error="no OpenAI OAuth credentials found")
-    token = find_string(auth.data, {"access", "access_token", "accessToken"})
+    token = find_string(auth.data, ACCESS_KEYS)
     account_id = (
         find_string(auth.data, {"accountId", "account_id", "chatgpt_account_id"}) or ""
     )
@@ -352,17 +413,9 @@ def lookup_gpt(src: Source, *, native_first: bool = False) -> Result:
     except Exception as exc:
         return Result("gpt", False, error=str(exc))
 
-    rate = raw.get("rate_limit") if isinstance(raw.get("rate_limit"), dict) else {}
-    primary = (
-        rate.get("primary_window")
-        if isinstance(rate.get("primary_window"), dict)
-        else {}
-    )
-    secondary = (
-        rate.get("secondary_window")
-        if isinstance(rate.get("secondary_window"), dict)
-        else {}
-    )
+    rate = as_dict(raw.get("rate_limit"))
+    primary = as_dict(rate.get("primary_window"))
+    secondary = as_dict(rate.get("secondary_window"))
     return Result(
         "gpt",
         True,
@@ -413,7 +466,7 @@ def copilot_auth(native_first: bool) -> Auth | None:
             )
             if isinstance(provider, dict):
                 token = find_string(
-                    provider, {"access", "access_token", "accessToken", "token", "key"}
+                    provider, ACCESS_KEYS | {"token", "key"}
                 )
                 if token:
                     return Auth(source, path, token)
@@ -464,6 +517,145 @@ def lookup_copilot(src: Source) -> Result:
     )
 
 
+def opencode_go_config() -> tuple[str, str, str, Path | None]:
+    workspace_id = os.environ.get("OPENCODE_GO_WORKSPACE_ID", "").strip()
+    auth_cookie = os.environ.get("OPENCODE_GO_AUTH_COOKIE", "").strip()
+    if workspace_id or auth_cookie:
+        if not workspace_id or not auth_cookie:
+            missing = (
+                "OPENCODE_GO_AUTH_COOKIE"
+                if workspace_id
+                else "OPENCODE_GO_WORKSPACE_ID"
+            )
+            raise RuntimeError(f"{missing} is not set")
+        return workspace_id, auth_cookie, "env", None
+
+    path = Path(
+        os.environ.get("OPENCODE_GO_CREDENTIALS_FILE", OPENCODE_GO_CREDENTIALS)
+    ).expanduser()
+    config = read_json(path)
+    if config:
+        if path.stat().st_mode & 0o077:
+            raise RuntimeError(f"{path} must have mode 0600")
+        workspace_id = str(config.get("workspaceId", "")).strip()
+        auth_cookie = str(config.get("authCookie", "")).strip()
+        if not workspace_id or not auth_cookie:
+            missing = "workspaceId" if not workspace_id else "authCookie"
+            raise RuntimeError(f"{path} has no {missing}")
+        return workspace_id, auth_cookie, "dashboard-cookie", path
+
+    raise RuntimeError(
+        "set OPENCODE_GO_WORKSPACE_ID and OPENCODE_GO_AUTH_COOKIE, or create "
+        f"{path} with workspaceId and authCookie"
+    )
+
+
+def parse_duration_seconds(value: str) -> float | None:
+    units = {"day": 86400, "hour": 3600, "minute": 60, "second": 1}
+    matches = re.findall(
+        r"(\d+(?:\.\d+)?)\s*(days?|hours?|minutes?|seconds?)", value.lower()
+    )
+    if not matches:
+        return 0 if re.search(r"\b(?:reset\s+)?now\b", value, re.I) else None
+    return sum(float(amount) * units[unit.rstrip("s")] for amount, unit in matches)
+
+
+def opencode_go_window(html: str, field: str, label: str) -> Json | None:
+    number = r"(-?\d+(?:\.\d+)?)"
+    for pattern, reverse in (
+        (
+            rf"{field}:\$R\[\d+\]=\{{[^}}]*usagePercent:{number}[^}}]*resetInSec:{number}[^}}]*\}}",
+            False,
+        ),
+        (
+            rf"{field}:\$R\[\d+\]=\{{[^}}]*resetInSec:{number}[^}}]*usagePercent:{number}[^}}]*\}}",
+            True,
+        ),
+    ):
+        match = re.search(pattern, html)
+        if match:
+            first, second = map(float, match.groups())
+            used, reset_seconds = (second, first) if reverse else (first, second)
+            return {
+                "used_percent": max(0.0, used),
+                "resets_at": (
+                    datetime.now(UTC) + timedelta(seconds=max(0.0, reset_seconds))
+                ).isoformat(),
+            }
+
+    for item in html.split('data-slot="usage-item"')[1:]:
+        label_match = re.search(r'data-slot="usage-label">([^<]+)<', item)
+        if not label_match or label not in label_match.group(1).lower():
+            continue
+        usage_match = re.search(r'data-slot="usage-value">[^0-9]*(\d+(?:\.\d+)?)', item)
+        reset_match = re.search(
+            r'data-slot="(?:reset-time|reset-now)">([\s\S]*?)</span>', item
+        )
+        if not usage_match or not reset_match:
+            continue
+        reset_text = re.sub(r"<!--/?\$-->", "", reset_match.group(1))
+        reset_seconds = parse_duration_seconds(reset_text)
+        if reset_seconds is None:
+            continue
+        return {
+            "used_percent": float(usage_match.group(1)),
+            "resets_at": (
+                datetime.now(UTC) + timedelta(seconds=reset_seconds)
+            ).isoformat(),
+        }
+    return None
+
+
+def lookup_opencode_go() -> Result:
+    try:
+        workspace_id, auth_cookie, auth_source, auth_path = opencode_go_config()
+        url = OPENCODE_GO_DASHBOARD_URL.format(
+            workspace_id=urllib.parse.quote(workspace_id, safe="")
+        )
+        html = request_text(
+            url,
+            headers={
+                "Accept": "text/html",
+                "Cookie": f"auth={auth_cookie}",
+                "User-Agent": "Mozilla/5.0 quota-lookup/0.1",
+            },
+        )
+    except Exception as exc:
+        return Result("opencode-go", False, error=str(exc))
+
+    windows = {
+        key: opencode_go_window(html, field, key)
+        for key, field in (
+            ("rolling", "rollingUsage"),
+            ("weekly", "weeklyUsage"),
+            ("monthly", "monthlyUsage"),
+        )
+    }
+    if not any(windows.values()):
+        return Result(
+            "opencode-go",
+            False,
+            error="could not parse usage from the OpenCode Go dashboard",
+        )
+
+    return Result(
+        "opencode-go",
+        True,
+        compact(
+            {
+                "source": url,
+                "auth_source": auth_source,
+                "auth_path": path_str(auth_path),
+                "account": workspace_id,
+                "updated_at": now_iso(),
+                "plan": "go",
+                "limits": OPENCODE_GO_LIMITS,
+                **windows,
+            }
+        ),
+    )
+
+
 def antigravity_file() -> Path:
     override = os.environ.get("ANTIGRAVITY_AUTH_FILE")
     if override:
@@ -477,48 +669,88 @@ def antigravity_file() -> Path:
     return matches[0] if matches else config_dir / "antigravity-accounts.json"
 
 
-def antigravity_auth(src: Source) -> Auth | None:
-    sources = [("antigravity", antigravity_file()), ("opencode", opencode_auth_path())]
-    if src == "opencode":
-        sources.reverse()
-    for source, path in sources:
-        auth = read_json(path)
-        if not auth:
+def antigravity_identity(account: Json) -> str:
+    refresh = find_string(account, REFRESH_KEYS)
+    if refresh:
+        return refresh.split("|", 1)[0]
+    email = account.get("email")
+    return str(email) if isinstance(email, str) and email else ""
+
+
+def opencode_account_json_antigravity() -> Auth | None:
+    path = Path.home() / ".local/share/opencode/account.json"
+    data = read_json(path)
+    if not data:
+        return None
+    accounts = data.get("accounts")
+    if not isinstance(accounts, dict):
+        return None
+    for account in accounts.values():
+        if not isinstance(account, dict) or account.get("serviceID") != "antigravity":
             continue
-        if source == "opencode" and isinstance(auth.get("antigravity"), dict):
-            return Auth(source, path, auth["antigravity"])
-        if source == "antigravity":
-            return Auth("opencode", path, auth)
+        credential = account.get("credential")
+        if isinstance(credential, dict):
+            return Auth("opencode", path, credential)
     return None
 
 
-def active_antigravity_account(auth: Json) -> Json:
-    accounts = auth.get("accounts")
-    if not isinstance(accounts, list) or not accounts:
-        return auth
-    index = auth.get("activeIndex")
-    family = auth.get("activeIndexByFamily")
-    if (
-        not isinstance(index, int)
-        and isinstance(family, dict)
-        and isinstance(family.get("gemini"), int)
-    ):
+def antigravity_account_sources(src: Source) -> list[Auth]:
+    candidates: list[Auth] = []
+    native_path = antigravity_file()
+    native = read_json(native_path)
+    if isinstance(native, dict):
+        accounts = native.get("accounts")
+        if isinstance(accounts, list) and accounts:
+            candidates.extend(
+                Auth("native", native_path, account)
+                for account in accounts
+                if isinstance(account, dict)
+            )
+        elif accounts is None:
+            candidates.append(Auth("native", native_path, native))
+
+    if src != "native":
+        plugin = opencode_provider("antigravity")
+        if plugin and isinstance(plugin.data, dict):
+            candidates.append(plugin)
+        account_store = opencode_account_json_antigravity()
+        if account_store:
+            candidates.append(account_store)
+
+    if src == "opencode":
+        candidates = [c for c in candidates if c.src != "native"]
+    elif src == "native":
+        candidates = [c for c in candidates if c.src != "opencode"]
+
+    seen: set[str] = set()
+    result: list[Auth] = []
+    for candidate in candidates:
+        key = antigravity_identity(candidate.data)
+        if key:
+            if key in seen:
+                continue
+            seen.add(key)
+        result.append(candidate)
+    return result
+
+
+def antigravity_active_indexes() -> set[int]:
+    native = read_json(antigravity_file())
+    if not isinstance(native, dict):
+        return set()
+    index = native.get("activeIndex")
+    family = native.get("activeIndexByFamily")
+    if isinstance(family, dict) and isinstance(family.get("gemini"), int):
         index = family["gemini"]
-    if not isinstance(index, int) or index < 0 or index >= len(accounts):
-        index = 0
-    account = accounts[index]
-    return account if isinstance(account, dict) else auth
+    return {index} if isinstance(index, int) else set()
 
 
 def antigravity_access_token(account: Json) -> str:
-    token = find_string(account, {"access", "access_token", "accessToken"})
-    if token:
-        return token
-    return refresh_antigravity_token(account)
+    return find_string(account, ACCESS_KEYS) or refresh_antigravity_token(account)
 
 
 def refresh_antigravity_token(account: Json) -> str:
-    refresh = find_string(account, {"refresh", "refresh_token", "refreshToken"})
+    refresh = find_string(account, REFRESH_KEYS)
     if not refresh:
         raise RuntimeError("Antigravity auth has no refresh token")
     refresh = refresh.split("|", 1)[0]
@@ -538,16 +770,8 @@ def refresh_antigravity_token(account: Json) -> str:
 
 
 def antigravity_headers(account: Json) -> dict[str, str]:
-    fingerprint = (
-        account.get("fingerprint")
-        if isinstance(account.get("fingerprint"), dict)
-        else {}
-    )
-    metadata = (
-        fingerprint.get("clientMetadata")
-        if isinstance(fingerprint.get("clientMetadata"), dict)
-        else None
-    )
+    fingerprint = as_dict(account.get("fingerprint"))
+    metadata = as_dict(fingerprint.get("clientMetadata"))
     headers = {
         "User-Agent": fingerprint.get("userAgent")
         or "antigravity/hub/2.0.10 darwin/arm64",
@@ -599,9 +823,7 @@ def summarize_antigravity(raw: Json) -> list[Json]:
         group = antigravity_group(model_name, entry)
         if not group:
             continue
-        quota = (
-            entry.get("quotaInfo") if isinstance(entry.get("quotaInfo"), dict) else {}
-        )
+        quota = as_dict(entry.get("quotaInfo"))
         current = groups.setdefault(group, {"model": group, "model_count": 0})
         current["model_count"] += 1
 
@@ -624,67 +846,119 @@ def summarize_antigravity(raw: Json) -> list[Json]:
     ]
 
 
+def cached_antigravity_buckets(quota: Json) -> list[Json]:
+    buckets: list[Json] = []
+    for key in ("gemini-flash", "gemini-pro", "claude"):
+        info = as_dict(quota.get(key))
+        if not info:
+            continue
+        remaining = info.get("remainingFraction")
+        used_percent = None
+        if isinstance(remaining, int | float):
+            remaining = min(max(float(remaining), 0.0), 1.0)
+            used_percent = (1.0 - remaining) * 100.0
+        buckets.append(
+            compact(
+                {
+                    "model": key,
+                    "model_count": info.get("modelCount"),
+                    "used_percent": used_percent,
+                    "resets_at": info.get("resetTime"),
+                }
+            )
+        )
+    return buckets
+
+
 def lookup_gemini(src: Source) -> Result:
-    auth = antigravity_auth(src)
-    if not auth or not isinstance(auth.data, dict):
+    sources = antigravity_account_sources(src)
+    if not sources:
         return Result(
             "gemini",
             False,
             error=f"no Antigravity OAuth credentials found for --src {src}",
         )
-    account = active_antigravity_account(auth.data)
-    project_id = os.environ.get("GOOGLE_CLOUD_PROJECT") or os.environ.get(
-        "GOOGLE_CLOUD_PROJECT_ID"
-    )
-    project_id = (
-        project_id or account.get("managedProjectId") or account.get("projectId") or ""
-    )
 
-    try:
-        token = antigravity_access_token(account)
-        try:
-            raw = fetch_antigravity_models(token, str(project_id), account)
-        except RuntimeError as exc:
-            if "HTTP 401" not in str(exc) and "HTTP 403" not in str(exc):
-                raise
-            token = refresh_antigravity_token(account)
-            raw = fetch_antigravity_models(token, str(project_id), account)
-    except Exception as exc:
-        return Result("gemini", False, error=str(exc))
+    active_indexes = antigravity_active_indexes()
+    accounts_out: list[Json] = []
+    errors: list[str] = []
 
-    return Result(
-        "gemini",
-        True,
-        compact(
-            {
-                "source": ANTIGRAVITY_MODELS_URL,
-                "auth_source": auth.src,
-                "auth_path": path_str(auth.path),
-                "account": account_name(account, auth.data, raw)
-                or google_account(token),
-                "updated_at": now_iso(),
-                "project_id": project_id,
-                "buckets": summarize_antigravity(raw),
-                "raw": raw,
-            }
-        ),
-    )
-
-
-def print_header(data: Json) -> None:
-    print(f"  source: {data.get('source', '?')}")
-    print(f"  src: {data.get('auth_source', '?')}")
-    print(f"  account: {data.get('account') or 'unknown'}")
-
-
-def print_window(
-    data: Json, label: str, key: str, percent_key: str = "used_percent"
-) -> None:
-    bucket = data.get(key)
-    if isinstance(bucket, dict):
-        print(
-            f"  {label}: {as_percent(bucket.get(percent_key))}{reset_suffix(bucket.get('resets_at'))}"
+    for index, source in enumerate(sources):
+        account = source.data
+        project_id = os.environ.get("GOOGLE_CLOUD_PROJECT") or os.environ.get(
+            "GOOGLE_CLOUD_PROJECT_ID"
         )
+        project_id = (
+            project_id
+            or account.get("managedProjectId")
+            or account.get("projectId")
+            or ""
+        )
+        entry: Json = {
+            "auth_source": source.src,
+            "auth_path": path_str(source.path),
+            "email": account.get("email"),
+            "enabled": account.get("enabled"),
+            "active": index in active_indexes or None,
+        }
+        if project_id:
+            entry["project_id"] = project_id
+
+        try:
+            token = antigravity_access_token(account)
+            try:
+                raw = fetch_antigravity_models(token, str(project_id), account)
+            except RuntimeError as exc:
+                if "HTTP 401" not in str(exc) and "HTTP 403" not in str(exc):
+                    raise
+                token = refresh_antigravity_token(account)
+                raw = fetch_antigravity_models(token, str(project_id), account)
+            buckets = summarize_antigravity(raw)
+            email = account.get("email") or account_name(account, raw) or google_account(token)
+            if email:
+                entry["email"] = email
+            if buckets:
+                entry["buckets"] = buckets
+        except Exception as exc:
+            cached = cached_antigravity_buckets(as_dict(account.get("cachedQuota")))
+            if cached:
+                entry["cached"] = True
+                entry["buckets"] = cached
+            else:
+                entry["error"] = str(exc)
+                errors.append(str(exc))
+        accounts_out.append(compact(entry))
+
+    if not accounts_out:
+        return Result("gemini", False, error="no Antigravity accounts found")
+
+    primary = next(
+        (
+            entry
+            for entry in accounts_out
+            if entry.get("active") and entry.get("buckets")
+        ),
+        next((entry for entry in accounts_out if entry.get("buckets")), None),
+    )
+    data = compact(
+        {
+            "source": ANTIGRAVITY_MODELS_URL,
+            "auth_source": ", ".join(sorted({source.src for source in sources})),
+            "auth_path": path_str(sources[0].path),
+            "account": (primary or {}).get("email"),
+            "updated_at": now_iso(),
+            "accounts": accounts_out,
+            "buckets": (primary or {}).get("buckets"),
+        }
+    )
+    return Result("gemini", not errors, data)
+
+
+def print_window(label: str, bucket: Any, percent_key: str, suffix: str = "") -> None:
+    bucket = as_dict(bucket)
+    if bucket:
+        percent = as_percent(bucket.get(percent_key))
+        print(f"  {label}: {percent}{suffix}{reset_suffix(bucket.get('resets_at'))}")
 
 
 def print_result(result: Result) -> None:
@@ -694,43 +968,66 @@ def print_result(result: Result) -> None:
         return
 
     data = result.data
-    print_header(data)
+    print(f"  source: {data.get('source', '?')}")
+    print(f"  src: {data.get('auth_source', '?')}")
+    print(f"  account: {data.get('account') or 'unknown'}")
+    if data.get("plan"):
+        print(f"  plan: {data['plan']}")
     match result.provider:
         case "claude":
-            raw = data.get("raw")
-            if isinstance(raw, dict):
-                for label, key in (
-                    ("session 5h", "five_hour"),
-                    ("week 7d", "seven_day"),
-                ):
-                    bucket = raw.get(key)
-                    if isinstance(bucket, dict):
-                        print(
-                            f"  {label}: {as_percent(bucket.get('utilization'))}{reset_suffix(bucket.get('resets_at'))}"
-                        )
+            raw = as_dict(data.get("raw"))
+            print_window("session 5h", raw.get("five_hour"), "utilization")
+            print_window("week 7d", raw.get("seven_day"), "utilization")
         case "gpt":
-            print(f"  plan: {data.get('plan', '?')}")
-            print_window(data, "session 5h", "session_5h")
-            print_window(data, "week 7d", "week_7d")
+            print_window("session 5h", data.get("session_5h"), "used_percent")
+            print_window("week 7d", data.get("week_7d"), "used_percent")
         case "gemini":
-            if data.get("project_id"):
-                print(f"  project: {data['project_id']}")
-            for bucket in data.get("buckets", []):
-                if isinstance(bucket, dict):
-                    print(
-                        f"  {bucket.get('model', 'quota')}: {as_percent(bucket.get('used_percent'))} used{reset_suffix(bucket.get('resets_at'))}"
+            accounts = data.get("accounts")
+            if isinstance(accounts, list) and accounts:
+                for account in accounts:
+                    email = account.get("email") or "unknown"
+                    flags = []
+                    if account.get("active"):
+                        flags.append("active")
+                    if account.get("enabled") is False:
+                        flags.append("disabled")
+                    if account.get("cached"):
+                        flags.append("cached")
+                    suffix = f" ({', '.join(flags)})" if flags else ""
+                    print(f"  account: {email}{suffix}")
+                    if account.get("project_id"):
+                        print(f"  project: {account['project_id']}")
+                    if account.get("error"):
+                        print(f"  error: {account['error']}")
+                    for bucket in account.get("buckets", []):
+                        print_window(
+                            as_dict(bucket).get("model", "quota"),
+                            bucket,
+                            "used_percent",
+                            " used",
+                        )
+            else:
+                if data.get("project_id"):
+                    print(f"  project: {data['project_id']}")
+                for bucket in data.get("buckets", []):
+                    print_window(
+                        as_dict(bucket).get("model", "quota"), bucket, "used_percent", " used"
                     )
         case "copilot":
-            if data.get("plan"):
-                print(f"  plan: {data['plan']}")
-            used = data.get("quota_used")
-            limit = data.get("quota_limit")
+            used, limit = data.get("quota_used"), data.get("quota_limit")
             if used is not None or limit is not None:
-                print(
-                    f"  quota: {used if used is not None else '?'} / {limit if limit is not None else '?'}"
-                )
+                print(f"  quota: {used if used is not None else '?'} / {limit if limit is not None else '?'}")
             if data.get("quota_reset"):
                 print(f"  reset: {data['quota_reset']}")
+        case "opencode-go":
+            for key, info in as_dict(data.get("limits")).items():
+                info = as_dict(info)
+                print_window(
+                    info.get("label", "?"),
+                    data.get(key),
+                    "used_percent",
+                    f" used / ${info.get('dollars', '?')} cap",
+                )
     print()
 
 
@@ -741,6 +1038,8 @@ def canonical_provider(name: ProviderArg) -> Provider:
         "codex": "gpt",
         "gemini": "gemini",
         "agy": "gemini",
+        "opencode-go": "opencode-go",
+        "go": "opencode-go",
         "copilot": "copilot",
         "gh": "copilot",
     }
@@ -753,7 +1052,7 @@ def source_for(provider_arg: ProviderArg, provider: Provider, src: Source) -> So
     if provider_arg in ("codex", "gh"):
         return "native"
     if provider == "gemini":
-        return "native"
+        return "auto"
     if provider in ("gpt", "copilot"):
         return "opencode"
     return "auto"
@@ -766,23 +1065,35 @@ def lookup(provider_arg: ProviderArg, src: Source) -> Result:
         case "claude":
             return lookup_claude(selected)
         case "gpt":
-            return lookup_gpt(selected, native_first=provider_arg == "codex")
+            return lookup_gpt(selected)
         case "gemini":
-            return lookup_gemini("opencode" if selected == "opencode" else "native")
+            return lookup_gemini(selected)
         case "copilot":
             return lookup_copilot(selected)
+        case "opencode-go":
+            return lookup_opencode_go()
 
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
-        description="OAuth quota lookup: claude, gpt/codex, gemini/agy, copilot/gh"
+        description="OAuth quota lookup: claude, gpt/codex, gemini/agy, copilot/gh, opencode-go/go"
     )
     parser.add_argument(
         "providers",
         nargs="*",
-        choices=["claude", "gpt", "codex", "gemini", "agy", "copilot", "gh"],
+        choices=[
+            "claude",
+            "gpt",
+            "codex",
+            "gemini",
+            "agy",
+            "copilot",
+            "gh",
+            "opencode-go",
+            "go",
+        ],
         default=DEFAULT_PROVIDER_ARGS,
-        help="provider: claude, gpt/codex, gemini/agy, copilot/gh",
+        help="provider: claude, gpt/codex, gemini/agy, copilot/gh, opencode-go/go",
     )
     parser.add_argument("--json", action="store_true", help="print raw JSON")
     parser.add_argument(

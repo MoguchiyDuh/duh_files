@@ -74,6 +74,7 @@ PLAYLISTS_FILE = Path(__file__).resolve().parent / "playlists.json"
 @dataclass
 class Config:
     cookies: Path | None = None
+    cookies_from_browser: str | None = None
     verbose: bool = False
     mode: AudioMode = "audio"
     parallel: int = 1
@@ -84,6 +85,7 @@ class Config:
     def from_args(cls, args: Namespace) -> Config:
         return cls(
             cookies=args.cookies,
+            cookies_from_browser=getattr(args, "cookies_from_browser", None),
             verbose=args.verbose,
             mode=getattr(args, "mode", "audio"),
             parallel=getattr(args, "parallel", 1),
@@ -241,6 +243,14 @@ def run_ytdlp(args: list[str], capture: bool = True, verbose: bool = False) -> s
         raise YtdlpError(f"yt-dlp failed: {e.stderr or e}") from e
 
 
+def add_cookie_args(args: list[str], cookies: Path | None, browser: str | None) -> None:
+    """Append cookie auth flags. Explicit cookie file takes precedence."""
+    if cookies and cookies.exists():
+        args.extend(["--cookies", str(cookies)])
+    elif browser:
+        args.extend(["--cookies-from-browser", browser])
+
+
 def build_download_args(
     url: str,
     output: Path,
@@ -293,9 +303,11 @@ def build_download_args(
             ]
         )
 
+    add_cookie_args(args, cfg.cookies, cfg.cookies_from_browser)
     if cfg.cookies and cfg.cookies.exists():
-        args.extend(["--cookies", str(cfg.cookies)])
         log.debug(f"Using cookies: {cfg.cookies}")
+    elif cfg.cookies_from_browser:
+        log.debug(f"Using cookies from browser: {cfg.cookies_from_browser}")
 
     args.append(url)
     return args
@@ -334,11 +346,10 @@ class Track:
         return make_filename(self.artist, self.title, ext)
 
 
-def search_youtube(query: str, cookies: Path | None = None) -> str:
+def search_youtube(query: str, cookies: Path | None = None, browser: str | None = None) -> str:
     log.debug(f"Searching: {query}")
     args = [f"ytsearch1:{query}", "--get-id"]
-    if cookies and cookies.exists():
-        args.extend(["--cookies", str(cookies)])
+    add_cookie_args(args, cookies, browser)
     video_id = run_ytdlp(args)
     return f"https://www.youtube.com/watch?v={video_id}"
 
@@ -388,14 +399,13 @@ class TrackDetails:
         return f"{self.upload_date[:4]}-{self.upload_date[4:6]}-{self.upload_date[6:]}"
 
 
-def get_track_info(url: str, cookies: Path | None = None) -> Track:
-    return get_track_details(url, cookies).to_track()
+def get_track_info(url: str, cookies: Path | None = None, browser: str | None = None) -> Track:
+    return get_track_details(url, cookies, browser).to_track()
 
 
-def get_track_details(url: str, cookies: Path | None = None) -> TrackDetails:
+def get_track_details(url: str, cookies: Path | None = None, browser: str | None = None) -> TrackDetails:
     args = ["--dump-json"]
-    if cookies and cookies.exists():
-        args.extend(["--cookies", str(cookies)])
+    add_cookie_args(args, cookies, browser)
     args.append(url)
     log.debug(f"Fetching info: {url}")
     data = json.loads(run_ytdlp(args))
@@ -413,10 +423,9 @@ def get_track_details(url: str, cookies: Path | None = None) -> TrackDetails:
     )
 
 
-def get_playlist_info(url: str, cookies: Path | None = None) -> tuple[str, list[Track]]:
+def get_playlist_info(url: str, cookies: Path | None = None, browser: str | None = None) -> tuple[str, list[Track]]:
     args = ["--flat-playlist", "--dump-json"]
-    if cookies and cookies.exists():
-        args.extend(["--cookies", str(cookies)])
+    add_cookie_args(args, cookies, browser)
     args.append(url)
     log.debug(f"Fetching playlist: {url}")
     output = run_ytdlp(args)
@@ -673,7 +682,7 @@ def cmd_download(args: Namespace) -> int:
 
     if input_type == "search":
         print(f"Searching: {args.url}")
-        url = search_youtube(args.url, cfg.cookies)
+        url = search_youtube(args.url, cfg.cookies, cfg.cookies_from_browser)
         print(f"Found: {url}")
         input_type = "url"
     else:
@@ -681,7 +690,7 @@ def cmd_download(args: Namespace) -> int:
 
     if input_type == "playlist":
         print("Fetching playlist...")
-        title, tracks = get_playlist_info(url, cfg.cookies)
+        title, tracks = get_playlist_info(url, cfg.cookies, cfg.cookies_from_browser)
         print(f"Playlist: {title} ({len(tracks)} tracks)")
 
         if cfg.parallel > 1:
@@ -699,7 +708,7 @@ def cmd_download(args: Namespace) -> int:
         print(f"\nDownloaded: {success}, Skipped: {skipped}, Failed: {failed}")
         print_success(f"Output: {output}")
     else:
-        track = get_track_info(url, cfg.cookies)
+        track = get_track_info(url, cfg.cookies, cfg.cookies_from_browser)
         print(f"Track: {track.artist} - {track.title}")
 
         if output.is_dir():
@@ -740,7 +749,7 @@ def sync_single_playlist(
         print(f"Created directory: {directory}")
 
     print("Fetching playlist...")
-    title, tracks = get_playlist_info(url, cfg.cookies)
+    title, tracks = get_playlist_info(url, cfg.cookies, cfg.cookies_from_browser)
     playlist_urls = {t.url for t in tracks}
     print(f"Playlist: {title} ({len(tracks)} tracks)")
 
@@ -920,7 +929,7 @@ def cmd_m3u(args: Namespace) -> int:
     ext = "mp3" if mode == "mp3" else "opus"
 
     print("Fetching playlist...")
-    title, tracks = get_playlist_info(url, args.cookies)
+    title, tracks = get_playlist_info(url, args.cookies, args.cookies_from_browser)
     playlist_urls = [t.url for t in tracks]
     print(f"Playlist: {title} ({len(tracks)} tracks)")
 
@@ -969,14 +978,14 @@ def cmd_view(args: Namespace) -> int:
         input_type = detect_input_type(args.url)
         if input_type == "search":
             print(f"Searching: {args.url}")
-            url = search_youtube(args.url, args.cookies)
+            url = search_youtube(args.url, args.cookies, args.cookies_from_browser)
             print(f"Found: {url}")
             input_type = "url"
         else:
             url = args.url
 
     if input_type == "playlist":
-        title, tracks = get_playlist_info(url, args.cookies)
+        title, tracks = get_playlist_info(url, args.cookies, args.cookies_from_browser)
         if args.to_file:
             data = [t.to_dict() for t in tracks]
             with open(args.to_file, "w", encoding="utf-8") as f:
@@ -988,7 +997,7 @@ def cmd_view(args: Namespace) -> int:
             for track in tracks:
                 print(f"  [{track.id:3}] {track.artist} - {track.title}")
     else:
-        details = get_track_details(url, args.cookies)
+        details = get_track_details(url, args.cookies, args.cookies_from_browser)
         if args.to_file:
             with open(args.to_file, "w", encoding="utf-8") as f:
                 json.dump([details.to_dict()], f, indent=2, ensure_ascii=False)
@@ -1109,6 +1118,11 @@ def build_parser() -> argparse.ArgumentParser:
         type=Path,
         metavar="FILE",
         help="cookies file for authentication",
+    )
+    parser.add_argument(
+        "--cookies-from-browser",
+        metavar="BROWSER",
+        help="extract cookies from browser (e.g. chrome, firefox, safari)",
     )
     parser.add_argument(
         "-v",

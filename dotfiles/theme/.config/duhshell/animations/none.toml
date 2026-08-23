@@ -1,0 +1,9 @@
+[meta]
+name = "none"
+label = "None"
+description = "All animation disabled"
+enabled = false
+
+[curves]
+
+[animations]

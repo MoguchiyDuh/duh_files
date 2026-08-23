@@ -1,0 +1,68 @@
+[meta]
+name = "pills"
+label = "Pills"
+description = "Floating rounded panels with live telemetry"
+icon = "view-grid-symbolic"
+variant = "dark"
+
+[color]
+backend = "fastresize"
+color_space = "lchmixed"
+palette = "dark16"
+threshold = 10
+check_contrast = true
+accent = "color12"
+accent_alt = "color13"
+semantic_blend = 0.15
+surface_steps = [0.00, 0.04, 0.09, 0.14, 0.20]
+
+[font]
+ui = "Noto Sans"
+mono = "FiraCode Nerd Font Mono"
+ui_size = 12
+mono_size = 12
+
+[toolkit]
+gtk = "Adwaita-dark"
+icons = "Adwaita"
+cursor = "Adwaita"
+cursor_size = 24
+qt_style = "Adwaita-Dark"
+kvantum = "KvLibadwaitaDark"
+
+[shape]
+radius = 20
+radius_sm = 10
+radius_lg = 28
+border = 2
+
+[spacing]
+gap_in = 6
+gap_out = 6
+pad = 8
+
+[effect]
+blur = true
+blur_size = 8
+blur_passes = 3
+shadow = true
+shadow_range = 24
+shadow_offset = [0, 10]
+opacity_active = 1.00
+opacity_inactive = 0.85
+surface_alpha = 0.80
+
+[animation]
+preset = "snappy"
+
+[shell]
+module = "pills"
+bar_surface = "none"
+bar_position = "top"
+bar_height = 40
+bar_floating = false
+bar_margin = 0
+workspaces = "center"
+metrics = true
+taskbar = true
+tray = true

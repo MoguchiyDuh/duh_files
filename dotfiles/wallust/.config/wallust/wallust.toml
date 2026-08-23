@@ -10,6 +10,9 @@ kitty.target = '~/.config/kitty/colors.conf'
 hypr.template = 'hyprland-colors.conf'
 hypr.target = '~/.config/hypr/colors.conf'
 
+rofi.template = 'rofi-colors.rasi'
+rofi.target = '~/.config/rofi/colors.rasi'
+
 waybar.template = 'waybar-colors.css'
 waybar.target = '~/.config/waybar/colors.css'
 

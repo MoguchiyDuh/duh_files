@@ -1,0 +1,21 @@
+[meta]
+name = "minimal"
+label = "Minimal"
+description = "Short confirmatory transitions with minimal travel"
+
+[curves]
+snap = { bezier = [0.15, 0.85, 0.25, 1.00] }
+
+[animations]
+border = { speed = 1.0, curve = "snap" }
+borderangle = { speed = 20, curve = "snap", style = "loop" }
+windowsIn = { speed = 1.2, curve = "snap", style = "popin 90%" }
+windowsOut = { speed = 1.0, curve = "snap", style = "popin 90%" }
+windowsMove = { speed = 1.0, curve = "snap" }
+fade = { speed = 1.2, curve = "snap" }
+layersIn = { speed = 1.0, curve = "snap" }
+layersOut = { speed = 0.8, curve = "snap" }
+fadeLayersIn = { speed = 1.0, curve = "snap" }
+fadeLayersOut = { speed = 0.8, curve = "snap" }
+workspaces = { speed = 1.4, curve = "snap", style = "slide" }
+specialWorkspace = { speed = 1.2, curve = "snap", style = "slidevert" }

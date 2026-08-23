@@ -1,0 +1,8 @@
+require("conf.env")
+require("conf.monitors")
+require("conf.appearance")
+require("conf.animations")
+require("conf.input")
+require("conf.rules")
+require("conf.binds")
+require("conf.autostart")

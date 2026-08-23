@@ -1,0 +1,67 @@
+[meta]
+name = "breeze"
+label = "Breeze"
+description = "KDE Plasma — bottom panel, task manager, sharp geometry"
+icon = "start-here-kde-symbolic"
+variant = "dark"
+
+[color]
+backend = "fastresize"
+color_space = "lchmixed"
+palette = "dark16"
+threshold = 10
+check_contrast = true
+accent = "color4"
+accent_alt = "color6"
+semantic_blend = 0.15
+surface_steps = [0.00, 0.03, 0.07, 0.11, 0.16]
+
+[font]
+ui = "Noto Sans"
+mono = "Noto Sans Mono"
+ui_size = 10
+mono_size = 10
+
+[toolkit]
+gtk = "Breeze-Dark"
+icons = "breeze-dark"
+cursor = "breeze_cursors"
+cursor_size = 24
+qt_style = "Breeze"
+kvantum = "KvBreezeDark"
+
+[shape]
+radius = 4
+radius_sm = 3
+radius_lg = 6
+border = 1
+
+[spacing]
+gap_in = 4
+gap_out = 4
+pad = 6
+
+[effect]
+blur = false
+blur_size = 0
+blur_passes = 0
+shadow = true
+shadow_range = 30
+shadow_offset = [0, 8]
+opacity_active = 1.00
+opacity_inactive = 0.90
+surface_alpha = 0.95
+
+[animation]
+preset = "minimal"
+
+[shell]
+module = "breeze"
+bar_position = "bottom"
+bar_height = 44
+bar_floating = false
+bar_margin = 0
+workspaces = "left"
+metrics = false
+taskbar = true
+tray = true

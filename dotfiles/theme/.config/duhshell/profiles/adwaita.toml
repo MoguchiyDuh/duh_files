@@ -1,0 +1,67 @@
+[meta]
+name = "adwaita"
+label = "Adwaita"
+description = "GNOME Shell — flat top bar, no telemetry, generous spacing"
+icon = "org.gnome.Settings-symbolic"
+variant = "dark"
+
+[color]
+backend = "fastresize"
+color_space = "lchmixed"
+palette = "softdark16"
+threshold = 12
+check_contrast = true
+accent = "color4"
+accent_alt = "color12"
+semantic_blend = 0.15
+surface_steps = [0.00, 0.05, 0.10, 0.15, 0.22]
+
+[font]
+ui = "Adwaita Sans"
+mono = "Adwaita Mono"
+ui_size = 11
+mono_size = 11
+
+[toolkit]
+gtk = "Adwaita-dark"
+icons = "Adwaita"
+cursor = "Adwaita"
+cursor_size = 24
+qt_style = "Adwaita-Dark"
+kvantum = "KvLibadwaitaDark"
+
+[shape]
+radius = 12
+radius_sm = 8
+radius_lg = 16
+border = 1
+
+[spacing]
+gap_in = 6
+gap_out = 12
+pad = 10
+
+[effect]
+blur = false
+blur_size = 0
+blur_passes = 0
+shadow = true
+shadow_range = 14
+shadow_offset = [0, 0]
+opacity_active = 1.00
+opacity_inactive = 0.92
+surface_alpha = 1.00
+
+[animation]
+preset = "fluid"
+
+[shell]
+module = "adwaita"
+bar_position = "top"
+bar_height = 34
+bar_floating = false
+bar_margin = 0
+workspaces = "overview"
+metrics = false
+taskbar = false
+tray = true
