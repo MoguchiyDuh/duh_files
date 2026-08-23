@@ -1,10 +1,10 @@
-anyrun
+elephant-all-git
+walker
 brave-bin
 clash-verge-rev-bin
-lazysql-bin
+lazysql
 neovim-git
 tor-browser-bin
 wallust
 wayvnc-git
-wlogout
 yay

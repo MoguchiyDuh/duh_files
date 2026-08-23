@@ -1,0 +1,12 @@
+[Unit]
+Description=Elephant data provider daemon
+PartOf=graphical-session.target
+
+[Service]
+Type=simple
+ExecStart=/usr/bin/elephant
+Restart=on-failure
+PassEnvironment=WAYLAND_DISPLAY DISPLAY XAUTHORITY
+
+[Install]
+WantedBy=graphical-session.target walker.service

@@ -3,17 +3,14 @@
 
 # <file system> <dir> <type> <options> <dump> <pass>
 # /dev/sda2
-UUID=32b13ac3-934c-449a-ad90-e0ec49240091	/         	ext4      	rw,relatime	0 1
+UUID=0c4af8ef-ccb2-4fd9-a996-307ff972df53	/         	ext4      	rw,relatime	0 1
 
 # /dev/sda1
-UUID=4DC0-78E1      	/boot     	vfat      	rw,relatime,fmask=0022,dmask=0022,codepage=437,iocharset=ascii,shortname=mixed,utf8,errors=remount-ro	0 2
+UUID=E5F9-80E8      	/boot     	vfat      	rw,relatime,fmask=0022,dmask=0022,codepage=437,iocharset=ascii,shortname=mixed,utf8,errors=remount-ro	0 2
 
-# /dev/sda3
-UUID=06ac879a-076c-4014-acab-b9e7bff05cdf	/home     	ext4      	rw,relatime	0 2
 
 # Windows partition (970 EVO Plus - nvme0n1p3)
 UUID=76ECFC6EECFC2A4F	/mnt/win    	ntfs-3g   	defaults,uid=1000,gid=1000,umask=022,nofail	0 0
 
 # Samsung 870 EVO 1TB (sdb1)
 UUID=0F2067D74E6D47C7	/mnt/870_evo	ntfs-3g   	defaults,uid=1000,gid=1000,umask=022,nofail	0 0
-/swapfile none swap defaults 0 0

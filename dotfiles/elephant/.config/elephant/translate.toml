@@ -1,0 +1,7 @@
+name_pretty = "Translate"
+placeholder = "translating…"
+min_chars = 2
+target_lang = "en"
+command = "trans -brief -no-ansi :%LANG% -- %QUERY%"
+copy_command = "wl-copy -n '%VALUE%'"
+async = true

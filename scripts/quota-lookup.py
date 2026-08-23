@@ -17,17 +17,25 @@ from pathlib import Path
 from typing import Any, Literal
 
 Json = dict[str, Any]
-Provider = Literal["claude", "gpt", "gemini", "copilot", "opencode-go"]
+Provider = Literal["claude", "gpt", "gemini", "opencode-go", "zai"]
 Source = Literal["auto", "opencode", "native"]
 ProviderArg = Literal[
-    "claude", "gpt", "codex", "gemini", "agy", "copilot", "gh", "opencode-go", "go"
+    "claude",
+    "gpt",
+    "codex",
+    "gemini",
+    "agy",
+    "opencode-go",
+    "go",
+    "zai",
+    "glm",
 ]
 DEFAULT_PROVIDER_ARGS: list[ProviderArg] = [
     "claude",
     "gpt",
     "gemini",
-    "copilot",
     "opencode-go",
+    "zai",
 ]
 
 ACCESS_KEYS = {"access", "access_token", "accessToken"}
@@ -63,8 +71,6 @@ ANTIGRAVITY_MODELS_URL = (
 GOOGLE_USERINFO_URL = "https://www.googleapis.com/oauth2/v2/userinfo"
 ANTIGRAVITY_FILE_RE = re.compile(r"antigravity.*\.json$")
 
-COPILOT_USER_URL = "https://api.github.com/copilot_internal/user"
-
 OPENCODE_GO_DASHBOARD_URL = "https://opencode.ai/workspace/{workspace_id}/go"
 OPENCODE_GO_CREDENTIALS = (
     Path(os.environ.get("XDG_DATA_HOME", Path.home() / ".local/share"))
@@ -75,6 +81,8 @@ OPENCODE_GO_LIMITS = {
     "weekly": {"label": "week 7d", "dollars": 30},
     "monthly": {"label": "month", "dollars": 60},
 }
+
+ZAI_USAGE_URL = "https://api.z.ai/api/monitor/usage/quota/limit"
 
 
 @dataclass(frozen=True)
@@ -90,6 +98,7 @@ class Result:
     ok: bool
     data: Json | None = None
     error: str | None = None
+    skip: bool = False
 
 
 def read_json(path: Path) -> Json | None:
@@ -130,7 +139,13 @@ def unix_to_iso(value: Any) -> str | None:
         return None
 
 
-def reset_suffix(value: str | None) -> str:
+def unix_ms_to_iso(value: Any) -> str | None:
+    if not isinstance(value, int | float):
+        return None
+    return unix_to_iso(value / 1000)
+
+
+def reset_suffix(value: str | None, stale_ok: bool = False) -> str:
     if not value:
         return ""
     try:
@@ -139,11 +154,18 @@ def reset_suffix(value: str | None) -> str:
         return ""
     seconds = int((reset - datetime.now(UTC)).total_seconds())
     if seconds <= 0:
-        return ""
-    minutes = seconds // 60
-    if minutes >= 60:
-        return f" resets {minutes // 60}h{minutes % 60}m"
-    return f" resets {minutes}m"
+        return " (stale reset)" if stale_ok else ""
+    days, rem = divmod(seconds, 86400)
+    hours, rem = divmod(rem, 3600)
+    minutes = rem // 60
+    parts = []
+    if days:
+        parts.append(f"{days}d")
+    if hours:
+        parts.append(f"{hours}h")
+    if minutes:
+        parts.append(f"{minutes}m")
+    return f" resets in {' '.join(parts)}" if parts else ""
 
 
 def find_string(value: Any, names: set[str]) -> str | None:
@@ -317,7 +339,7 @@ def lookup_claude(src: Source) -> Result:
     token = find_string(auth.data, ACCESS_KEYS | {"oauth_token", "token"}) if auth else None
     if not auth or not token:
         return Result(
-            "claude", False, error=f"no Claude OAuth token found for --src {src}"
+            "claude", False, error=f"no Claude OAuth token found for --src {src}", skip=True
         )
 
     errors: list[str] = []
@@ -362,8 +384,10 @@ def gpt_auth(native_first: bool) -> Auth | None:
         auth = read_json(path)
         if not auth:
             continue
-        if source == "opencode" and isinstance(auth.get("openai"), dict):
-            return Auth(source, path, auth["openai"])
+        if source == "opencode":
+            if isinstance(auth.get("openai"), dict):
+                return Auth(source, path, auth["openai"])
+            continue
         return Auth(source, path, auth)
     return None
 
@@ -389,13 +413,13 @@ def refresh_openai_token(auth: Auth) -> str:
 def lookup_gpt(src: Source) -> Result:
     auth = gpt_auth(src == "native")
     if not auth:
-        return Result("gpt", False, error="no OpenAI OAuth credentials found")
+        return Result("gpt", False, error="no OpenAI OAuth credentials found", skip=True)
     token = find_string(auth.data, ACCESS_KEYS)
     account_id = (
         find_string(auth.data, {"accountId", "account_id", "chatgpt_account_id"}) or ""
     )
     if not token:
-        return Result("gpt", False, error=f"{auth.path} has no OpenAI access token")
+        return Result("gpt", False, error=f"{auth.path} has no OpenAI access token", skip=True)
 
     headers = {
         "chatgpt-account-id": account_id,
@@ -441,76 +465,6 @@ def lookup_gpt(src: Source) -> Result:
                 ),
                 "additional_rate_limits": raw.get("additional_rate_limits"),
                 "code_review_rate_limit": raw.get("code_review_rate_limit"),
-                "raw": raw,
-            }
-        ),
-    )
-
-
-def copilot_auth(native_first: bool) -> Auth | None:
-    sources = [
-        ("opencode", opencode_auth_path()),
-        ("gh", Path.home() / ".config/gh/hosts.yml"),
-    ]
-    if native_first:
-        sources.reverse()
-    for source, path in sources:
-        if source == "opencode":
-            auth = read_json(path)
-            if not auth:
-                continue
-            provider = (
-                auth.get("github")
-                if isinstance(auth.get("github"), dict)
-                else auth.get("copilot")
-            )
-            if isinstance(provider, dict):
-                token = find_string(
-                    provider, ACCESS_KEYS | {"token", "key"}
-                )
-                if token:
-                    return Auth(source, path, token)
-            continue
-        try:
-            text = path.read_text()
-        except OSError:
-            continue
-        match = re.search(r"oauth_token:\s*(\S+)", text)
-        if match:
-            return Auth(source, path, match.group(1))
-    return None
-
-
-def lookup_copilot(src: Source) -> Result:
-    auth = copilot_auth(src == "native")
-    if not auth or not isinstance(auth.data, str):
-        return Result(
-            "copilot", False, error="no Copilot/GitHub OAuth credentials found"
-        )
-    try:
-        raw = request_json(
-            COPILOT_USER_URL,
-            token=auth.data,
-            headers={"Accept": "application/json", "User-Agent": USER_AGENT},
-        )
-    except Exception as exc:
-        return Result("copilot", False, error=str(exc))
-    return Result(
-        "copilot",
-        True,
-        compact(
-            {
-                "source": COPILOT_USER_URL,
-                "auth_source": auth.src,
-                "auth_path": path_str(auth.path),
-                "account": account_name(raw),
-                "updated_at": now_iso(),
-                "plan": raw.get("copilot_plan")
-                or raw.get("access_type_sku")
-                or raw.get("sku"),
-                "quota_used": raw.get("quota_used") or raw.get("quotaUsed"),
-                "quota_limit": raw.get("quota_limit") or raw.get("quotaLimit"),
-                "quota_reset": raw.get("quota_reset_date") or raw.get("quotaResetDate"),
                 "raw": raw,
             }
         ),
@@ -651,6 +605,96 @@ def lookup_opencode_go() -> Result:
                 "plan": "go",
                 "limits": OPENCODE_GO_LIMITS,
                 **windows,
+            }
+        ),
+    )
+
+
+def zai_auth() -> Auth | None:
+    key = os.environ.get("ZAI_API_KEY", "").strip()
+    if key:
+        return Auth("env", None, key)
+    return opencode_provider("zai-coding-plan") or opencode_provider("zai")
+
+
+ZAI_UNIT_HOURS: dict[int, int] = {3: 1, 6: 168}
+
+
+def zai_label(lim: Json) -> str:
+    unit = lim.get("unit")
+    number = lim.get("number")
+    if isinstance(unit, int) and isinstance(number, int | float) and unit in ZAI_UNIT_HOURS:
+        hours = ZAI_UNIT_HOURS[unit] * int(number)
+        if hours < 24:
+            return f"session {hours}h"
+        days = hours // 24
+        return f"week {days}d" if days <= 7 else f"month {days}d"
+    period = lim.get("period") or lim.get("periodType") or lim.get("periodUnit")
+    if period:
+        return str(period).lower().replace("_", " ")
+    if isinstance(number, int | float):
+        n = int(number)
+        return f"session {n}h" if n < 24 else f"week {n // 24}d"
+    return "session"
+
+
+def zai_windows(data: Json) -> list[Json]:
+    windows: list[Json] = []
+    for lim in data.get("limits", []):
+        if not isinstance(lim, dict):
+            continue
+        limit_type = str(lim.get("type", "")).lower()
+        if limit_type == "credit_limit":
+            label = zai_label(lim)
+        else:
+            label = limit_type.replace("_", " ") or "quota"
+        percentage = lim.get("percentage")
+        windows.append(
+            compact(
+                {
+                    "label": label,
+                    "used_percent": float(percentage)
+                    if isinstance(percentage, int | float)
+                    else None,
+                    "resets_at": unix_ms_to_iso(lim.get("nextResetTime")),
+                    "remaining": lim.get("remaining"),
+                }
+            )
+        )
+    return windows
+
+
+def lookup_zai() -> Result:
+    auth = zai_auth()
+    token = find_string(auth.data, {"key", "api_key", "apiKey", "access_token"}) if auth else None
+    if not auth or not token:
+        return Result("zai", False, error="no z.ai API key found (ZAI_API_KEY or opencode auth)", skip=True)
+
+    try:
+        raw = request_json(
+            ZAI_USAGE_URL, token=token, headers={"User-Agent": USER_AGENT}
+        )
+    except Exception as exc:
+        return Result("zai", False, error=str(exc))
+
+    payload = as_dict(raw.get("data"))
+    windows = zai_windows(payload)
+    if not windows:
+        return Result("zai", False, error=f"unexpected response: {raw.get('msg', raw)}")
+
+    level = payload.get("level")
+    return Result(
+        "zai",
+        True,
+        compact(
+            {
+                "source": ZAI_USAGE_URL,
+                "auth_source": auth.src,
+                "auth_path": path_str(auth.path),
+                "updated_at": now_iso(),
+                "plan": level.title() if isinstance(level, str) and level else None,
+                "windows": windows,
+                "raw": payload,
             }
         ),
     )
@@ -877,6 +921,7 @@ def lookup_gemini(src: Source) -> Result:
             "gemini",
             False,
             error=f"no Antigravity OAuth credentials found for --src {src}",
+            skip=True,
         )
 
     active_indexes = antigravity_active_indexes()
@@ -930,7 +975,7 @@ def lookup_gemini(src: Source) -> Result:
         accounts_out.append(compact(entry))
 
     if not accounts_out:
-        return Result("gemini", False, error="no Antigravity accounts found")
+        return Result("gemini", False, error="no Antigravity accounts found", skip=True)
 
     primary = next(
         (
@@ -954,11 +999,11 @@ def lookup_gemini(src: Source) -> Result:
     return Result("gemini", not errors, data)
 
 
-def print_window(label: str, bucket: Any, percent_key: str, suffix: str = "") -> None:
+def print_window(label: str, bucket: Any, percent_key: str, suffix: str = "", stale_ok: bool = False) -> None:
     bucket = as_dict(bucket)
     if bucket:
         percent = as_percent(bucket.get(percent_key))
-        print(f"  {label}: {percent}{suffix}{reset_suffix(bucket.get('resets_at'))}")
+        print(f"  {label}: {percent}{suffix}{reset_suffix(bucket.get('resets_at'), stale_ok=stale_ok)}")
 
 
 def print_result(result: Result) -> None:
@@ -978,6 +1023,14 @@ def print_result(result: Result) -> None:
             raw = as_dict(data.get("raw"))
             print_window("session 5h", raw.get("five_hour"), "utilization")
             print_window("week 7d", raw.get("seven_day"), "utilization")
+            print_window("week 7d opus", raw.get("seven_day_opus"), "utilization")
+            print_window("week 7d sonnet", raw.get("seven_day_sonnet"), "utilization")
+            print_window("week 7d oauth apps", raw.get("seven_day_oauth_apps"), "utilization")
+            extra = as_dict(raw.get("extra_usage"))
+            if extra.get("is_enabled"):
+                util = extra.get("utilization")
+                util_s = as_percent(util) if util is not None else "enabled"
+                print(f"  extra usage: {util_s}")
         case "gpt":
             print_window("session 5h", data.get("session_5h"), "used_percent")
             print_window("week 7d", data.get("week_7d"), "used_percent")
@@ -1013,12 +1066,6 @@ def print_result(result: Result) -> None:
                     print_window(
                         as_dict(bucket).get("model", "quota"), bucket, "used_percent", " used"
                     )
-        case "copilot":
-            used, limit = data.get("quota_used"), data.get("quota_limit")
-            if used is not None or limit is not None:
-                print(f"  quota: {used if used is not None else '?'} / {limit if limit is not None else '?'}")
-            if data.get("quota_reset"):
-                print(f"  reset: {data['quota_reset']}")
         case "opencode-go":
             for key, info in as_dict(data.get("limits")).items():
                 info = as_dict(info)
@@ -1028,6 +1075,12 @@ def print_result(result: Result) -> None:
                     "used_percent",
                     f" used / ${info.get('dollars', '?')} cap",
                 )
+        case "zai":
+            for window in data.get("windows", []):
+                window = as_dict(window)
+                remaining = window.get("remaining")
+                suffix = f" used / {remaining} credits left" if remaining is not None else " used"
+                print_window(window.get("label", "quota"), window, "used_percent", suffix, stale_ok=True)
     print()
 
 
@@ -1040,8 +1093,8 @@ def canonical_provider(name: ProviderArg) -> Provider:
         "agy": "gemini",
         "opencode-go": "opencode-go",
         "go": "opencode-go",
-        "copilot": "copilot",
-        "gh": "copilot",
+        "zai": "zai",
+        "glm": "zai",
     }
     return aliases[name]
 
@@ -1049,11 +1102,11 @@ def canonical_provider(name: ProviderArg) -> Provider:
 def source_for(provider_arg: ProviderArg, provider: Provider, src: Source) -> Source:
     if src != "auto":
         return src
-    if provider_arg in ("codex", "gh"):
+    if provider_arg == "codex":
         return "native"
     if provider == "gemini":
         return "auto"
-    if provider in ("gpt", "copilot"):
+    if provider == "gpt":
         return "opencode"
     return "auto"
 
@@ -1068,15 +1121,15 @@ def lookup(provider_arg: ProviderArg, src: Source) -> Result:
             return lookup_gpt(selected)
         case "gemini":
             return lookup_gemini(selected)
-        case "copilot":
-            return lookup_copilot(selected)
         case "opencode-go":
             return lookup_opencode_go()
+        case "zai":
+            return lookup_zai()
 
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
-        description="OAuth quota lookup: claude, gpt/codex, gemini/agy, copilot/gh, opencode-go/go"
+        description="OAuth quota lookup: claude, gpt/codex, gemini/agy, opencode-go/go, zai/glm"
     )
     parser.add_argument(
         "providers",
@@ -1087,13 +1140,13 @@ def parse_args() -> argparse.Namespace:
             "codex",
             "gemini",
             "agy",
-            "copilot",
-            "gh",
             "opencode-go",
             "go",
+            "zai",
+            "glm",
         ],
         default=DEFAULT_PROVIDER_ARGS,
-        help="provider: claude, gpt/codex, gemini/agy, copilot/gh, opencode-go/go",
+        help="provider: claude, gpt/codex, gemini/agy, opencode-go/go, zai/glm",
     )
     parser.add_argument("--json", action="store_true", help="print raw JSON")
     parser.add_argument(
@@ -1110,12 +1163,17 @@ def main() -> int:
     results = [lookup(name, args.src) for name in args.providers]
     if args.json:
         print(
-            json.dumps([result.__dict__ for result in results], indent=2, default=str)
+            json.dumps(
+                [r.__dict__ for r in results if not r.skip],
+                indent=2,
+                default=str,
+            )
         )
     else:
         for result in results:
-            print_result(result)
-    return 0 if all(result.ok for result in results) else 1
+            if not result.skip:
+                print_result(result)
+    return 0 if all(r.ok for r in results if not r.skip) else 1
 
 
 if __name__ == "__main__":

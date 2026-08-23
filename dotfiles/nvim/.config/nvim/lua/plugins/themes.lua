@@ -1,11 +1,9 @@
--- ── all colorschemes + theme/variant/transparency selector ───────────────────
--- keymaps:
---   <leader>ct  — pick theme → then variant
---   <leader>cv  — pick variant for current theme
---   <leader>cb  — toggle transparency
+-- theme/variant/transparency selector
+--   <leader>ct  pick theme -> variant
+--   <leader>cv  pick variant for current theme
+--   <leader>cb  toggle transparency
 
 return {
-	-- non-default themes: installed by lazy, loaded on demand
 	{ "folke/tokyonight.nvim", lazy = true },
 	{ "catppuccin/nvim", lazy = true, name = "catppuccin" },
 	{ "navarasu/onedark.nvim", lazy = true },
@@ -14,14 +12,11 @@ return {
 	{ "EdenEast/nightfox.nvim", lazy = true },
 	{ "sainnhe/everforest", lazy = true },
 
-	-- kanagawa is the boot driver: lazy=false ensures it loads first,
-	-- config runs after all plugins are registered so require() is safe
 	{
 		"rebelot/kanagawa.nvim",
 		lazy = false,
 		priority = 1000,
 		config = function()
-			-- ── helpers ───────────────────────────────────────────────────────
 			local light_variants = {
 				["tokyonight-day"] = true,
 				["catppuccin-latte"] = true,
@@ -32,26 +27,19 @@ return {
 				["kanagawa-lotus"] = true,
 				["everforest-light"] = true,
 			}
-
-			local function is_light(v)
-				return v and light_variants[v] == true
-			end
-
-			local function strip(s)
-				return (s or ""):gsub("%s+%[.+%]", "")
-			end
+			local is_light = function(v) return v and light_variants[v] == true end
+			local strip = function(s) return (s or ""):gsub("%s+%[.+%]", "") end
 
 			local function warn_if_light(v)
 				if is_light(v) then
 					vim.notify(
-						"⚠ LIGHT THEME ⚠  use <leader>ct or <leader>cv to switch back",
+						"LIGHT THEME - use <leader>ct or <leader>cv to switch back",
 						vim.log.levels.WARN,
 						{ title = "LIGHT THEME ACTIVE", timeout = 8000 }
 					)
 				end
 			end
 
-			-- snacks height fix (upstream: non-integer from float math)
 			local function snacks_layout(n)
 				return {
 					layout = {
@@ -66,8 +54,14 @@ return {
 				}
 			end
 
-			-- ── theme definitions ─────────────────────────────────────────────
 			local themes = {
+				wallust = {
+					variants = { "wallust" },
+					load = function(_)
+						vim.o.background = "dark"
+						vim.cmd("colorscheme wallust")
+					end,
+				},
 				kanagawa = {
 					variants = { "kanagawa-wave", "kanagawa-dragon", "kanagawa-lotus [LIGHT]" },
 					load = function(variant)
@@ -79,12 +73,7 @@ return {
 					end,
 				},
 				tokyonight = {
-					variants = {
-						"tokyonight-night",
-						"tokyonight-storm",
-						"tokyonight-moon",
-						"tokyonight-day [LIGHT]",
-					},
+					variants = { "tokyonight-night", "tokyonight-storm", "tokyonight-moon", "tokyonight-day [LIGHT]" },
 					load = function(variant)
 						local v = strip(variant) ~= "" and strip(variant) or "tokyonight-night"
 						require("tokyonight").setup({ style = v:gsub("tokyonight%-", "") })
@@ -94,12 +83,7 @@ return {
 					end,
 				},
 				catppuccin = {
-					variants = {
-						"catppuccin-mocha",
-						"catppuccin-macchiato",
-						"catppuccin-frappe",
-						"catppuccin-latte [LIGHT]",
-					},
+					variants = { "catppuccin-mocha", "catppuccin-macchiato", "catppuccin-frappe", "catppuccin-latte [LIGHT]" },
 					load = function(variant)
 						local v = strip(variant) ~= "" and strip(variant) or "catppuccin-mocha"
 						require("catppuccin").setup({ flavour = v:gsub("catppuccin%-", "") })
@@ -138,15 +122,7 @@ return {
 					end,
 				},
 				nightfox = {
-					variants = {
-						"nightfox",
-						"carbonfox",
-						"nordfox",
-						"terafox",
-						"duskfox",
-						"dayfox [LIGHT]",
-						"dawnfox [LIGHT]",
-					},
+					variants = { "nightfox", "carbonfox", "nordfox", "terafox", "duskfox", "dayfox [LIGHT]", "dawnfox [LIGHT]" },
 					load = function(variant)
 						local v = strip(variant) ~= "" and strip(variant) or "nightfox"
 						require("nightfox").setup({})
@@ -167,8 +143,8 @@ return {
 				},
 			}
 
-			-- ── persistence ───────────────────────────────────────────────────
 			local state_file = vim.fn.stdpath("data") .. "/theme_state.json"
+			local transparent = false
 
 			local function save_state(theme, transp, variant)
 				local f = io.open(state_file, "w")
@@ -188,30 +164,11 @@ return {
 				return ok and data or nil
 			end
 
-			-- ── transparency ──────────────────────────────────────────────────
-			local transparent = false
-
 			local transparent_groups = {
-				"Normal",
-				"NormalNC",
-				"NormalFloat",
-				"SignColumn",
-				"StatusLine",
-				"StatusLineNC",
-				"EndOfBuffer",
-				"CursorLine",
-				"CursorLineNr",
-				"LineNr",
-				"LineNrAbove",
-				"LineNrBelow",
-				"WinSeparator",
-				"VertSplit",
-				"SnacksNormal",
-				"SnacksNormalNC",
-				"SnacksWinBar",
-				"SnacksWinBarNC",
-				"SnacksPickerPickWin",
-				"SnacksPickerPickWinCurrent",
+				"Normal", "NormalNC", "NormalFloat", "SignColumn", "StatusLine", "StatusLineNC",
+				"EndOfBuffer", "CursorLine", "CursorLineNr", "LineNr", "LineNrAbove", "LineNrBelow",
+				"WinSeparator", "VertSplit", "SnacksNormal", "SnacksNormalNC", "SnacksWinBar",
+				"SnacksWinBarNC", "SnacksPickerPickWin", "SnacksPickerPickWinCurrent",
 			}
 
 			local function apply_transparent()
@@ -228,7 +185,6 @@ return {
 				end,
 			})
 
-			-- ── apply ─────────────────────────────────────────────────────────
 			local function apply_theme(name, variant)
 				local t = themes[name]
 				if not t then
@@ -247,7 +203,7 @@ return {
 				end
 				Snacks.picker.select(
 					{ "Yes, I know what I'm doing", "No, go back" },
-					{ prompt = "⚠  LIGHT THEME — are you sure?", snacks = snacks_layout(2) },
+					{ prompt = "LIGHT THEME - are you sure?", snacks = snacks_layout(2) },
 					function(choice)
 						if choice and choice:sub(1, 3) == "Yes" then
 							on_confirm()
@@ -276,7 +232,6 @@ return {
 				)
 			end
 
-			-- ── keymaps ───────────────────────────────────────────────────────
 			vim.keymap.set("n", "<leader>cb", function()
 				transparent = not transparent
 				if transparent then
@@ -318,7 +273,6 @@ return {
 				end)
 			end, { desc = "Switch variant" })
 
-			-- ── boot ──────────────────────────────────────────────────────────
 			local state = load_state()
 			local boot_theme = (state and state.theme) or "kanagawa"
 			local boot_variant = state and state.variant

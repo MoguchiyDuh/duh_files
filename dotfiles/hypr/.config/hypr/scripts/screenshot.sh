@@ -2,7 +2,7 @@
 
 set -euo pipefail
 
-case "$1" in
+case "${1:-}" in
     fullscreen)
         hyprshot -m output
         ;;

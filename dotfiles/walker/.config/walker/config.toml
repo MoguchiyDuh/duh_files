@@ -1,0 +1,116 @@
+theme = "duh"
+close_when_open = true
+click_to_close = true
+single_click_activation = true
+selection_wrap = false
+global_argument_delimiter = "#"
+exact_search_prefix = "'"
+hide_quick_activation = false
+hide_action_hints = false
+hide_return_action = false
+keybind_symbols = true
+resume_last_query = false
+ext_background_effect_blur = true
+
+[columns]
+"menus:wallpapers" = 3
+symbols = 7
+
+[placeholders]
+default = { input = "Search apps, windows, files — DDG bangs work: !gh, !w, !yt, !mdn…", list = "No results" }
+calc = { input = "Calculate or convert", list = "No calculation" }
+files = { input = "Search files", list = "No files" }
+websearch = { input = "Search the web", list = "No search engine" }
+"menus:settings" = { input = "Search settings", list = "No settings" }
+"menus:keybinds" = { input = "Search keybinds", list = "No keybinds" }
+"menus:tools" = { input = "Search tools", list = "No tools" }
+symbols = { input = "Search symbols and emoji", list = "No symbols" }
+windows = { input = "Search open windows", list = "No windows" }
+clipboard = { input = "Search clipboard history", list = "Clipboard is empty" }
+runner = { input = "Run a shell command", list = "No matching command" }
+translate = { input = "Translate (de: to force target lang, default en)", list = "No translation" }
+
+[providers]
+default = ["desktopapplications", "windows", "calc", "menus:settings", "files", "websearch"]
+empty = ["desktopapplications", "windows"]
+ignore_preview = ["desktopapplications", "windows", "calc", "menus:settings", "menus:tools", "symbols", "websearch", "translate"]
+max_results = 100
+
+[providers.max_results_provider]
+desktopapplications = 20
+windows = 15
+files = 25
+calc = 5
+"menus:settings" = 12
+"menus:tools" = 8
+clipboard = 20
+symbols = 999999
+websearch = 5
+runner = 10
+translate = 1
+[providers.sets.clipboard]
+default = ["clipboard"]
+empty = ["clipboard"]
+
+[providers.sets.wallpapers]
+default = ["menus:wallpapers"]
+empty = ["menus:wallpapers"]
+
+[providers.sets.settings]
+default = ["menus:settings"]
+empty = ["menus:settings"]
+
+[providers.sets.tools]
+default = ["menus:tools"]
+empty = ["menus:tools"]
+
+[providers.sets.keybinds]
+default = ["menus:keybinds"]
+empty = ["menus:keybinds"]
+
+[providers.sets.animations]
+default = ["menus:animations"]
+empty = ["menus:animations"]
+
+[[providers.prefixes]]
+prefix = "="
+provider = "calc"
+
+[[providers.prefixes]]
+prefix = "@"
+provider = "files"
+
+[[providers.prefixes]]
+prefix = "?"
+provider = "websearch"
+
+[[providers.prefixes]]
+prefix = "$"
+provider = "menus:settings"
+
+[[providers.prefixes]]
+prefix = "<"
+provider = "windows"
+
+[[providers.prefixes]]
+prefix = ":"
+provider = "clipboard"
+
+[[providers.prefixes]]
+prefix = ">"
+provider = "runner"
+
+[[providers.prefixes]]
+prefix = "^"
+provider = "menus:keybinds"
+
+[[providers.prefixes]]
+prefix = "~"
+provider = "menus:tools"
+
+[[providers.prefixes]]
+prefix = "tr "
+provider = "translate"
+
+[providers.clipboard]
+time_format = "relative"

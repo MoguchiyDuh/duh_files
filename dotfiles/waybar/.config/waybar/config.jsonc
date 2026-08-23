@@ -1,226 +1,257 @@
 {
-    "layer": "top",
-    "position": "top",
-    "height": 46,
+  "layer": "top",
+  "position": "top",
+  "height": 46,
+  "spacing": 0,
+  "exclusive": true,
+  "passthrough": false,
+  "gtk-layer-shell": true,
+  "modules-left": [
+    "custom/distro-icon",
+    "cpu",
+    "memory",
+    "custom/gpu",
+    "wlr/taskbar"
+  ],
+  "modules-center": ["hyprland/workspaces"],
+  "modules-right": [
+    "custom/cliphist",
+    "privacy",
+    "tray",
+    "pulseaudio#mic",
+    "pulseaudio",
+    "bluetooth",
+    "network",
+    "hyprland/language",
+    "custom/weather",
+    "clock",
+    "battery",
+    "custom/awake",
+    "custom/profile",
+    "custom/notifications"
+  ],
+  "custom/distro-icon": {
+    "exec": "~/.config/waybar/scripts/distro_icon.sh",
+    "interval": "once",
+    "tooltip-format": "<b>Session</b>",
+    "on-click": "~/.config/hypr/scripts/walker.sh toggle",
+    "on-click-right": "hyprlock",
+  },
+  "cpu": {
+    "interval": 3,
+    "states": {
+      "warning": 70,
+      "critical": 90,
+    },
+    "format": " {usage}%",
+    "tooltip-format": "<b>CPU</b>  {usage}%\nLoad  {load}\nFreq  {avg_frequency} GHz",
+    "on-click": "kitty btop",
+  },
+  "memory": {
+    "interval": 3,
+    "states": {
+      "warning": 80,
+      "critical": 92,
+    },
+    "format": " {percentage}%",
+    "tooltip-format": "<b>Memory</b>  {percentage}%\nUsed  {used} / {total} GiB\nSwap  {swapPercentage}%",
+    "on-click": "kitty btop",
+  },
+  "custom/gpu": {
+    "interval": 5,
+    "exec": "~/.config/waybar/scripts/status.sh gpu",
+    "return-type": "json",
+    "tooltip-format": "{tooltip}",
+    "on-click": "lact",
+  },
+  "wlr/taskbar": {
+    "format": "{icon}",
+    "icon-size": 20,
     "spacing": 0,
-    "margin-top": 0,
-    "margin-bottom": 0,
-    "exclusive": true,
-    "passthrough": false,
-    "gtk-layer-shell": true,
-
-    "modules-left": [
-        "custom/distro-icon",
-        "custom/cpu",
-        "custom/memory",
-        "custom/gpu",
-        "wlr/taskbar"
+    "all-outputs": true,
+    "active-first": true,
+    "tooltip-format": "{title}",
+    "on-click": "activate",
+    "on-click-middle": "close",
+  },
+  "hyprland/workspaces": {
+    "format": "{icon}",
+    "format-icons": {
+      "urgent": "",
+      "active": "",
+      "default": "",
+    },
+    "persistent-workspaces": {
+      "*": 5,
+    },
+    "tooltip": false,
+    "on-click": "activate",
+    "on-scroll-up": "hyprctl dispatch workspace e+1",
+    "on-scroll-down": "hyprctl dispatch workspace e-1",
+  },
+  "custom/cliphist": {
+    "exec": "~/.config/waybar/scripts/status.sh clipboard",
+    "return-type": "json",
+    "interval": 30,
+    "tooltip-format": "{tooltip}",
+    "on-click": "walker --provider clipboard",
+  },
+  "privacy": {
+    "icon-spacing": 6,
+    "icon-size": 14,
+    "transition-duration": 250,
+    "modules": [
+      {
+        "type": "audio-in",
+        "tooltip": "Microphone in use",
+      },
+      {
+        "type": "screenshare",
+        "tooltip": "Screen sharing",
+      },
     ],
-    "modules-center": ["hyprland/workspaces"],
-    "modules-right": [
-        "custom/cliphist",
-        "tray",
-        "custom/mic",
-        "custom/volume",
-        "bluetooth",
-        "custom/network",
-        "hyprland/language",
-        "custom/weather",
-        "clock",
-        "battery",
-        "custom/awake",
-        "custom/profile",
-        "custom/notifications"
-    ],
-
-    "custom/distro-icon": {
-        "exec": "~/.config/waybar/scripts/distro_icon.sh",
-        "interval": "once",
-        "tooltip-format": "<b>Session menu</b>\n\nRMB  Open",
-        "on-click-right": "wlogout"
+  },
+  "tray": {
+    "icon-size": 20,
+    "spacing": 5,
+    "show-passive-items": true,
+  },
+  "pulseaudio": {
+    "format": "{icon} {volume}%",
+    "format-muted": "󰝟 {volume}%",
+    "format-icons": {
+      "default": ["󰕿", "󰖀", "󰕾"],
     },
-    "custom/cpu": {
-        "exec": "~/.local/bin/hardwarebar cpu",
-        "return-type": "json",
-        "restart-interval": 5,
-        "on-click": "kitty btop"
+    "on-click": "pavucontrol",
+    "on-click-right": "pactl set-sink-mute @DEFAULT_SINK@ toggle",
+    "on-scroll-up": "~/.config/waybar/scripts/volume.sh sink up",
+    "on-scroll-down": "~/.config/waybar/scripts/volume.sh sink down",
+  },
+  "pulseaudio#mic": {
+    "format": "{format_source} {source_volume}%",
+    "format-source": "󰍬",
+    "format-source-muted": "󰍭",
+    "ignored-sources": ["EasyEffectsSink"],
+    "on-click": "pavucontrol -t 4",
+    "on-click-right": "pactl set-source-mute @DEFAULT_SOURCE@ toggle",
+    "on-scroll-up": "~/.config/waybar/scripts/volume.sh source up",
+    "on-scroll-down": "~/.config/waybar/scripts/volume.sh source down",
+  },
+  "bluetooth": {
+    "format": "{icon}",
+    "format-disabled": "󰂲",
+    "format-off": "󰂲",
+    "format-on": "",
+    "format-connected": "󰂱",
+    "format-no-controller": "󰂲",
+    "format-icons": {
+      "enabled": "",
+      "disabled": "󰂲",
     },
-    "custom/memory": {
-        "exec": "~/.local/bin/hardwarebar memory",
-        "return-type": "json",
-        "restart-interval": 5,
-        "on-click": "kitty btop"
+    "tooltip-format": "<b>Bluetooth</b>\nController {controller_alias}",
+    "tooltip-format-connected": "<b>Bluetooth</b>  {num_connections} connected\n{device_enumerate}",
+    "tooltip-format-enumerate-connected": "• {device_alias}",
+    "tooltip-format-enumerate-connected-battery": "• {device_alias}  {device_battery_percentage}%",
+    "on-click": "blueman-manager",
+  },
+  "network": {
+    "interval": 5,
+    "format-wifi": "{icon}",
+    "format-icons": ["󰤯", "󰤟", "󰤢", "󰤥", "󰤨"],
+    "format-ethernet": "󰈀",
+    "format-linked": "󰈀",
+    "format-disconnected": "󰤭",
+    "tooltip-format-wifi": "<b>Wi-Fi</b>  {essid}\nSignal  {signalStrength}%\nBand  {frequency} GHz\nIP  {ipaddr}",
+    "tooltip-format-ethernet": "<b>Ethernet</b>\nIP  {ipaddr}\nGW  {gwaddr}",
+    "tooltip-format-disconnected": "<b>Disconnected</b>",
+    "on-click": "nm-connection-editor",
+  },
+  "hyprland/language": {
+    "format": "{}",
+    "format-en": "US",
+    "format-ru": "RU",
+    "tooltip-format": "<b>Keyboard</b>  {long}",
+    "on-click": "~/.config/waybar/scripts/switch-layout.sh next",
+    "on-click-right": "~/.config/waybar/scripts/switch-layout.sh prev",
+  },
+  "custom/weather": {
+    "exec": "~/.config/waybar/scripts/status.sh weather",
+    "return-type": "json",
+    "interval": 3600,
+    "tooltip-format": "{tooltip}",
+    "on-click": "xdg-open 'https://wttr.in'",
+  },
+  "clock": {
+    "format": "{:%R\n%d.%m.%Y}",
+    "interval": 1,
+    "min-length": 10,
+    "tooltip-format": "<tt><small>{calendar}</small></tt>",
+    "calendar": {
+      "mode": "year",
+      "mode-mon-col": 3,
+      "weeks-pos": "right",
+      "iso8601": true,
+      "on-scroll": 1,
+      "format": {
+        "months": "<b>{}</b>",
+        "days": "{}",
+        "weeks": "<span alpha='60%'>W{}</span>",
+        "weekdays": "<b>{}</b>",
+        "today": "<span foreground='#fcaf3e'><b><u>{}</u></b></span>",
+      },
     },
-    "custom/gpu": {
-        "exec": "~/.local/bin/hardwarebar gpu",
-        "return-type": "json",
-        "restart-interval": 5,
-        "on-click": "lact"
+    "actions": {
+      "on-click-right": "mode",
+      "on-scroll-up": "shift_up",
+      "on-scroll-down": "shift_down",
     },
-    "wlr/taskbar": {
-        "format": "{icon}",
-        "icon-size": 20,
-        "spacing": 0,
-        "all-outputs": true,
-        "active-first": true,
-        "tooltip-format": "{title}\n\nLMB  Focus\nMMB  Close",
-        "on-click": "activate",
-        "on-click-middle": "close"
+    "justify": "center",
+  },
+  "battery": {
+    "states": {
+      "good": 95,
+      "warning": 30,
+      "critical": 20,
     },
-
-    "hyprland/workspaces": {
-        "format": "{icon}",
-        "format-icons": {
-            "urgent": "",
-            "active": "",
-            "default": ""
-        },
-        "persistent-workspaces": {
-            "*": 5
-        },
-        "tooltip": false,
-        "on-click": "activate",
-        "on-scroll-up": "hyprctl dispatch workspace e+1",
-        "on-scroll-down": "hyprctl dispatch workspace e-1"
+    "format": "{icon}  {capacity}%",
+    "format-charging": "  {capacity}%",
+    "format-plugged": "  {capacity}%",
+    "format-icons": ["󰂎", "󰁺", "󰁻", "󰁼", "󰁽", "󰁾", "󰁿", "󰂀", "󰂁", "󰂂", "󰁹"],
+    "tooltip-format": "Battery  {capacity}%\nPower    {power:.1f} W\nTime     {time}\nHealth   {health}%  ·  {cycles} cycles",
+  },
+  "custom/awake": {
+    "exec": "~/.config/waybar/scripts/status.sh awake",
+    "return-type": "json",
+    "interval": 30,
+    "signal": 1,
+    "tooltip-format": "{tooltip}",
+    "on-click": "~/.config/hypr/scripts/power.sh awake toggle",
+  },
+  "custom/profile": {
+    "exec": "~/.config/waybar/scripts/status.sh profile",
+    "return-type": "json",
+    "interval": 30,
+    "signal": 1,
+    "tooltip-format": "{tooltip}",
+    "on-click": "~/.config/hypr/scripts/power.sh profile cycle",
+  },
+  "custom/notifications": {
+    "exec": "swaync-client -swb",
+    "exec-if": "which swaync-client",
+    "return-type": "json",
+    "format": "{icon}",
+    "format-icons": {
+      "notification": "󰂞",
+      "none": "󰂜",
+      "dnd-notification": "󰂛",
+      "dnd-none": "󰂛",
+      "inhibited-notification": "󰂞",
+      "inhibited-none": "󰂜",
+      "dnd-inhibited-notification": "󰂛",
+      "dnd-inhibited-none": "󰂛",
     },
-
-    "custom/cliphist": {
-        "exec": "~/.config/waybar/scripts/status.sh clipboard",
-        "return-type": "json",
-        "interval": "once",
-        "signal": 2,
-        "format": "󰅍",
-        "on-click-middle": "~/.config/waybar/scripts/clipboard.sh wipe",
-        "on-click-right": "~/.config/waybar/scripts/clipboard.sh wipe"
-    },
-    "tray": {
-        "icon-size": 20,
-        "spacing": 5,
-        "show-passive-items": true
-    },
-    "custom/mic": {
-        "exec": "~/.local/bin/soundbar source",
-        "return-type": "json",
-        "restart-interval": 5,
-        "on-click": "pavucontrol -t 4",
-        "on-click-right": "pactl set-source-mute @DEFAULT_SOURCE@ toggle",
-        "on-scroll-up": "pactl set-source-volume @DEFAULT_SOURCE@ +5%",
-        "on-scroll-down": "pactl set-source-volume @DEFAULT_SOURCE@ -5%"
-    },
-    "custom/volume": {
-        "exec": "~/.local/bin/soundbar sink",
-        "return-type": "json",
-        "restart-interval": 5,
-        "on-click": "pavucontrol -t 3",
-        "on-click-right": "pactl set-sink-mute @DEFAULT_SINK@ toggle",
-        "on-scroll-up": "pactl set-sink-volume @DEFAULT_SINK@ +5%",
-        "on-scroll-down": "pactl set-sink-volume @DEFAULT_SINK@ -5%"
-    },
-    "bluetooth": {
-        "format": "{icon}",
-        "format-disabled": "󰂲",
-        "format-off": "󰂲",
-        "format-on": "",
-        "format-connected": "󰂱",
-        "format-no-controller": "",
-        "format-icons": {
-            "enabled": "",
-            "disabled": "󰂲"
-        },
-        "tooltip-format": "<b>Bluetooth</b>\nController {controller_alias}\n\nLMB  Open settings",
-        "tooltip-format-connected": "<b>Bluetooth</b>  {num_connections} connected\n{device_enumerate}\n\nLMB  Open settings",
-        "tooltip-format-enumerate-connected": "• {device_alias}",
-        "tooltip-format-enumerate-connected-battery": "• {device_alias}  {device_battery_percentage}%",
-        "on-click": "blueman-manager"
-    },
-    "custom/network": {
-        "exec": "~/.local/bin/netbar",
-        "return-type": "json",
-        "restart-interval": 5,
-        "on-click": "nm-connection-editor"
-    },
-    "hyprland/language": {
-        "format": "{}",
-        "format-en": "US",
-        "format-ru": "RU",
-        "tooltip-format": "<b>Keyboard</b>  {long}\n\nLMB  Next\nRMB  Previous",
-        "on-click": "~/.config/waybar/scripts/switch-layout.sh next",
-        "on-click-right": "~/.config/waybar/scripts/switch-layout.sh prev"
-    },
-    "custom/weather": {
-        "exec": "~/.config/waybar/scripts/weather.sh",
-        "return-type": "json",
-        "interval": 3600,
-        "on-click": "xdg-open 'https://wttr.in'"
-    },
-    "clock": {
-        "format": "{:%R\n%d.%m.%Y}",
-        "interval": 1,
-        "min-length": 10,
-        "align": 0.5,
-        "justify": "center",
-        "tooltip-format": "<tt><small>{calendar}</small></tt>\n\nRMB  Month / year\nScroll  Navigate",
-        "calendar": {
-            "mode": "year",
-            "mode-mon-col": 3,
-            "weeks-pos": "right",
-            "iso8601": true,
-            "on-scroll": 1,
-            "format": {
-                "months": "<b>{}</b>",
-                "days": "{}",
-                "weeks": "<span alpha='60%'>W{}</span>",
-                "weekdays": "<b>{}</b>",
-                "today": "<span foreground='#fcaf3e'><b><u>{}</u></b></span>"
-            }
-        },
-        "actions": {
-            "on-click-right": "mode",
-            "on-scroll-up": "shift_up",
-            "on-scroll-down": "shift_down"
-        }
-    },
-    "battery": {
-        "states": {
-            "good": 95,
-            "warning": 30,
-            "critical": 20
-        },
-        "format": "{icon}  {capacity}%",
-        "format-charging": "  {capacity}%",
-        "format-plugged": "  {capacity}%",
-        "format-icons": ["󰂎", "󰁺", "󰁻", "󰁼", "󰁽", "󰁾", "󰁿", "󰂀", "󰂁", "󰂂", "󰁹"],
-        "tooltip-format": "Battery  {capacity}%\nPower    {power:.1f} W\nTime     {time}\nHealth   {health}%  ·  {cycles} cycles"
-    },
-    "custom/awake": {
-        "exec": "~/.config/waybar/scripts/coffee.sh awake",
-        "return-type": "json",
-        "interval": 30,
-        "signal": 1
-    },
-    "custom/profile": {
-        "exec": "~/.config/waybar/scripts/coffee.sh profile",
-        "return-type": "json",
-        "interval": 30,
-        "signal": 1
-    },
-    "custom/notifications": {
-        "exec": "swaync-client -swb",
-        "return-type": "json",
-        "format": "{icon}",
-        "format-icons": {
-            "notification": "󱅫",
-            "none": "",
-            "dnd-notification": "󰂛",
-            "dnd-none": "󰂛",
-            "inhibited-notification": "󱅫",
-            "inhibited-none": "",
-            "dnd-inhibited-notification": "󰂛",
-            "dnd-inhibited-none": "󰂛"
-        },
-        "tooltip-format": "<b>Notifications</b>  {} unread\n\nLMB  Open center\nRMB  Do not disturb",
-        "on-click": "swaync-client -t -sw",
-        "on-click-right": "swaync-client -d -sw",
-        "escape": true
-    }
+    "on-click": "swaync-client -t -sw",
+    "on-click-middle": "swaync-client -d -sw",
+    "on-click-right": "swaync-client -C -sw",
+  },
 }

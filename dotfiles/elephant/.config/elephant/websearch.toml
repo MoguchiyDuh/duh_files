@@ -1,0 +1,13 @@
+name_pretty = "Web Search"
+hide_from_providerlist = true
+history = true
+history_when_empty = false
+engines_as_actions = true
+always_show_default = true
+text_prefix = "Search: "
+command = "xdg-open"
+
+[[entries]]
+name = "DuckDuckGo"
+default = true
+url = "https://duckduckgo.com/?q=%TERM%"

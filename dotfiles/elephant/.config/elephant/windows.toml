@@ -1,0 +1,4 @@
+name_pretty = "Windows"
+delay = 100
+show_workspaces = true
+show_empty_workspaces = false

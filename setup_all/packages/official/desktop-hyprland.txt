@@ -1,11 +1,11 @@
 awww
-cliphist
 grim
 gpu-screen-recorder
 hypridle
 hyprland
 hyprland-guiutils
 hyprlock
+hyprpolkitagent
 hyprpicker
 hyprshot
 kitty

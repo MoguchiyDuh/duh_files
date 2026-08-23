@@ -7,42 +7,67 @@ Machine-specific state for this Arch/Hyprland desktop (Ryzen 7 5700X, RTX 3060 T
 
 Suspend uses S3/deep sleep and is known-good on this machine.
 
-Two pieces are required for a _correct_ resume, not just a working-looking one:
+Three pieces are required for a _correct_ resume, not just a working-looking one:
 
-1. Systemd services (VRAM save/restore hooks):
+1. VRAM preservation (driver options). As of nvidia-open 610 the right options
+   are already active on this machine — verify with
+   `grep -E 'Preserve|Temporary|SuspendNotifiers' /proc/driver/nvidia/params`:
 
-   ```bash
-   sudo systemctl enable nvidia-suspend.service nvidia-resume.service
-   sudo systemctl enable disable-acpi-wakeup-gpp0.service
-   ```
+   - `PreserveVideoMemoryAllocations: 1` comes from
+     `/usr/lib/modprobe.d/gsr-nvidia.conf`, shipped by the
+     gpu-screen-recorder NVIDIA package. It saves _all_ VRAM on suspend and
+     restores it on resume; without it, resume under GPU load risks a black
+     screen or corrupted framebuffers.
+   - `TemporaryFilePath: "/var/tmp"` (VRAM dump on ext4, not tmpfs) and
+     `UseKernelSuspendNotifiers: 1` (kernel-driven VRAM save/restore, so the
+     old `nvidia-suspend.service`/`nvidia-resume.service` pair is not needed)
+     are driver defaults in this version.
+   - `modeset=1 fbdev=1` for `nvidia_drm` are default-on here; `fbdev=1` is
+     mandatory for Wayland on kernel >= 6.11.
 
-2. Driver options in `/etc/modprobe.d/nvidia-power-management.conf`
-   (mirrored in `setup_all/etc/modprobe.d/`):
+   The old `/etc/modprobe.d/nvidia-power-management.conf` is gone; do not
+   recreate it — it would only duplicate the shipped options.
 
-   ```
-   options nvidia NVreg_PreserveVideoMemoryAllocations=1 NVreg_TemporaryFilePath=/var/tmp
-   options nvidia_drm modeset=1 fbdev=1
-   ```
+2. Wake-source udev rules (see next section).
 
-   - `NVreg_PreserveVideoMemoryAllocations=1` saves _all_ VRAM on suspend and
-     restores it on resume. Without it the nvidia-suspend/resume services are
-     effectively useless: resume under GPU load risks a black screen or
-     corrupted framebuffers. This is the fix for the previously-latent bug where
-     suspend only "worked" because the GPU was idle at test time.
-   - `NVreg_TemporaryFilePath=/var/tmp` puts the VRAM dump on disk (ext4) instead
-     of the default `/tmp`, which is tmpfs (RAM). Recommended by the Arch Wiki
-     and the NVIDIA README.
-   - `nvidia_drm modeset=1 fbdev=1` set explicitly. `fbdev=1` is mandatory for
-     Wayland on kernel >= 6.11; do not rely on the driver default.
+3. Session freeze on suspend (see below).
 
-   No initramfs regeneration is needed: these options are not in the
-   `mkinitcpio.conf` `MODULES=` array, so they load at normal module init.
-   Changes take effect on the next reboot.
+`enable nvidia-suspend.service`/`nvidia-resume.service` are no longer part of
+this setup: kernel suspend notifiers replaced them.
 
-`disable-acpi-wakeup-gpp0.service` disables `GPP0` from `/proc/acpi/wakeup` at
-boot. On this board `GPP0` maps to `0000:00:01.1`, the PCIe bridge to the NVMe
-SSD, and caused immediate wake after successful S3 suspend. Keep keyboard USB
-wake enabled; the keyboard was tested and was not the root cause.
+## Wake sources (udev rules)
+
+Phantom wake after S3 was caused by `GPP0` (`0000:00:01.1`, the PCIe bridge to
+the NVMe SSD) firing spurious PME events — a known Gigabyte B550 quirk. Fixed
+persistently with a udev rule instead of the old
+`disable-acpi-wakeup-gpp0.service`:
+
+- `/etc/udev/rules.d/90-nvme-bridge-gpp0-nowake.rules`:
+  `ACTION=="add", SUBSYSTEM=="pci", KERNELS=="0000:00:01.1", ATTR{power/wakeup}="disabled"`
+- `/etc/udev/rules.d/90-logitech-g502-wake.rules`: keeps the G502 mouse
+  wake-enabled (wakeup on its USB port is explicitly `enabled`)
+
+Keyboard (G512) wake stays at the kernel default (`enabled`); it was tested and
+was not the wake source. Verify with `cat /proc/acpi/wakeup | grep GPP0`
+(must show `*disabled`).
+
+Both rules are mirrored in `setup_all/etc/udev/rules.d/`.
+
+## Session freeze on suspend
+
+nvidia-utils ships
+`/usr/lib/systemd/system/systemd-suspend.service.d/10-nvidia-no-freeze-session.conf`
+setting `SYSTEMD_SLEEP_FREEZE_USER_SESSIONS=false`. With sessions unfrozen,
+wayland clients resume concurrently with the GPU driver restore and race it —
+on this machine hyprlock lost a pending DMABUF resource, never repainted, and
+showed a translucent frozen lockscreen (desktop blended through) until a hard
+reset.
+
+Fixed by re-enabling the systemd default:
+`/etc/systemd/system/systemd-suspend.service.d/override.conf` sets
+`SYSTEMD_SLEEP_FREEZE_USER_SESSIONS=true` (drop-in filename sorts after
+nvidia's, so it wins). Sessions now freeze before sleep and thaw after the
+driver is fully restored. Mirrored in `setup_all/etc/systemd/system/`.
 
 ## Idle escalation (hypridle)
 
@@ -56,8 +81,14 @@ never reveals the unlocked desktop.
 | notify      | 8 min     | warning toast                                     |
 | dim         | 9 min 50s | `idle-dim.sh dim` (hardware backlight/DDC + LEDs) |
 | lock        | 10 min    | `loginctl lock-session`                           |
-| display off | 10 min    | `hyprctl dispatch dpms off` (1s after lock)       |
+| display off | 10 min    | dpms off via Lua dispatch (1s after lock)         |
 | suspend     | 30 min    | `power.sh suspend` (honours awake mode + gating)  |
+
+hypridle itself runs as the systemd user unit `hypridle.service`. Display power
+is toggled with `hyprctl repl 'hl.dispatch(hl.dsp.dpms("off"))'` (and `"on"`
+for `after_sleep_cmd`/`on-resume`): since Hyprland 0.56 configs are Lua and the
+old string form `hyprctl dispatch dpms on` fails to parse two-word dispatcher
+args. `dpms` is exposed as `hl.dsp.dpms("on"|"off"|"toggle")`.
 
 Timings mirror the Windows "Balanced, plugged-in" plan: display off at 10 min,
 sleep at 30 min, with a short dim ~10 s before the display goes dark.
@@ -101,8 +132,8 @@ freeze Hyprland.
 `power.sh awake {enable|disable|toggle|status}` runs a transient user unit
 `awake-inhibit.service` holding `systemd-inhibit --what=idle:sleep --mode=block`.
 Because hypridle has `ignore_systemd_inhibit = false`, an active inhibitor
-pauses the whole idle escalation. Intended to be wired to a coffee-cup toggle in
-the top bar later.
+pauses the whole idle escalation. Wired to the waybar coffee pill
+(`status.sh awake`, click toggles, RTMIN+1 signal refresh).
 
 ## Hibernate safeguard
 
@@ -111,8 +142,8 @@ here. Blockers (all still true):
 
 - no valid kernel `resume=` parameter
 - no mkinitcpio `resume` hook
-- disk swap is too small for 31 GiB RAM (2 GiB swapfile only)
-- zram swap cannot be used for hibernation resume
+- the only swap is 16 GiB zram (`zram-generator`, compressed in RAM), which
+  cannot back hibernation; no disk swap exists
 
 Enforced in two places:
 

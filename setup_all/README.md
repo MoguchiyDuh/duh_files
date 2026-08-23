@@ -87,7 +87,7 @@ while read -r app; do flatpak install -y flathub "$app"; done < setup_all/pkg-fl
 
 ```bash
 cd ~/duh_files/dotfiles
-stow zsh kitty hypr waybar tmux wallust wlogout zed gtk qt5 fastfetch nvim
+stow zsh kitty ghostty hypr waybar tmux wallust swaync walker elephant systemd starship fastfetch gtk qt5 nvim
 ```
 
 Only stow directories that make sense on the target machine.
@@ -108,11 +108,12 @@ while read -r file; do
 done < etc-restore-candidates.txt
 ```
 
-Safe to copy verbatim on a fresh install: `zram-generator.conf`, both
-`sysctl.d/*`, `modules-load.d/network-performance.conf`, `mkinitcpio.conf`,
+Safe to copy verbatim on a fresh install: `zram-generator.conf` (16 GiB zstd
+zram0), both `sysctl.d/*`, `modules-load.d/*`, `mkinitcpio.conf`,
 `default/grub`, `locale.conf`, `locale.gen`, `vconsole.conf`, `hosts`,
-`pacman.conf`, `modprobe.d/nvidia-power-management.conf`, and the two
-`systemd/` units.
+`pacman.conf`, `sleep.conf.d/disable-hibernation.conf`,
+`systemd/system/systemd-suspend.service.d/override.conf`, and both
+`udev/rules.d/90-*.rules` (wake-source fixes; see `power-management.md`).
 
 Must be ADAPTED, never copied blindly: `fstab` (disk UUIDs) and `hostname`.
 After copying `mkinitcpio.conf` or `default/grub`, regenerate: `mkinitcpio -P`

@@ -1,16 +1,12 @@
 local autostart = {
-    "awww-daemon",
-    "hypridle",
-    "waybar",
-    "wl-paste --type text --watch ~/.config/waybar/scripts/clipboard.sh store",
-    "wl-paste --type image --watch ~/.config/waybar/scripts/clipboard.sh store",
-    "clash-verge",
-    "flatpak run org.telegram.desktop -startintray",
-    "flatpak run com.discordapp.Discord --start-minimized",
+  "gsettings set org.gnome.desktop.interface color-scheme 'prefer-dark'",
+  "gsettings set org.gnome.desktop.interface gtk-theme 'Adwaita-dark'",
+  "gsettings set org.gnome.desktop.interface font-name 'JetBrainsMono Nerd Font Mono 11'",
+  "gsettings set org.gnome.desktop.interface cursor-theme 'Adwaita'",
 }
 
 hl.on("hyprland.start", function()
-    for _, cmd in ipairs(autostart) do
-        hl.exec_cmd(cmd)
-    end
+  for _, cmd in ipairs(autostart) do
+    hl.exec_cmd(cmd)
+  end
 end)

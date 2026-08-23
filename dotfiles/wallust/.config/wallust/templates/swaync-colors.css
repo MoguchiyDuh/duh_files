@@ -1,5 +1,5 @@
 @define-color text {{foreground}};
-@define-color background rgba({{background | rgb}},0.25);
+@define-color background {{background}};
 @define-color background-alt {{background}};
 @define-color cursor {{cursor}};
 @define-color hovered {{color12}};
@@ -7,3 +7,23 @@
 @define-color button-active {{color3}};
 @define-color border {{color9}};
 @define-color urgent {{color15}};
+
+:root {
+    --cc-bg: rgba({{background | rgb}}, 0.75);
+    --noti-border-color: rgba({{color9 | rgb}}, 0.3);
+    --noti-bg: {{background | rgb}};
+    --noti-bg-alpha: 0.75;
+    --noti-bg-darker: rgb({{color0 | rgb}});
+    --noti-bg-hover: rgba({{color12 | rgb}}, 0.25);
+    --noti-bg-focus: rgba({{color12 | rgb}}, 0.35);
+    --noti-close-bg: rgba({{color9 | rgb}}, 0.25);
+    --noti-close-bg-hover: rgba({{color9 | rgb}}, 0.5);
+    --text-color: {{foreground}};
+    --text-color-disabled: {{color8}};
+    --bg-selected: {{color5}};
+    --notification-icon-size: 32px;
+    --border: 1px solid var(--noti-border-color);
+    --border-radius: 16px;
+    --font-size-body: 13px;
+    --font-size-summary: 14px;
+}

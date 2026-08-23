@@ -20,14 +20,14 @@ import spotipy
 from dotenv import load_dotenv
 from spotipy.oauth2 import SpotifyClientCredentials
 
-# Configure logging
-log_file = Path(__file__).resolve().parent / "duh-spotify-cli.log"
+_state_dir = Path(os.environ.get("XDG_STATE_HOME", Path.home() / ".local/state")) / "spotify-cli"
+_state_dir.mkdir(parents=True, exist_ok=True)
 logging.basicConfig(
     level=logging.INFO,
     format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
     handlers=[
         logging.StreamHandler(),
-        logging.FileHandler(log_file),
+        logging.FileHandler(_state_dir / "spotify-cli.log"),
     ],
 )
 logger = logging.getLogger(__name__)
@@ -40,7 +40,8 @@ class SpotifyFetcher:
         self, client_id: Optional[str] = None, client_secret: Optional[str] = None
     ):
         """Initialize SpotifyFetcher with credentials"""
-        load_dotenv(Path(__file__).parent / ".env_spotify")
+        _cfg = Path(os.environ.get("XDG_CONFIG_HOME", Path.home() / ".config")) / "spotify-cli" / "env"
+        load_dotenv(_cfg)
 
         self.client_id = client_id or os.getenv("SPOTIFY_CLIENT_ID")
         self.client_secret = client_secret or os.getenv("SPOTIFY_CLIENT_SECRET")

@@ -1,3 +1,4 @@
-anyrun
+elephant-all-git
+walker
 wayvnc-git
-wlogout
+mpvpaper

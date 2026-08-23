@@ -1,53 +1,53 @@
-typeset -g POWERLEVEL9K_INSTANT_PROMPT=off
-
-if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]; then
-    source "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh"
-fi
-
-# --- Exports & Environment ---
-export ZSH="$HOME/.oh-my-zsh"
-export PATH="$HOME/.local/bin:$PATH"
-export PATH="$HOME/.cargo/bin:$PATH"
-export TERMINAL=$terminal
-export XDG_TERMINAL_EMULATOR=$terminal
+export PATH="$HOME/.local/bin:$HOME/.cargo/bin:$PATH"
 export EDITOR="nvim"
 export VISUAL="nvim"
 export MANPAGER="sh -c 'col -bx | bat -l man -p'"
+export OPENCODE_ENABLE_EXA=1
 
-# --- Oh My Zsh Configuration ---
-ZSH_THEME="powerlevel10k/powerlevel10k"
-plugins=(git zsh-autosuggestions zsh-syntax-highlighting zsh-completions fzf)
+plugin_dir="${XDG_DATA_HOME:-$HOME/.local/share}/zsh/plugins"
+mkdir -p "$plugin_dir"
 
-source $ZSH/oh-my-zsh.sh
+typeset -A _plugin_repos=(
+  zsh-autosuggestions "zsh-users/zsh-autosuggestions"
+  fast-syntax-highlighting "zdharma-continuum/fast-syntax-highlighting"
+  zsh-completions "zsh-users/zsh-completions"
+)
+for _name _slug in ${(kv)_plugin_repos}; do
+  if [[ ! -d "$plugin_dir/$_name" ]]; then
+    git clone --quiet --depth 1 "https://github.com/$_slug" "$plugin_dir/$_name" &
+  fi
+done
+wait
 
-# --- nnn Configuration ---
-export NNN_TRASH=1
-export NNN_OPTS="deH"
-export NNN_FIFO="/tmp/nnn.fifo"
-export NNN_OPENER=xdg-open
+export HISTFILE="${XDG_STATE_HOME:-$HOME/.local/state}/zsh/history"
+mkdir -p "$HISTFILE:h"
+HISTSIZE=50000
+SAVEHIST=50000
+setopt inc_append_history share_history hist_ignore_dups hist_ignore_space hist_reduce_blanks
+setopt autocd interactive_comments no_beep
 
-n() {
-    if [ -n "$NNNLVL" ] && [ "${NNNLVL:-0}" -ge 1 ]; then
-        echo "nnn is already running"
-        return
-    fi
-    export NNN_TMPFILE="${XDG_CONFIG_HOME:-$HOME/.config}/nnn/.lastd"
-    nnn "$@"
-    if [ -f "$NNN_TMPFILE" ]; then
-        . "$NNN_TMPFILE"
-        rm -f "$NNN_TMPFILE" >/dev/null
-    fi
-}
+fpath=("$plugin_dir/zsh-completions/src" $fpath)
+autoload -Uz compinit
+compinit -d "${XDG_CACHE_HOME:-$HOME/.cache}/zsh/zcompdump-$ZSH_VERSION"
 
-# --- Completion Settings ---
-fpath=(~/.zsh/completions $fpath)
-autoload -U compinit && compinit -u
+zstyle ':completion:*' menu select
+zstyle ':completion:*' matcher-list 'm:{a-z}={A-Za-z}'
+[[ -n ${LS_COLORS:-} ]] && zstyle ':completion:*' list-colors ${(s.:.)LS_COLORS}
 
-# --- Aliases: Core Remaps ---
+bindkey -e
+bindkey '^[[H' beginning-of-line
+bindkey '^[[F' end-of-line
+bindkey '^[[3~' delete-char
+bindkey '^[[1;5C' forward-word
+bindkey '^[[1;5D' backward-word
+
+ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE='fg=8'
+ZSH_AUTOSUGGEST_STRATEGY=(history completion)
+source "$plugin_dir/zsh-autosuggestions/zsh-autosuggestions.zsh"
+
 alias ls='eza --icons --git --header --group-directories-first'
 alias la='eza -la --icons --git --header --group-directories-first'
 
-# --- Aliases: Pacman ---
 alias pac='sudo pacman'
 alias pac-update='sudo pacman -Sy'
 alias pac-upgrade='sudo pacman -Syu'
@@ -62,7 +62,6 @@ alias pac-autoclean='sudo pacman -Scc'
 alias pac-depends='pactree -d1'
 alias pac-why='pactree -r'
 
-# --- Aliases: Yay ---
 alias y='yay'
 alias y-update='yay -Sy'
 alias y-upgrade='yay -Syu'
@@ -75,20 +74,26 @@ alias y-listfiles='yay -Ql'
 alias y-clean='yay -Sc'
 alias y-autoclean='yay -Scc'
 
-# --- Aliases: Utilities ---
 alias h='history'
-alias hc='history -c'
+alias hc='rm -f ~/.local/share/atuin/history.db'
 alias c='clear'
 alias venv='source .venv/bin/activate'
 alias lgit='lazygit'
 alias lsql='lazysql'
 alias ldoc='lazydocker'
 
-# --- Initializations ---
+yy() {
+  local tmp="$(mktemp -t "yazi-cwd.XXXXXX")" cwd
+  yazi "$@" --cwd-file="$tmp"
+  if cwd="$(command cat -- "$tmp")" && [ -n "$cwd" ] && [ "$cwd" != "$PWD" ]; then
+    builtin cd -- "$cwd"
+  fi
+  rm -f -- "$tmp"
+}
+
 eval "$(zoxide init zsh)"
-
-# Load Powerlevel10k elements
-[[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
-
-# Startup info
-fastfetch
+eval "$(fzf --zsh)"
+eval "$(atuin init zsh)"
+[[ -o interactive ]] && fastfetch
+eval "$(starship init zsh)"
+source "$plugin_dir/fast-syntax-highlighting/fast-syntax-highlighting.plugin.zsh"

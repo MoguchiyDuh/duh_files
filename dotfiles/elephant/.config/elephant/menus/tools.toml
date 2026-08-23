@@ -1,0 +1,52 @@
+name = "tools"
+name_pretty = "Tools"
+description = "Capture, recording and language utilities"
+action = 'bash "$HOME/.config/walker/scripts/utility.sh"'
+search_name = true
+fixed_order = true
+keywords = ["tools", "utilities", "screenshot", "record", "ocr", "translate"]
+
+[[entries]]
+text = "Screenshot: Full screen"
+value = "screenshot.fullscreen"
+keywords = ["grim", "print", "capture", "screen"]
+
+[[entries]]
+text = "Screenshot: Window"
+value = "screenshot.active"
+keywords = ["grim", "print", "capture", "window", "active"]
+
+[[entries]]
+text = "Screenshot: Area"
+value = "screenshot.area"
+keywords = ["grim", "slurp", "print", "capture", "select"]
+
+[[entries]]
+text = "Toggle screen recording"
+value = "record.toggle"
+keywords = ["gpu-screen-recorder", "video", "capture", "record"]
+
+[[entries]]
+text = "OCR: English"
+value = "ocr.eng"
+keywords = ["capture", "recognize", "tesseract", "eng"]
+
+[[entries]]
+text = "OCR: Russian"
+value = "ocr.rus"
+keywords = ["capture", "recognize", "tesseract", "rus"]
+
+[[entries]]
+text = "OCR: English + Russian"
+value = "ocr.eng-rus"
+keywords = ["capture", "recognize", "tesseract", "eng", "rus"]
+
+[[entries]]
+text = "Color picker"
+value = "color.pick"
+keywords = ["hyprpicker", "hex", "copy"]
+
+[[entries]]
+text = "Translate"
+value = "provider.translate"
+keywords = ["language", "english", "russian", "translate-shell", "trans"]

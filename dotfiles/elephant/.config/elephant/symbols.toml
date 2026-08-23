@@ -1,0 +1,5 @@
+name_pretty = "Symbols & Emoji"
+locale = "en"
+history = true
+history_when_empty = true
+command = "wl-copy"

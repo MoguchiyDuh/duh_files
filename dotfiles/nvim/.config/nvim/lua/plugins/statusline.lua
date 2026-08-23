@@ -31,23 +31,15 @@ return {
 			options = {
 				numbers = "ordinal",
 				diagnostics = "nvim_lsp",
-				diagnostics_indicator = function(count, level)
-					local icon = level:match("error") and " " or " "
-					return " " .. icon .. count
+				diagnostics_indicator = function(count)
+					return " " .. count
 				end,
 				separator_style = "thin",
 				always_show_bufferline = true,
 				offsets = {
-					{ filetype = "OilNvim", text = "File Explorer", text_align = "center", separator = true },
+					{ filetype = "Oil", text = "File Explorer", text_align = "center", separator = true },
 				},
 			},
 		},
-	},
-
-	-- ── which-key ─────────────────────────────────────────────────────────────
-	{
-		"folke/which-key.nvim",
-		event = "VeryLazy",
-		opts = {},
 	},
 }

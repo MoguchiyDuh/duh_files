@@ -1,0 +1,30 @@
+name_pretty = "Files"
+search_dirs = [
+  "/home/kirill/Documents",
+  "/home/kirill/Downloads",
+  "/home/kirill/Music",
+  "/home/kirill/Pictures",
+  "/home/kirill/Videos",
+  "/home/kirill/duh_files",
+  "/home/kirill/plugins-src",
+]
+ignored_dirs = [
+  '(^|/)\.(cache|git|venv|tox|mypy_cache|pytest_cache)(/|$)',
+  '(^|/)(node_modules|target|build|dist|coverage|__pycache__)(/|$)',
+]
+fd_flags = [
+  "--ignore-vcs",
+  "--type", "file",
+  "--type", "directory",
+  "--exclude", ".git",
+  "--exclude", ".cache",
+  "--exclude", ".venv",
+  "--exclude", "node_modules",
+  "--exclude", "target",
+  "--exclude", "build",
+  "--exclude", "dist",
+  "--exclude", "__pycache__",
+]
+watch = false
+watch_dirs = []
+ignore_watching = []

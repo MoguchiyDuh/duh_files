@@ -1,5 +1,6 @@
 7zip
 amd-ucode
+atuin
 audacious
 awww
 base
@@ -12,7 +13,6 @@ bluez-utils
 brightnessctl
 btop
 clang
-cliphist
 cmake
 croc
 cronie
@@ -30,13 +30,14 @@ fd
 firefox
 flatpak
 fzf
+ghostty
 gimp
 git
 git-delta
 github-cli
 gnome-themes-extra
-grim
 gpu-screen-recorder
+grim
 grub
 gst-plugin-pipewire
 hyperfine
@@ -45,6 +46,7 @@ hyprland
 hyprland-guiutils
 hyprlock
 hyprpicker
+hyprpolkitagent
 hyprshot
 i2c-tools
 imagemagick
@@ -53,9 +55,9 @@ iwd
 jq
 kitty
 kvantum
+lact
 lazydocker
 lazygit
-lact
 libreoffice-fresh
 linux
 linux-firmware
@@ -100,6 +102,7 @@ rsync
 rustup
 sddm
 slurp
+starship
 stow
 swayimg
 swaync
@@ -121,6 +124,7 @@ wireplumber
 wl-clipboard
 wtype
 xdg-desktop-portal-hyprland
+yazi
 ydotool
 yq
 yt-dlp

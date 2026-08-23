@@ -9,10 +9,11 @@
 /etc/hosts
 /etc/systemd/zram-generator.conf
 /etc/systemd/sleep.conf.d/disable-hibernation.conf
-/etc/systemd/system/disable-acpi-wakeup-gpp0.service
-/etc/modprobe.d/nvidia-power-management.conf
 /etc/sysctl.d/99-zram.conf
 /etc/sysctl.d/90-network-performance.conf
 /etc/modules-load.d/network-performance.conf
 /etc/modules-load.d/i2c-dev.conf
 /etc/lact/config.yaml
+/etc/udev/rules.d/90-nvme-bridge-gpp0-nowake.rules
+/etc/udev/rules.d/90-logitech-g502-wake.rules
+/etc/systemd/system/systemd-suspend.service.d/override.conf

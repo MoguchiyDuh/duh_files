@@ -1,0 +1,6 @@
+name_pretty = "Clipboard"
+max_items = 100
+command = "wl-copy"
+ignore_symbols = true
+pinned_on_top = true
+auto_cleanup = 0

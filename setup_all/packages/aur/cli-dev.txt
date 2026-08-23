@@ -1,4 +1,4 @@
-lazysql-bin
+lazysql
 neovim-git
 wallust
 yay

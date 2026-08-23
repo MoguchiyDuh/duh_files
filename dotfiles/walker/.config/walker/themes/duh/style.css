@@ -1,0 +1,294 @@
+@import url("file:///home/kirill/.cache/wallust/walker-colors.css");
+
+* {
+  all: unset;
+  font-family: "Noto Sans", sans-serif;
+  color: @foreground;
+}
+
+.window {
+  background: transparent;
+}
+
+popover {
+  padding: 8px;
+  background-color: alpha(@surface, 0.62);
+  background-image: linear-gradient(
+    to bottom,
+    alpha(white, 0.10) 0%,
+    alpha(white, 0.02) 20%,
+    alpha(white, 0) 45%
+  );
+  border: 1px solid alpha(white, 0.14);
+  border-radius: 18px;
+  box-shadow: 0 20px 50px alpha(black, 0.45);
+}
+
+scrollbar {
+  opacity: 0;
+}
+
+/* Liquid Glass: low-opacity surface + soft top specular highlight, so the
+   compositor blur behind it does most of the "frosted glass" work, and a
+   neutral (not accent-tinted) hairline edge simulates light catching the
+   rim of the glass, closer to macOS's vibrancy material than a tinted
+   Raycast-style panel. */
+.box-wrapper {
+  padding: 22px 22px 14px;
+  background-color: alpha(@surface, 0.60);
+  background-image: linear-gradient(
+    to bottom,
+    alpha(white, 0.12) 0%,
+    alpha(white, 0.03) 16%,
+    alpha(white, 0) 38%
+  );
+  border: 1px solid alpha(white, 0.16);
+  border-radius: 28px;
+  box-shadow:
+    0 40px 100px alpha(black, 0.50),
+    0 10px 30px alpha(black, 0.30),
+    inset 0 1px 0 alpha(white, 0.10);
+}
+
+.search-container {
+  min-height: 64px;
+  background: transparent;
+  border-bottom: 1px solid alpha(@foreground, 0.10);
+  border-radius: 0;
+  margin-bottom: 4px;
+}
+
+.input {
+  padding: 14px 6px;
+  font-size: 26px;
+  font-weight: 400;
+  caret-color: @accent;
+  background: transparent;
+}
+
+.input image {
+  margin-right: 12px;
+  opacity: 0.45;
+  -gtk-icon-size: 22px;
+}
+
+.input placeholder {
+  color: alpha(@foreground, 0.42);
+}
+
+.input selection {
+  color: @foreground;
+  background: alpha(@accent_deep, 0.72);
+}
+
+.content-container {
+  min-height: 360px;
+}
+
+.elephant-hint,
+.placeholder {
+  color: alpha(@foreground, 0.46);
+  font-size: 14px;
+}
+
+.list {
+  color: @foreground;
+}
+
+.item-box {
+  min-height: 40px;
+  padding: 8px 12px;
+  border-radius: 13px;
+}
+
+child:selected .item-box,
+row:selected .item-box {
+  background: alpha(@accent_deep, 0.45);
+}
+
+child:hover .item-box,
+row:hover .item-box {
+  background: alpha(@foreground, 0.055);
+}
+
+child:selected:hover .item-box,
+row:selected:hover .item-box {
+  background: alpha(@accent_deep, 0.52);
+}
+
+.item-image,
+.normal-icons {
+  -gtk-icon-size: 28px;
+}
+
+.large-icons {
+  -gtk-icon-size: 56px;
+}
+
+.item-image-text {
+  min-width: 30px;
+  font-size: 22px;
+}
+
+.menus-settings .item-image,
+.menus-settings .item-image-text,
+.menus-tools .item-image,
+.menus-tools .item-image-text {
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  opacity: 0;
+  font-size: 0;
+}
+
+.item-text {
+  font-size: 14px;
+  font-weight: 520;
+}
+
+.item-subtext {
+  color: alpha(@foreground, 0.52);
+  font-size: 11px;
+}
+
+.providerlist .item-subtext {
+  color: @accent;
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.item-quick-activation {
+  min-width: 16px;
+  padding: 3px 5px;
+  color: alpha(@foreground, 0.72);
+  background: alpha(@foreground, 0.08);
+  border: 1px solid alpha(@foreground, 0.12);
+  border-radius: 6px;
+  font-size: 10px;
+  font-weight: 650;
+}
+
+.calc.item-box {
+  min-height: 52px;
+  background: alpha(@accent_soft, 0.08);
+}
+
+.calc .item-text {
+  color: @cyan;
+  font-size: 24px;
+  font-weight: 700;
+}
+
+.calc .item-subtext {
+  color: alpha(@foreground, 0.64);
+  font-size: 12px;
+}
+
+.clipboard.pinned .item-text {
+  color: @accent;
+}
+
+.preview {
+  min-width: 0;
+  background: alpha(@foreground, 0.035);
+  border: 1px solid alpha(white, 0.10);
+  border-radius: 16px;
+}
+
+.preview-box {
+  padding: 9px;
+}
+
+.preview-box,
+.preview-stack,
+.preview-content {
+  color: @foreground;
+}
+
+.keybinds {
+  min-height: 26px;
+  padding-top: 10px;
+  border-top: 1px solid alpha(@foreground, 0.09);
+}
+
+.keybind {
+  color: alpha(@foreground, 0.62);
+}
+
+.keybind-button {
+  opacity: 0.82;
+}
+
+.keybind-button:hover {
+  opacity: 1;
+}
+
+.keybind-label {
+  padding: 2px 5px;
+  color: @accent;
+  background: alpha(@accent, 0.08);
+  border: 1px solid alpha(@accent, 0.25);
+  border-radius: 5px;
+  font-size: 10px;
+  font-weight: 650;
+}
+
+.keybind-bind {
+  color: alpha(@foreground, 0.44);
+  font-size: 10px;
+  text-transform: lowercase;
+}
+
+.error {
+  padding: 7px 9px;
+  color: @surface;
+  background: @error;
+  border-radius: 8px;
+  font-weight: 650;
+}
+
+.list.grid .item-box {
+  min-height: 70px;
+  padding: 9px;
+}
+
+.list.grid .symbols .item-image,
+.symbol-item .item-image {
+  font-size: 26px;
+}
+
+.list.grid .symbols .item-text,
+.symbol-item .item-text {
+  color: alpha(@foreground, 0.58);
+  font-size: 9px;
+}
+
+.list.grid .menus-wallpapers,
+.wallpaper-item {
+  min-height: 138px;
+  padding: 0;
+  background: alpha(@foreground, 0.045);
+  border: 1px solid alpha(@foreground, 0.07);
+  border-radius: 12px;
+}
+
+.wallpaper-image {
+  min-width: 220px;
+  min-height: 138px;
+  -gtk-icon-size: 220px;
+  -gtk-icon-transform: scale(5.5);
+  border-radius: 8px;
+}
+
+.menus-wallpapers .item-text,
+.menus-wallpapers .item-subtext,
+.menus-wallpapers .item-quick-activation,
+.wallpaper-item .item-text,
+.wallpaper-item .item-subtext,
+.wallpaper-item .item-quick-activation {
+  min-width: 0;
+  padding: 0;
+  margin: 0;
+  opacity: 0;
+  font-size: 0;
+}

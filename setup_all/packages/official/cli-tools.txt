@@ -1,4 +1,5 @@
 7zip
+atuin
 bat
 btop
 croc
@@ -9,6 +10,7 @@ eza
 fastfetch
 fd
 fzf
+ghostty
 git
 git-delta
 github-cli
@@ -23,11 +25,13 @@ procs
 rclone
 ripgrep
 rsync
+starship
 stow
 tmux
 trash-cli
 tree
 unzip
+yazi
 yq
 yt-dlp
 zip

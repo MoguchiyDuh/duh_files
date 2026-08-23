@@ -1,0 +1,80 @@
+name = "settings"
+name_pretty = "Settings"
+description = "Session, power, network, display, audio, theme and wallpaper controls"
+icon = "preferences-system-symbolic"
+action = 'bash "$HOME/.config/walker/scripts/utility.sh"'
+search_name = true
+fixed_order = true
+keywords = ["settings", "control", "system", "power", "network", "display", "audio", "theme", "wallpaper"]
+
+[[entries]]
+text = "Power profile: Eco"
+value = "profile.eco"
+icon = "power-profile-power-saver-symbolic"
+keywords = ["power saver", "energy", "quiet"]
+
+[[entries]]
+text = "Power profile: Balanced"
+value = "profile.balanced"
+icon = "power-profile-balanced-symbolic"
+keywords = ["power", "normal"]
+
+[[entries]]
+text = "Power profile: Performance"
+value = "profile.performance"
+icon = "power-profile-performance-symbolic"
+keywords = ["power", "fast"]
+
+[[entries]]
+text = "Toggle awake mode"
+value = "awake.toggle"
+icon = "weather-clear-night-symbolic"
+keywords = ["inhibit", "sleep", "caffeine", "keep awake"]
+
+[[entries]]
+text = "Change theme"
+submenu = "themes"
+icon = "preferences-desktop-appearance-symbolic"
+keywords = ["design", "look", "chrome", "decoration", "profile", "appearance"]
+
+[[entries]]
+text = "Animations"
+submenu = "animations"
+icon = "preferences-desktop-multitasking-symbolic"
+keywords = ["motion", "transitions", "hyprland", "windows", "workspaces"]
+
+[[entries]]
+text = "Wallpaper"
+submenu = "wallpapers"
+icon = "preferences-desktop-wallpaper-symbolic"
+keywords = ["background", "image", "video", "wallust"]
+
+[[entries]]
+text = "Lock"
+value = "power.lock"
+keywords = ["screen", "security"]
+
+[[entries]]
+text = "Log out"
+value = "power.logout"
+keywords = ["logout", "session", "exit"]
+
+[[entries]]
+text = "Suspend"
+value = "power.suspend"
+keywords = ["sleep", "power"]
+
+[[entries]]
+text = "Hibernate"
+value = "power.hibernate"
+keywords = ["sleep", "power"]
+
+[[entries]]
+text = "Reboot"
+value = "power.reboot"
+keywords = ["restart", "power"]
+
+[[entries]]
+text = "Shut down"
+value = "power.shutdown"
+keywords = ["poweroff", "power off"]

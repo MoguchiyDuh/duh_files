@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # Simple file encryption/decryption using OpenSSL
 
 set -e

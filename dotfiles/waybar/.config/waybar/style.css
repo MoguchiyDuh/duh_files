@@ -1,10 +1,10 @@
-@import "colors.css";
+@import url("file:///home/kirill/.cache/wallust/waybar-colors.css");
 
 * {
     min-height: 0;
     border: none;
     border-radius: 0;
-    font-family: "FiraCode Nerd Font Propo";
+    font-family: "JetBrainsMono Nerd Font";
     font-size: 13px;
     font-weight: 500;
 }
@@ -15,16 +15,16 @@ window#waybar {
 }
 
 #custom-distro-icon,
-#custom-cpu,
-#custom-memory,
+#cpu,
+#memory,
 #custom-gpu,
 #custom-cliphist,
+#privacy,
 #tray,
 #custom-notifications,
-#custom-mic,
-#custom-volume,
+#pulseaudio,
 #bluetooth,
-#custom-network,
+#network,
 #language,
 #custom-weather,
 #clock,
@@ -40,21 +40,37 @@ window#waybar {
 }
 
 #custom-distro-icon {
-    min-width: 20px;
-    padding: 0 9px;
+    padding: 0 15px;
     color: @color12;
     background: linear-gradient(135deg, alpha(@color12, 0.4), alpha(@color11, 0.3));
     font-size: 20px;
     font-weight: 700;
 }
 
-#custom-cpu,
-#custom-memory,
+#cpu,
+#memory,
 #custom-gpu {
-    min-width: 44px;
-    padding: 0 6px;
+    padding: 0 8px;
     color: @color9;
     background: alpha(@color9, 0.4);
+}
+
+#cpu.warning,
+#memory.warning {
+    color: @color3;
+    background: alpha(@color3, 0.5);
+}
+
+#cpu.critical,
+#memory.critical {
+    color: @color1;
+    background: alpha(@color1, 0.6);
+}
+
+#custom-gpu.hot {
+    color: @color1;
+    background: alpha(@color1, 0.6);
+    text-shadow: 0 0 9px alpha(@color1, 0.75);
 }
 
 #taskbar {
@@ -109,12 +125,43 @@ window#waybar {
     background: linear-gradient(135deg, @color1, @color9);
 }
 
-#custom-cliphist,
-#custom-notifications {
-    min-width: 20px;
-    padding: 0 9px;
+#custom-cliphist {
+    padding: 0 15px;
     color: @color15;
     background: alpha(@color14, 0.4);
+}
+
+#custom-notifications {
+    padding: 0 15px;
+    color: @color7;
+    background: alpha(@color0, 0.7);
+}
+
+#custom-notifications.notification,
+#custom-notifications.inhibited-notification {
+    color: @color11;
+    background: alpha(@color11, 0.4);
+    text-shadow: 0 0 9px alpha(@color11, 0.75);
+}
+
+#custom-notifications.dnd-notification,
+#custom-notifications.dnd-none,
+#custom-notifications.dnd-inhibited-notification,
+#custom-notifications.dnd-inhibited-none {
+    color: @color8;
+    background: alpha(@color8, 0.4);
+    opacity: 0.7;
+}
+
+#privacy {
+    padding: 0 10px;
+}
+
+#privacy > widget > image,
+#privacy image {
+    margin: 0 2px;
+    color: @color1;
+    -gtk-icon-shadow: 0 0 6px alpha(@color1, 0.8);
 }
 
 #tray {
@@ -130,40 +177,33 @@ window#waybar {
     background: alpha(@color1, 0.4);
 }
 
-#custom-mic,
-#custom-volume,
+#pulseaudio,
 #bluetooth,
-#custom-network {
+#network {
+    padding: 0 15px;
     color: @color13;
     background: alpha(@color13, 0.4);
 }
 
-#custom-mic,
-#custom-volume {
-    min-width: 44px;
-    padding: 0 6px;
+#pulseaudio {
+    padding: 0 8px;
 }
 
-#bluetooth,
-#custom-network,
+#pulseaudio.mic {
+    padding: 0 8px;
+}
+
 #language,
 #custom-awake,
 #custom-profile {
-    min-width: 20px;
-    padding: 0 9px;
+    padding: 0 15px;
 }
 
-#custom-mic.mic-active {
-    color: @color11;
-    background: alpha(@color11, 0.4);
-    text-shadow: 0 0 9px alpha(@color11, 0.75);
-}
-
-#custom-mic.muted,
-#custom-volume.muted,
+#pulseaudio.muted,
+#pulseaudio.mic.source-muted,
 #bluetooth.disabled,
 #bluetooth.off,
-#custom-network.disconnected {
+#network.disconnected {
     color: @color8;
     background: alpha(@color8, 0.4);
     opacity: 0.6;
@@ -177,6 +217,7 @@ window#waybar {
 
 #custom-weather,
 #clock {
+    padding: 0 8px;
     color: @color5;
     background: linear-gradient(135deg, alpha(@color5, 0.4), alpha(@color6, 0.35));
     font-family: "JetBrainsMono Nerd Font";
@@ -184,8 +225,7 @@ window#waybar {
 }
 
 #battery {
-    min-width: 44px;
-    padding: 0 6px;
+    padding: 0 8px;
     color: @color2;
     background: alpha(@color2, 0.4);
 }
@@ -229,7 +269,8 @@ window#waybar {
 }
 
 #custom-awake.hidden,
-#custom-profile.hidden {
+#custom-profile.hidden,
+#custom-gpu.hidden {
     min-width: 0;
     margin: 0;
     padding: 0;
@@ -237,15 +278,15 @@ window#waybar {
 }
 
 #custom-distro-icon:hover,
-#custom-cpu:hover,
-#custom-memory:hover,
+#cpu:hover,
+#memory:hover,
 #custom-gpu:hover,
 #custom-cliphist:hover,
+#privacy:hover,
 #custom-notifications:hover,
-#custom-mic:hover,
-#custom-volume:hover,
+#pulseaudio:hover,
 #bluetooth:hover,
-#custom-network:hover,
+#network:hover,
 #language:hover,
 #custom-weather:hover,
 #clock:hover,

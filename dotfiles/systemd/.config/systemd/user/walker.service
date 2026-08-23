@@ -1,0 +1,12 @@
+[Unit]
+Description=Walker launcher service
+PartOf=graphical-session.target
+
+[Service]
+Type=simple
+ExecStart=/usr/bin/walker --gapplication-service
+Environment=GSK_RENDERER=cairo
+Restart=on-failure
+
+[Install]
+WantedBy=graphical-session.target

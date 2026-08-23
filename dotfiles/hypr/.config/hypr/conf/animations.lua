@@ -1,40 +1,36 @@
-local tokens = require("conf.tokens")
-local anim = tokens.t.animations or {}
+local home = os.getenv("HOME") or ""
+local cache = os.getenv("XDG_CACHE_HOME") or (home .. "/.cache")
+local dir = home .. "/.config/hypr/animations"
+local selected = "snappy"
 
-if not anim.enabled then
-    hl.config({ animations = { enabled = false } })
-    return
+local handle = io.open(cache .. "/current-animation", "r")
+if handle then
+  local content = handle:read("*l")
+  handle:close()
+  if content and content ~= "" then
+    selected = content
+  end
 end
 
 hl.config({ animations = { enabled = true } })
 
-for name, spec in pairs(anim.curves or {}) do
-    if type(spec) == "table" and type(spec.bezier) == "table" and #spec.bezier == 4 then
-        hl.curve(name, {
-            type = "bezier",
-            points = { { spec.bezier[1], spec.bezier[2] }, { spec.bezier[3], spec.bezier[4] } },
-        })
-    elseif type(spec) == "table" and type(spec.spring) == "table" then
-        hl.curve(name, {
-            type = "spring",
-            mass = spec.spring.mass or 1,
-            stiffness = spec.spring.stiffness or 70,
-            dampening = spec.spring.dampening or 15,
-        })
-    end
+local ok, preset = pcall(dofile, dir .. "/" .. selected .. ".lua")
+
+if not ok or type(preset) ~= "table" then
+  preset = {
+    curves = {
+      { name = "liner", cfg = { type = "bezier", points = { { 1, 1 }, { 1, 1 } } } },
+    },
+    animations = {
+      { leaf = "fade", enabled = true, speed = 0.5, bezier = "liner" },
+    },
+  }
 end
 
-for leaf, spec in pairs(anim.leaves or {}) do
-    if type(spec) == "table" then
-        local entry = {
-            leaf = leaf,
-            enabled = true,
-            speed = spec.speed or 1.0,
-            bezier = spec.curve or "default",
-        }
-        if spec.style then
-            entry.style = spec.style
-        end
-        hl.animation(entry)
-    end
+for _, curve in ipairs(preset.curves or {}) do
+  hl.curve(curve.name, curve.cfg)
+end
+
+for _, animation in ipairs(preset.animations or {}) do
+  hl.animation(animation)
 end

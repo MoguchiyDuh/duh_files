@@ -23,12 +23,12 @@ return {
 	-- nvim 0.12+: highlight/indent are built-in, plugin only manages parsers
 	{
 		"nvim-treesitter/nvim-treesitter",
+		branch = "main",
 		build = ":TSUpdate",
 		event = { "BufReadPost", "BufNewFile" },
 		config = function()
 			require("nvim-treesitter").setup()
 
-			-- install parsers
 			local parsers = {
 				"lua",
 				"vim",
@@ -59,7 +59,6 @@ return {
 				pcall(install.install, lang)
 			end
 
-			-- enable highlight + indent via built-in vim.treesitter
 			vim.api.nvim_create_autocmd("FileType", {
 				callback = function(ev)
 					local ok = pcall(vim.treesitter.start, ev.buf)
@@ -70,6 +69,42 @@ return {
 			})
 		end,
 	},
+
+	-- textobject queries for mini.ai (function/class/block objects)
+	{ "nvim-treesitter/nvim-treesitter-textobjects", branch = "main", lazy = true },
+
+	-- ── mini.ai ───────────────────────────────────────────────────────────────
+	{
+		"echasnovski/mini.ai",
+		event = "VeryLazy",
+		dependencies = { "nvim-treesitter/nvim-treesitter-textobjects" },
+		opts = function()
+			local ai = require("mini.ai")
+			return {
+				n_lines = 500,
+				custom_textobjects = {
+					o = ai.gen_spec.treesitter({
+						a = { "@block.outer" },
+						i = { "@block.inner" },
+					}),
+					f = ai.gen_spec.treesitter({
+						a = { "@function.outer" },
+						i = { "@function.inner" },
+					}),
+					c = ai.gen_spec.treesitter({
+						a = { "@class.outer" },
+						i = { "@class.inner" },
+					}),
+				},
+			}
+		end,
+	},
+
+	-- ── autopairs ─────────────────────────────────────────────────────────────
+	{ "echasnovski/mini.pairs", event = "VeryLazy", opts = {} },
+
+	-- ── treesitter-aware comments ─────────────────────────────────────────────
+	{ "folke/ts-comments.nvim", event = "VeryLazy", opts = {} },
 
 	-- ── git signs ─────────────────────────────────────────────────────────────
 	{
@@ -85,70 +120,15 @@ return {
 			},
 		},
 		keys = {
-			{
-				"]h",
-				function()
-					require("gitsigns").next_hunk()
-				end,
-				desc = "Next hunk",
-			},
-			{
-				"[h",
-				function()
-					require("gitsigns").prev_hunk()
-				end,
-				desc = "Prev hunk",
-			},
-			{
-				"<leader>gs",
-				function()
-					require("gitsigns").stage_hunk()
-				end,
-				desc = "Stage hunk",
-			},
-			{
-				"<leader>gr",
-				function()
-					require("gitsigns").reset_hunk()
-				end,
-				desc = "Reset hunk",
-			},
-			{
-				"<leader>gu",
-				function()
-					require("gitsigns").undo_stage_hunk()
-				end,
-				desc = "Undo stage hunk",
-			},
-			{
-				"<leader>gp",
-				function()
-					require("gitsigns").preview_hunk()
-				end,
-				desc = "Preview hunk",
-			},
-			{
-				"<leader>gl",
-				function()
-					require("gitsigns").blame_line()
-				end,
-				desc = "Blame line",
-			},
-			{
-				"<leader>gD",
-				function()
-					require("gitsigns").diffthis()
-				end,
-				desc = "Diff this",
-			},
+			{ "]h", function() require("gitsigns").next_hunk() end, desc = "Next hunk" },
+			{ "[h", function() require("gitsigns").prev_hunk() end, desc = "Prev hunk" },
+			{ "<leader>gs", function() require("gitsigns").stage_hunk() end, desc = "Stage hunk" },
+			{ "<leader>gr", function() require("gitsigns").reset_hunk() end, desc = "Reset hunk" },
+			{ "<leader>gu", function() require("gitsigns").undo_stage_hunk() end, desc = "Undo stage hunk" },
+			{ "<leader>gp", function() require("gitsigns").preview_hunk() end, desc = "Preview hunk" },
+			{ "<leader>gl", function() require("gitsigns").blame_line() end, desc = "Blame line" },
+			{ "<leader>gD", function() require("gitsigns").diffthis() end, desc = "Diff this" },
 		},
-	},
-
-	-- ── lazygit ───────────────────────────────────────────────────────────────
-	{
-		"kdheepak/lazygit.nvim",
-		dependencies = { "nvim-lua/plenary.nvim" },
-		cmd = "LazyGit",
 	},
 
 	-- ── jump navigation ───────────────────────────────────────────────────────
@@ -159,17 +139,13 @@ return {
 		keys = {
 			{
 				"<leader>j",
-				function()
-					require("flash").jump()
-				end,
+				function() require("flash").jump() end,
 				mode = { "n", "x", "o" },
 				desc = "Flash jump",
 			},
 			{
 				"<leader>J",
-				function()
-					require("flash").treesitter()
-				end,
+				function() require("flash").treesitter() end,
 				mode = { "n", "x", "o" },
 				desc = "Flash treesitter",
 			},
@@ -177,18 +153,7 @@ return {
 	},
 
 	-- ── surround ──────────────────────────────────────────────────────────────
-	{
-		"kylechui/nvim-surround",
-		event = "VeryLazy",
-		opts = {},
-	},
-
-	-- ── autopairs ─────────────────────────────────────────────────────────────
-	{
-		"windwp/nvim-autopairs",
-		event = "InsertEnter",
-		opts = {},
-	},
+	{ "kylechui/nvim-surround", event = "VeryLazy", opts = {} },
 
 	-- ── markdown rendering ────────────────────────────────────────────────────
 	{

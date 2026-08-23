@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # Fix GRUB to detect Windows/other OS in dual-boot setup
 
 set -e

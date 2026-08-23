@@ -1,0 +1,8 @@
+name_pretty = "Calculator"
+max_items = 50
+placeholder = "Calculating…"
+require_number = true
+min_chars = 1
+command = "wl-copy -n '%VALUE%'"
+async = true
+autosave = false

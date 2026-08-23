@@ -1,0 +1,8 @@
+name_pretty = "Applications"
+show_actions = false
+show_generic = true
+history = true
+history_when_empty = true
+only_search_title = false
+icon_placeholder = "application-x-executable-symbolic"
+window_integration = false

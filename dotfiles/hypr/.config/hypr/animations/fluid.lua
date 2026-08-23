@@ -1,0 +1,26 @@
+return {
+  curves = {
+    { name = "wind", cfg = { type = "bezier", points = { { 0.05, 0.85 }, { 0.03, 0.97 } } } },
+    { name = "winIn", cfg = { type = "bezier", points = { { 0.07, 0.88 }, { 0.04, 0.99 } } } },
+    { name = "liner", cfg = { type = "bezier", points = { { 1, 1 }, { 1, 1 } } } },
+    { name = "md3_decel", cfg = { type = "bezier", points = { { 0.05, 0.80 }, { 0.10, 0.97 } } } },
+    { name = "md3_accel", cfg = { type = "bezier", points = { { 0.20, 0 }, { 0.80, 0.08 } } } },
+    { name = "menu_decel", cfg = { type = "bezier", points = { { 0.05, 0.82 }, { 0, 1 } } } },
+    { name = "menu_accel", cfg = { type = "bezier", points = { { 0.20, 0 }, { 0.82, 0.10 } } } },
+    { name = "expressiveFastSpatial", cfg = { type = "bezier", points = { { 0.42, 1.67 }, { 0.21, 0.90 } } } },
+  },
+  animations = {
+    { leaf = "border",           enabled = true, speed = 1.6, bezier = "liner" },
+    { leaf = "borderangle",      enabled = true, speed = 82,  bezier = "liner", style = "loop" },
+    { leaf = "windowsIn",        enabled = true, speed = 3.0, bezier = "winIn",     style = "popin 80%" },
+    { leaf = "windowsOut",       enabled = true, speed = 2.2, bezier = "md3_accel", style = "popin 85%" },
+    { leaf = "windowsMove",      enabled = true, speed = 3.0, bezier = "wind",      style = "slide" },
+    { leaf = "fade",             enabled = true, speed = 1.8, bezier = "md3_decel" },
+    { leaf = "layersIn",         enabled = true, speed = 1.8, bezier = "menu_decel", style = "fade" },
+    { leaf = "layersOut",        enabled = true, speed = 1.5, bezier = "menu_accel", style = "fade" },
+    { leaf = "fadeLayersIn",     enabled = true, speed = 1.6, bezier = "menu_decel" },
+    { leaf = "fadeLayersOut",    enabled = true, speed = 1.8, bezier = "menu_accel" },
+    { leaf = "workspaces",       enabled = true, speed = 4.0, bezier = "expressiveFastSpatial", style = "slide" },
+    { leaf = "specialWorkspace", enabled = true, speed = 2.3, bezier = "md3_decel",  style = "slidevert" },
+  },
+}

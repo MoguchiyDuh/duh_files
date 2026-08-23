@@ -5,10 +5,11 @@ Hyprland uses `gpu-screen-recorder` for full-screen recording on Nvidia.
 - `Shift+Print`: start/stop recording
 - Output: `~/Videos/Screenshots/recording_YYYYMMDD_HHMMSS.mp4`
 - Video: 60 FPS H.264 through NVENC
-- Target monitor: `HDMI-A-1`
+- Target monitor: auto-detected (focused monitor); override by editing
+  `record.sh`
 
-The toggle script is stowed at `~/.config/hypr/scripts/record.sh`. Update its
-`monitor` value if the output name changes; inspect available names with:
+The toggle script is stowed at `~/.config/hypr/scripts/record.sh`. It detects
+the target monitor at runtime via `hyprctl`; inspect available names with:
 
 ```bash
 hyprctl monitors

@@ -5,6 +5,8 @@ return {
 		priority = 900,
 		lazy = false,
 		opts = {
+			bigfile = { enabled = true },
+			quickfile = { enabled = true },
 			dashboard = {
 				preset = {
 					keys = {
@@ -49,90 +51,56 @@ return {
 			words = { enabled = true },
 		},
 		keys = {
+			{ "<leader>ff", function() Snacks.picker.files() end, desc = "Find files" },
+			{ "<leader>fg", function() Snacks.picker.grep() end, desc = "Live grep" },
+			{ "<leader>fr", function() Snacks.picker.recent() end, desc = "Recent files" },
+			{ "<leader>fb", function() Snacks.picker.buffers() end, desc = "Buffers" },
+			{ "<leader>fk", function() Snacks.picker.keymaps() end, desc = "Keymaps" },
+			{ "<leader>fp", function() Snacks.picker.commands() end, desc = "Commands" },
+			{ "<leader>fd", function() Snacks.picker.diagnostics() end, desc = "Diagnostics" },
+			{ "gr", function() Snacks.picker.lsp_references() end, desc = "LSP references" },
+			{ "<leader>gd", function() Snacks.picker.lsp_definitions() end, desc = "LSP definitions" },
+			{ "<leader>gb", function() Snacks.gitbrowse() end, desc = "Git browse" },
+			{ "<leader>N", function() Snacks.notifier.show_history() end, desc = "Notification history" },
+			{ "<leader>.", function() Snacks.scratch() end, desc = "Scratch buffer" },
+		},
+	},
+
+	-- ── trouble ───────────────────────────────────────────────────────────────
+	{
+		"folke/trouble.nvim",
+		cmd = "Trouble",
+		opts = {},
+		keys = {
+			{ "<leader>xx", "<cmd>Trouble diagnostics toggle<cr>", desc = "Diagnostics (Trouble)" },
+			{ "<leader>xX", "<cmd>Trouble diagnostics toggle filter.buf=0<cr>", desc = "Buffer diagnostics" },
 			{
-				"<leader>ff",
+				"[q",
 				function()
-					Snacks.picker.files()
+					if require("trouble").is_open() then
+						require("trouble").prev({ skip_groups = true, jump = true })
+					else
+						local ok, err = pcall(vim.cmd.cprevious)
+						if not ok then vim.notify(err, vim.log.levels.ERROR) end
+					end
 				end,
-				desc = "Find files",
+				desc = "Previous item",
 			},
 			{
-				"<leader>fg",
+				"]q",
 				function()
-					Snacks.picker.grep()
+					if require("trouble").is_open() then
+						require("trouble").next({ skip_groups = true, jump = true })
+					else
+						local ok, err = pcall(vim.cmd.cnext)
+						if not ok then vim.notify(err, vim.log.levels.ERROR) end
+					end
 				end,
-				desc = "Live grep",
-			},
-			{
-				"<leader>fr",
-				function()
-					Snacks.picker.recent()
-				end,
-				desc = "Recent files",
-			},
-			{
-				"<leader>fb",
-				function()
-					Snacks.picker.buffers()
-				end,
-				desc = "Buffers",
-			},
-			{
-				"<leader>fk",
-				function()
-					Snacks.picker.keymaps()
-				end,
-				desc = "Keymaps",
-			},
-			{
-				"<leader>fp",
-				function()
-					Snacks.picker.commands()
-				end,
-				desc = "Commands",
-			},
-			{
-				"<leader>fd",
-				function()
-					Snacks.picker.diagnostics()
-				end,
-				desc = "Diagnostics",
-			},
-			{
-				"gr",
-				function()
-					Snacks.picker.lsp_references()
-				end,
-				desc = "LSP references",
-			},
-			{
-				"<leader>gd",
-				function()
-					Snacks.picker.lsp_definitions()
-				end,
-				desc = "LSP definitions",
-			},
-			{
-				"<leader>gb",
-				function()
-					Snacks.gitbrowse()
-				end,
-				desc = "Git browse",
-			},
-			{
-				"<leader>N",
-				function()
-					Snacks.notifier.show_history()
-				end,
-				desc = "Notification history",
-			},
-			{
-				"<leader>.",
-				function()
-					Snacks.scratch()
-				end,
-				desc = "Scratch buffer",
+				desc = "Next item",
 			},
 		},
 	},
+
+	-- ── which-key ─────────────────────────────────────────────────────────────
+	{ "folke/which-key.nvim", event = "VeryLazy", opts = {} },
 }

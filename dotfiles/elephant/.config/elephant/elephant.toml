@@ -1,0 +1,4 @@
+auto_detect_launch_prefix = true
+overload_local_env = false
+ignored_providers = []
+git_on_demand = true

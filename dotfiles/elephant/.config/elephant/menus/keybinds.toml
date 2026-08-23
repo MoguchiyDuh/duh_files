@@ -1,0 +1,597 @@
+name = "keybinds"
+name_pretty = "Keybinds"
+description = "Reference for all configured Hyprland keybinds"
+icon = "input-keyboard-symbolic"
+action = 'wl-copy --'
+search_name = true
+fixed_order = true
+keywords = ["keybind", "shortcut", "hotkey", "help", "hint", "cheatsheet"]
+
+[[entries]]
+text = "Open terminal"
+subtext = "Super+RETURN"
+value = "Super+RETURN -> Open terminal"
+icon = "input-keyboard-symbolic"
+
+[[entries]]
+text = "Open file manager"
+subtext = "Super+E"
+value = "Super+E -> Open file manager"
+icon = "input-keyboard-symbolic"
+
+[[entries]]
+text = "Open browser"
+subtext = "Super+B"
+value = "Super+B -> Open browser"
+icon = "input-keyboard-symbolic"
+
+[[entries]]
+text = "Open system monitor"
+subtext = "CTRL_SHIFT+escape"
+value = "CTRL_SHIFT+escape -> Open system monitor"
+icon = "input-keyboard-symbolic"
+
+[[entries]]
+text = "Open launcher"
+subtext = "Super+R"
+value = "Super+R -> Open launcher"
+icon = "input-keyboard-symbolic"
+
+[[entries]]
+text = "Open keybind reference"
+subtext = "F1"
+value = "F1 -> Open keybind reference"
+icon = "input-keyboard-symbolic"
+
+[[entries]]
+text = "Open clipboard history"
+subtext = "Super+V"
+value = "Super+V -> Open clipboard history"
+icon = "input-keyboard-symbolic"
+
+[[entries]]
+text = "Open wallpaper picker"
+subtext = "Super+X"
+value = "Super+X -> Open wallpaper picker"
+icon = "input-keyboard-symbolic"
+
+[[entries]]
+text = "Open symbols and emoji picker"
+subtext = "Super+PERIOD"
+value = "Super+PERIOD -> Open symbols and emoji picker"
+icon = "input-keyboard-symbolic"
+
+[[entries]]
+text = "Translate text"
+subtext = "Super SHIFT+W"
+value = "Super SHIFT+W -> Translate text"
+icon = "input-keyboard-symbolic"
+
+[[entries]]
+text = "Screenshot: select area"
+subtext = "Super SHIFT+S"
+value = "Super SHIFT+S -> Screenshot: select area"
+icon = "input-keyboard-symbolic"
+
+[[entries]]
+text = "Screenshot: full screen"
+subtext = "Print"
+value = "Print -> Screenshot: full screen"
+icon = "input-keyboard-symbolic"
+
+[[entries]]
+text = "Screenshot: select area"
+subtext = "CTRL+Print"
+value = "CTRL+Print -> Screenshot: select area"
+icon = "input-keyboard-symbolic"
+
+[[entries]]
+text = "Screenshot: active window"
+subtext = "ALT+Print"
+value = "ALT+Print -> Screenshot: active window"
+icon = "input-keyboard-symbolic"
+
+[[entries]]
+text = "Toggle screen recording"
+subtext = "SHIFT+Print"
+value = "SHIFT+Print -> Toggle screen recording"
+icon = "input-keyboard-symbolic"
+
+[[entries]]
+text = "OCR: select area, copy recognized text"
+subtext = "Super SHIFT+T"
+value = "Super SHIFT+T -> OCR: select area, copy recognized text"
+icon = "input-keyboard-symbolic"
+
+[[entries]]
+text = "Pick a color, copy hex to clipboard"
+subtext = "Super SHIFT+C"
+value = "Super SHIFT+C -> Pick a color, copy hex to clipboard"
+icon = "input-keyboard-symbolic"
+
+[[entries]]
+text = "Reload Hyprland, Waybar, and hypridle"
+subtext = "Super SHIFT+R"
+value = "Super SHIFT+R -> Reload Hyprland, Waybar, and hypridle"
+icon = "input-keyboard-symbolic"
+
+[[entries]]
+text = "Open power/session menu"
+subtext = "CTRL ALT+DELETE"
+value = "CTRL ALT+DELETE -> Open power/session menu"
+icon = "input-keyboard-symbolic"
+
+[[entries]]
+text = "Close active window"
+subtext = "Super+Q"
+value = "Super+Q -> Close active window"
+icon = "input-keyboard-symbolic"
+
+[[entries]]
+text = "Force-kill active window"
+subtext = "Super SHIFT+Q"
+value = "Super SHIFT+Q -> Force-kill active window"
+icon = "input-keyboard-symbolic"
+
+[[entries]]
+text = "Toggle floating mode"
+subtext = "Super+T"
+value = "Super+T -> Toggle floating mode"
+icon = "input-keyboard-symbolic"
+
+[[entries]]
+text = "Pin window on top of all workspaces"
+subtext = "Super+I"
+value = "Super+I -> Pin window on top of all workspaces"
+icon = "input-keyboard-symbolic"
+
+[[entries]]
+text = "Toggle fullscreen"
+subtext = "Super+F"
+value = "Super+F -> Toggle fullscreen"
+icon = "input-keyboard-symbolic"
+
+[[entries]]
+text = "Toggle fullscreen (fake, keeps bar)"
+subtext = "Super SHIFT+F"
+value = "Super SHIFT+F -> Toggle fullscreen (fake, keeps bar)"
+icon = "input-keyboard-symbolic"
+
+[[entries]]
+text = "Toggle pseudotiling"
+subtext = "Super+P"
+value = "Super+P -> Toggle pseudotiling"
+icon = "input-keyboard-symbolic"
+
+[[entries]]
+text = "Toggle split direction"
+subtext = "Super+O"
+value = "Super+O -> Toggle split direction"
+icon = "input-keyboard-symbolic"
+
+[[entries]]
+text = "Resize active window left"
+subtext = "Super CTRL+H"
+value = "Super CTRL+H -> Resize active window left"
+icon = "input-keyboard-symbolic"
+
+[[entries]]
+text = "Resize active window left"
+subtext = "Super CTRL+LEFT"
+value = "Super CTRL+LEFT -> Resize active window left"
+icon = "input-keyboard-symbolic"
+
+[[entries]]
+text = "Resize active window right"
+subtext = "Super CTRL+L"
+value = "Super CTRL+L -> Resize active window right"
+icon = "input-keyboard-symbolic"
+
+[[entries]]
+text = "Resize active window right"
+subtext = "Super CTRL+RIGHT"
+value = "Super CTRL+RIGHT -> Resize active window right"
+icon = "input-keyboard-symbolic"
+
+[[entries]]
+text = "Resize active window up"
+subtext = "Super CTRL+K"
+value = "Super CTRL+K -> Resize active window up"
+icon = "input-keyboard-symbolic"
+
+[[entries]]
+text = "Resize active window up"
+subtext = "Super CTRL+UP"
+value = "Super CTRL+UP -> Resize active window up"
+icon = "input-keyboard-symbolic"
+
+[[entries]]
+text = "Resize active window down"
+subtext = "Super CTRL+J"
+value = "Super CTRL+J -> Resize active window down"
+icon = "input-keyboard-symbolic"
+
+[[entries]]
+text = "Resize active window down"
+subtext = "Super CTRL+DOWN"
+value = "Super CTRL+DOWN -> Resize active window down"
+icon = "input-keyboard-symbolic"
+
+[[entries]]
+text = "Focus window to the left"
+subtext = "Super+H"
+value = "Super+H -> Focus window to the left"
+icon = "input-keyboard-symbolic"
+
+[[entries]]
+text = "Focus window to the left"
+subtext = "Super+LEFT"
+value = "Super+LEFT -> Focus window to the left"
+icon = "input-keyboard-symbolic"
+
+[[entries]]
+text = "Focus window to the right"
+subtext = "Super+L"
+value = "Super+L -> Focus window to the right"
+icon = "input-keyboard-symbolic"
+
+[[entries]]
+text = "Focus window to the right"
+subtext = "Super+RIGHT"
+value = "Super+RIGHT -> Focus window to the right"
+icon = "input-keyboard-symbolic"
+
+[[entries]]
+text = "Focus window above"
+subtext = "Super+K"
+value = "Super+K -> Focus window above"
+icon = "input-keyboard-symbolic"
+
+[[entries]]
+text = "Focus window above"
+subtext = "Super+UP"
+value = "Super+UP -> Focus window above"
+icon = "input-keyboard-symbolic"
+
+[[entries]]
+text = "Focus window below"
+subtext = "Super+J"
+value = "Super+J -> Focus window below"
+icon = "input-keyboard-symbolic"
+
+[[entries]]
+text = "Focus window below"
+subtext = "Super+DOWN"
+value = "Super+DOWN -> Focus window below"
+icon = "input-keyboard-symbolic"
+
+[[entries]]
+text = "Swap with window to the left"
+subtext = "Super SHIFT+H"
+value = "Super SHIFT+H -> Swap with window to the left"
+icon = "input-keyboard-symbolic"
+
+[[entries]]
+text = "Swap with window to the left"
+subtext = "Super SHIFT+LEFT"
+value = "Super SHIFT+LEFT -> Swap with window to the left"
+icon = "input-keyboard-symbolic"
+
+[[entries]]
+text = "Swap with window to the right"
+subtext = "Super SHIFT+L"
+value = "Super SHIFT+L -> Swap with window to the right"
+icon = "input-keyboard-symbolic"
+
+[[entries]]
+text = "Swap with window to the right"
+subtext = "Super SHIFT+RIGHT"
+value = "Super SHIFT+RIGHT -> Swap with window to the right"
+icon = "input-keyboard-symbolic"
+
+[[entries]]
+text = "Swap with window above"
+subtext = "Super SHIFT+K"
+value = "Super SHIFT+K -> Swap with window above"
+icon = "input-keyboard-symbolic"
+
+[[entries]]
+text = "Swap with window above"
+subtext = "Super SHIFT+UP"
+value = "Super SHIFT+UP -> Swap with window above"
+icon = "input-keyboard-symbolic"
+
+[[entries]]
+text = "Swap with window below"
+subtext = "Super SHIFT+J"
+value = "Super SHIFT+J -> Swap with window below"
+icon = "input-keyboard-symbolic"
+
+[[entries]]
+text = "Swap with window below"
+subtext = "Super SHIFT+DOWN"
+value = "Super SHIFT+DOWN -> Swap with window below"
+icon = "input-keyboard-symbolic"
+
+[[entries]]
+text = "Drag to move window"
+subtext = "Super+mouse:272"
+value = "Super+mouse:272 -> Drag to move window"
+icon = "input-keyboard-symbolic"
+
+[[entries]]
+text = "Drag to resize window"
+subtext = "Super+mouse:273"
+value = "Super+mouse:273 -> Drag to resize window"
+icon = "input-keyboard-symbolic"
+
+[[entries]]
+text = "Cycle to next window"
+subtext = "ALT+Tab"
+value = "ALT+Tab -> Cycle to next window"
+icon = "input-keyboard-symbolic"
+
+[[entries]]
+text = "Cycle to next window"
+subtext = "ALT+Tab"
+value = "ALT+Tab -> Cycle to next window"
+icon = "input-keyboard-symbolic"
+
+[[entries]]
+text = "Cycle to previous window"
+subtext = "SHIFT ALT+Tab"
+value = "SHIFT ALT+Tab -> Cycle to previous window"
+icon = "input-keyboard-symbolic"
+
+[[entries]]
+text = "Cycle to previous window"
+subtext = "SHIFT ALT+Tab"
+value = "SHIFT ALT+Tab -> Cycle to previous window"
+icon = "input-keyboard-symbolic"
+
+[[entries]]
+text = "Open window switcher"
+subtext = "Super+Tab"
+value = "Super+Tab -> Open window switcher"
+icon = "input-keyboard-symbolic"
+
+[[entries]]
+text = "Go to previous workspace"
+subtext = "Super ALT+H"
+value = "Super ALT+H -> Go to previous workspace"
+icon = "input-keyboard-symbolic"
+
+[[entries]]
+text = "Go to previous workspace"
+subtext = "Super ALT+LEFT"
+value = "Super ALT+LEFT -> Go to previous workspace"
+icon = "input-keyboard-symbolic"
+
+[[entries]]
+text = "Go to next workspace"
+subtext = "Super ALT+L"
+value = "Super ALT+L -> Go to next workspace"
+icon = "input-keyboard-symbolic"
+
+[[entries]]
+text = "Go to next workspace"
+subtext = "Super ALT+RIGHT"
+value = "Super ALT+RIGHT -> Go to next workspace"
+icon = "input-keyboard-symbolic"
+
+[[entries]]
+text = "Go to workspace 1"
+subtext = "Super+1"
+value = "Super+1 -> Go to workspace 1"
+icon = "input-keyboard-symbolic"
+
+[[entries]]
+text = "Go to workspace 2"
+subtext = "Super+2"
+value = "Super+2 -> Go to workspace 2"
+icon = "input-keyboard-symbolic"
+
+[[entries]]
+text = "Go to workspace 3"
+subtext = "Super+3"
+value = "Super+3 -> Go to workspace 3"
+icon = "input-keyboard-symbolic"
+
+[[entries]]
+text = "Go to workspace 4"
+subtext = "Super+4"
+value = "Super+4 -> Go to workspace 4"
+icon = "input-keyboard-symbolic"
+
+[[entries]]
+text = "Go to workspace 5"
+subtext = "Super+5"
+value = "Super+5 -> Go to workspace 5"
+icon = "input-keyboard-symbolic"
+
+[[entries]]
+text = "Go to workspace 6"
+subtext = "Super+6"
+value = "Super+6 -> Go to workspace 6"
+icon = "input-keyboard-symbolic"
+
+[[entries]]
+text = "Go to workspace 7"
+subtext = "Super+7"
+value = "Super+7 -> Go to workspace 7"
+icon = "input-keyboard-symbolic"
+
+[[entries]]
+text = "Go to workspace 8"
+subtext = "Super+8"
+value = "Super+8 -> Go to workspace 8"
+icon = "input-keyboard-symbolic"
+
+[[entries]]
+text = "Go to workspace 9"
+subtext = "Super+9"
+value = "Super+9 -> Go to workspace 9"
+icon = "input-keyboard-symbolic"
+
+[[entries]]
+text = "Go to workspace 10"
+subtext = "Super+0"
+value = "Super+0 -> Go to workspace 10"
+icon = "input-keyboard-symbolic"
+
+[[entries]]
+text = "Move active window to previous workspace"
+subtext = "Super SHIFT ALT+H"
+value = "Super SHIFT ALT+H -> Move active window to previous workspace"
+icon = "input-keyboard-symbolic"
+
+[[entries]]
+text = "Move active window to previous workspace"
+subtext = "Super SHIFT ALT+left"
+value = "Super SHIFT ALT+left -> Move active window to previous workspace"
+icon = "input-keyboard-symbolic"
+
+[[entries]]
+text = "Move active window to next workspace"
+subtext = "Super SHIFT ALT+L"
+value = "Super SHIFT ALT+L -> Move active window to next workspace"
+icon = "input-keyboard-symbolic"
+
+[[entries]]
+text = "Move active window to next workspace"
+subtext = "Super SHIFT ALT+right"
+value = "Super SHIFT ALT+right -> Move active window to next workspace"
+icon = "input-keyboard-symbolic"
+
+[[entries]]
+text = "Move active window to workspace 1"
+subtext = "Super SHIFT+1"
+value = "Super SHIFT+1 -> Move active window to workspace 1"
+icon = "input-keyboard-symbolic"
+
+[[entries]]
+text = "Move active window to workspace 2"
+subtext = "Super SHIFT+2"
+value = "Super SHIFT+2 -> Move active window to workspace 2"
+icon = "input-keyboard-symbolic"
+
+[[entries]]
+text = "Move active window to workspace 3"
+subtext = "Super SHIFT+3"
+value = "Super SHIFT+3 -> Move active window to workspace 3"
+icon = "input-keyboard-symbolic"
+
+[[entries]]
+text = "Move active window to workspace 4"
+subtext = "Super SHIFT+4"
+value = "Super SHIFT+4 -> Move active window to workspace 4"
+icon = "input-keyboard-symbolic"
+
+[[entries]]
+text = "Move active window to workspace 5"
+subtext = "Super SHIFT+5"
+value = "Super SHIFT+5 -> Move active window to workspace 5"
+icon = "input-keyboard-symbolic"
+
+[[entries]]
+text = "Move active window to workspace 6"
+subtext = "Super SHIFT+6"
+value = "Super SHIFT+6 -> Move active window to workspace 6"
+icon = "input-keyboard-symbolic"
+
+[[entries]]
+text = "Move active window to workspace 7"
+subtext = "Super SHIFT+7"
+value = "Super SHIFT+7 -> Move active window to workspace 7"
+icon = "input-keyboard-symbolic"
+
+[[entries]]
+text = "Move active window to workspace 8"
+subtext = "Super SHIFT+8"
+value = "Super SHIFT+8 -> Move active window to workspace 8"
+icon = "input-keyboard-symbolic"
+
+[[entries]]
+text = "Move active window to workspace 9"
+subtext = "Super SHIFT+9"
+value = "Super SHIFT+9 -> Move active window to workspace 9"
+icon = "input-keyboard-symbolic"
+
+[[entries]]
+text = "Move active window to workspace 10"
+subtext = "Super SHIFT+0"
+value = "Super SHIFT+0 -> Move active window to workspace 10"
+icon = "input-keyboard-symbolic"
+
+[[entries]]
+text = "Toggle scratchpad workspace"
+subtext = "Super+M"
+value = "Super+M -> Toggle scratchpad workspace"
+icon = "input-keyboard-symbolic"
+
+[[entries]]
+text = "Move active window to scratchpad"
+subtext = "Super SHIFT+M"
+value = "Super SHIFT+M -> Move active window to scratchpad"
+icon = "input-keyboard-symbolic"
+
+[[entries]]
+text = "Volume up"
+subtext = "XF86AudioRaiseVolume"
+value = "XF86AudioRaiseVolume -> Volume up"
+icon = "input-keyboard-symbolic"
+
+[[entries]]
+text = "Volume down"
+subtext = "XF86AudioLowerVolume"
+value = "XF86AudioLowerVolume -> Volume down"
+icon = "input-keyboard-symbolic"
+
+[[entries]]
+text = "Mute/unmute output"
+subtext = "XF86AudioMute"
+value = "XF86AudioMute -> Mute/unmute output"
+icon = "input-keyboard-symbolic"
+
+[[entries]]
+text = "Mute/unmute microphone"
+subtext = "XF86AudioMicMute"
+value = "XF86AudioMicMute -> Mute/unmute microphone"
+icon = "input-keyboard-symbolic"
+
+[[entries]]
+text = "Brightness up"
+subtext = "XF86MonBrightnessUp"
+value = "XF86MonBrightnessUp -> Brightness up"
+icon = "input-keyboard-symbolic"
+
+[[entries]]
+text = "Brightness down"
+subtext = "XF86MonBrightnessDown"
+value = "XF86MonBrightnessDown -> Brightness down"
+icon = "input-keyboard-symbolic"
+
+[[entries]]
+text = "Next track"
+subtext = "XF86AudioNext"
+value = "XF86AudioNext -> Next track"
+icon = "input-keyboard-symbolic"
+
+[[entries]]
+text = "Play/pause"
+subtext = "XF86AudioPause"
+value = "XF86AudioPause -> Play/pause"
+icon = "input-keyboard-symbolic"
+
+[[entries]]
+text = "Play/pause"
+subtext = "XF86AudioPlay"
+value = "XF86AudioPlay -> Play/pause"
+icon = "input-keyboard-symbolic"
+
+[[entries]]
+text = "Previous track"
+subtext = "XF86AudioPrev"
+value = "XF86AudioPrev -> Previous track"
+icon = "input-keyboard-symbolic"
+

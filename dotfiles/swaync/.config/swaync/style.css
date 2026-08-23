@@ -1,0 +1,15 @@
+@import url("file:///home/kirill/.cache/wallust/swaync-colors.css");
+
+* {
+    font-family: "JetBrainsMono Nerd Font Mono";
+    font-size: 13px;
+    font-weight: 500;
+}
+
+.widget-dnd > switch:checked {
+    background: @button-active;
+}
+
+.notification.critical {
+    border: 1px solid @urgent;
+}

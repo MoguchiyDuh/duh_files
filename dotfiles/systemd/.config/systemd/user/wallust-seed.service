@@ -1,0 +1,11 @@
+[Unit]
+Description=Seed wallust cache with Tokyo Night fallback palette
+Before=graphical-session.target
+ConditionPathExists=!%h/.cache/wallust/kitty-colors.conf
+
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/wallust theme Tokyo-Night -q
+
+[Install]
+WantedBy=graphical-session.target

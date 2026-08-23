@@ -10,6 +10,7 @@ from __future__ import annotations
 import argparse
 import json
 import logging
+import os
 import shutil
 import subprocess
 import sys
@@ -68,7 +69,7 @@ log = setup_logger()
 # Config
 # ============================================================================
 
-PLAYLISTS_FILE = Path(__file__).resolve().parent / "playlists.json"
+PLAYLISTS_FILE = Path(os.environ.get("XDG_DATA_HOME", Path.home() / ".local/share")) / "yt-manager" / "playlists.json"
 
 
 @dataclass

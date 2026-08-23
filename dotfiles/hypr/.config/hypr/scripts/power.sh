@@ -6,8 +6,6 @@ state_dir="${XDG_STATE_HOME:-$HOME/.local/state}/power"
 state_file="$state_dir/states"
 awake_unit="awake-inhibit.service"
 
-# custom/awake and custom/profile in waybar's config.jsonc declare
-# "signal": 8 to avoid polling; this is what actually fires it.
 refresh_waybar() {
     pkill -RTMIN+1 waybar 2>/dev/null || true
 }
@@ -55,8 +53,12 @@ require() {
 check_suspend() {
     failures=()
     require "grep -qw mem /sys/power/state" "kernel does not expose suspend-to-RAM"
-    require "systemctl is-enabled --quiet nvidia-suspend.service" "nvidia-suspend.service is not enabled"
-    require "systemctl is-enabled --quiet nvidia-resume.service" "nvidia-resume.service is not enabled"
+    if lsmod | grep -q '^nvidia '; then
+        require "grep -q '^UseKernelSuspendNotifiers: 1' /proc/driver/nvidia/params" "nvidia kernel suspend notifiers are not enabled"
+        local tmp_path
+        tmp_path=$(awk -F'"' '/^TemporaryFilePath:/ { print $2; exit }' /proc/driver/nvidia/params 2>/dev/null)
+        require "[[ -n '$tmp_path' && '$tmp_path' != '/tmp' ]]" "nvidia TemporaryFilePath is unset or tmpfs-backed /tmp"
+    fi
 }
 
 check_hibernate() {
@@ -128,11 +130,6 @@ run_mode() {
     systemctl "$mode"
 }
 
-# --- power profiles (eco/balanced/performance) ---------------------------
-# Thin wrapper over power-profiles-daemon. eco -> power-saver, balanced ->
-# balanced, performance -> performance. Mirrors the Windows power-mode slider /
-# macOS Low Power Mode. On this AMD box ppd drives amd-pstate-epp directly; it
-# also works on desktops (no battery required).
 ppd_available() {
     command -v powerprofilesctl >/dev/null 2>&1
 }
@@ -250,7 +247,7 @@ case "${1:-}" in
         hyprlock
         ;;
     2|logout)
-        hyprctl dispatch exit
+        uwsm stop
         ;;
     3|suspend)
         run_mode suspend

@@ -22,13 +22,19 @@ Common packages:
 ```text
 zsh
 kitty
+ghostty
 hypr
 waybar
+tmux
 wallust
-wlogout
-zed
-qt5
+swaync
+walker
+elephant
+systemd
+starship
 fastfetch
+gtk
+qt5
 nvim
 ```
 
@@ -36,7 +42,7 @@ Deploy from the repo root like this:
 
 ```bash
 cd ~/duh_files/dotfiles
-stow zsh kitty hypr waybar tmux wallust wlogout zed gtk qt5 fastfetch nvim
+stow zsh kitty ghostty hypr waybar tmux wallust swaync walker elephant systemd starship fastfetch gtk qt5 nvim
 ```
 
 Preview first when unsure:
