@@ -1,11 +1,11 @@
 [Unit]
-Description=Seed wallust cache with Tokyo Night fallback palette
+Description=Seed matugen cache with fallback palette
 Before=graphical-session.target
 ConditionPathExists=!%h/.cache/wallust/kitty-colors.conf
 
 [Service]
 Type=oneshot
-ExecStart=/usr/bin/wallust theme Tokyo-Night -q
+ExecStart=/usr/bin/matugen color hex --prefer saturation "#367dd6"
 
 [Install]
 WantedBy=graphical-session.target

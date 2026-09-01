@@ -22,16 +22,16 @@ case $wallpaper in
     ln -sfn "$wallpaper" "$cache/current_wallpaper.png"
     frame=$(mktemp --suffix=.jpg)
     if ffmpeg -y -ss 3 -i "$wallpaper" -vframes 1 -q:v 2 "$frame" </dev/null >/dev/null 2>&1; then
-        wallust run "$frame"
+        matugen image --prefer saturation "$frame"
     else
-        wallust run "$wallpaper"
+        matugen image --prefer saturation "$wallpaper"
     fi
     rm -f "$frame"
     ;;
 *.jpg | *.jpeg | *.png | *.webp)
     awww img "$wallpaper" -t center 2>/dev/null || true
     ln -sfn "$wallpaper" "$cache/current_wallpaper.png"
-    wallust run "$wallpaper"
+    matugen image --prefer saturation "$wallpaper"
     ;;
 *)
     usage

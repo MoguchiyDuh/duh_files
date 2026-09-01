@@ -1,0 +1,59 @@
+[config]
+mode = "dark"
+scheme_type = "scheme-tonal-spot"
+prefer = "saturation"
+
+[templates.kitty]
+input_path = "~/.config/matugen/templates/kitty-colors.conf"
+output_path = "~/.cache/wallust/kitty-colors.conf"
+post_hook = "kill -SIGUSR1 $(pgrep -x kitty) 2>/dev/null || true"
+
+[templates.ghostty]
+input_path = "~/.config/matugen/templates/ghostty-colors"
+output_path = "~/.cache/wallust/ghostty-colors"
+
+[templates.waybar]
+input_path = "~/.config/matugen/templates/waybar-colors.css"
+output_path = "~/.cache/wallust/waybar-colors.css"
+post_hook = "systemctl --user restart waybar.service || true"
+
+[templates.swaync]
+input_path = "~/.config/matugen/templates/swaync-colors.css"
+output_path = "~/.cache/wallust/swaync-colors.css"
+post_hook = "swaync-client --reload-css >/dev/null 2>&1 || true"
+
+[templates.walker]
+input_path = "~/.config/matugen/templates/walker-colors.css"
+output_path = "~/.cache/wallust/walker-colors.css"
+post_hook = "systemctl --user try-restart walker.service >/dev/null 2>&1 || true"
+
+[templates.hypr]
+input_path = "~/.config/matugen/templates/hyprland-colors.conf"
+output_path = "~/.cache/wallust/hypr-colors.conf"
+
+[templates.hyprlock]
+input_path = "~/.config/matugen/templates/hyprlock-colors.conf"
+output_path = "~/.cache/wallust/hyprlock-colors.conf"
+
+[templates.hypr_lua]
+input_path = "~/.config/matugen/templates/hyprland-colors.lua"
+output_path = "~/.cache/wallust/colors.lua"
+post_hook = "hyprctl reload >/dev/null 2>&1 || true"
+
+[templates.tmux]
+input_path = "~/.config/matugen/templates/tmux-colors.conf"
+output_path = "~/.cache/wallust/tmux-colors.conf"
+post_hook = "tmux ls >/dev/null 2>&1 && tmux source-file -q ~/.cache/wallust/tmux-colors.conf || true"
+
+[templates.gitmux]
+input_path = "~/.config/matugen/templates/gitmux.conf"
+output_path = "~/.cache/wallust/gitmux.conf"
+
+[templates.gtk]
+input_path = "~/.config/matugen/templates/gtk-colors.css"
+output_path = "~/.cache/wallust/gtk-colors.css"
+
+[templates.nvim]
+input_path = "~/.config/matugen/templates/nvim-colors.lua"
+output_path = "~/.local/share/nvim/site/colors/dynamic.lua"
+post_hook = "pgrep -x nvim >/dev/null && pkill -USR1 -x nvim || true"

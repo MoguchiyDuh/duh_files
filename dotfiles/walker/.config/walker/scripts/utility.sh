@@ -114,12 +114,7 @@ case "$action" in
         bash "$power_script" profile "${action#profile.}"
         ;;
     theme.*)
-        theme=${action#theme.}
-        if wallust theme "$theme" >/dev/null 2>&1; then
-            notify-send "Theme" "$theme applied" -u low -t 2000 2>/dev/null || true
-        else
-            fail "Theme $theme not found"
-        fi
+        fail "Theme switching not supported"
         ;;
     awake.toggle)
         bash "$power_script" awake toggle
@@ -159,8 +154,9 @@ case "$action" in
     wallpaper)
         wallpaper=$(stdin_value) || fail "Missing wallpaper"
         wallpaper=$(validate_wallpaper "$wallpaper")
+        ln -sfn "$wallpaper" "${XDG_CACHE_HOME:-$HOME/.cache}/current_wallpaper.png"
         awww img "$wallpaper" --resize crop -t fade --transition-step 90 2>/dev/null || true
-        wallust run "$wallpaper" 2>/dev/null || true
+        matugen image --prefer saturation "$wallpaper" 2>/dev/null || true
         notify-send "Wallpaper" "Applied" -u low -t 2000 2>/dev/null || true
         ;;
     thumbnail)

@@ -35,41 +35,42 @@ window#waybar {
     margin: 5px;
     padding: 0 12px;
     border-radius: 10px;
-    background: alpha(@color0, 0.8);
+    background: alpha(@color0, 0.75);
     text-shadow: 0 1px 3px rgba(0, 0, 0, 0.8);
 }
 
 #custom-distro-icon {
     padding: 0 15px;
-    color: @color12;
-    background: linear-gradient(135deg, alpha(@color12, 0.4), alpha(@color11, 0.3));
+    color: @on_primary;
+    background: linear-gradient(135deg, @grad_a_dim, @grad_b_dim);
     font-size: 20px;
     font-weight: 700;
+    text-shadow: 0 1px 4px rgba(0, 0, 0, 0.9);
 }
 
 #cpu,
 #memory,
 #custom-gpu {
     padding: 0 8px;
-    color: @color9;
+    color: @color4;
     background: alpha(@color9, 0.4);
 }
 
 #cpu.warning,
 #memory.warning {
     color: @color3;
-    background: alpha(@color3, 0.5);
+    background: alpha(@color3, 0.4);
 }
 
 #cpu.critical,
 #memory.critical {
     color: @color1;
-    background: alpha(@color1, 0.6);
+    background: alpha(@color1, 0.4);
 }
 
 #custom-gpu.hot {
     color: @color1;
-    background: alpha(@color1, 0.6);
+    background: alpha(@color1, 0.4);
     text-shadow: 0 0 9px alpha(@color1, 0.75);
 }
 
@@ -91,12 +92,12 @@ window#waybar {
 
 #taskbar button.active {
     color: @color0;
-    background: linear-gradient(135deg, alpha(@color12, 0.8), alpha(@color11, 0.7));
+    background: linear-gradient(135deg, alpha(@color12, 0.85), alpha(@color13, 0.75));
 }
 
 #taskbar button.minimized {
     opacity: 0.5;
-    background: alpha(@color0, 0.5);
+    background: alpha(@color0, 0.75);
 }
 
 #workspaces {
@@ -108,40 +109,42 @@ window#waybar {
 #workspaces button {
     min-height: 36px;
     margin: 0 3px;
-    padding: 0 12px;
+    padding: 0 14px;
     border-radius: 10px;
     color: @color7;
-    background: alpha(@color0, 0.8);
+    background: alpha(@color0, 0.75);
     font-weight: 600;
     text-shadow: 0 1px 3px rgba(0, 0, 0, 0.8);
 }
 
 #workspaces button.active {
     color: @color0;
-    background: linear-gradient(135deg, @color12, @color11);
+    background: linear-gradient(135deg, @color12, @color13);
+    text-shadow: none;
 }
 
 #workspaces button.urgent {
+    color: @color0;
     background: linear-gradient(135deg, @color1, @color9);
 }
 
 #custom-cliphist {
     padding: 0 15px;
     color: @color15;
-    background: alpha(@color14, 0.4);
+    background: alpha(@color0, 0.75);
 }
 
 #custom-notifications {
     padding: 0 15px;
     color: @color7;
-    background: alpha(@color0, 0.7);
+    background: alpha(@color0, 0.75);
 }
 
 #custom-notifications.notification,
 #custom-notifications.inhibited-notification {
-    color: @color11;
-    background: alpha(@color11, 0.4);
-    text-shadow: 0 0 9px alpha(@color11, 0.75);
+    color: @color5;
+    background: alpha(@color9, 0.4);
+    text-shadow: 0 0 9px alpha(@color5, 0.6);
 }
 
 #custom-notifications.dnd-notification,
@@ -166,7 +169,7 @@ window#waybar {
 
 #tray {
     padding: 0 12px;
-    background: alpha(@color0, 0.7);
+    background: alpha(@color0, 0.75);
 }
 
 #tray > .passive {
@@ -238,12 +241,12 @@ window#waybar {
 
 #battery.warning:not(.charging) {
     color: @color3;
-    background: alpha(@color3, 0.5);
+    background: alpha(@color3, 0.4);
 }
 
 #battery.critical:not(.charging) {
     color: @color1;
-    background: alpha(@color1, 0.6);
+    background: alpha(@color1, 0.4);
 }
 
 #custom-awake,

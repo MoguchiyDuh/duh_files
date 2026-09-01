@@ -6,13 +6,13 @@ hl.config({
     gaps_in = 6,
     gaps_out = 6,
     border_size = 2,
-    col = {
-      active_border = {
-        colors = { colors.rgb(c.color12), colors.rgb(c.color11) },
-        angle = 45,
+      col = {
+        active_border = {
+          colors = { colors.rgb(c.color12), colors.rgb(c.color13) },
+          angle = 0,
+        },
+        inactive_border = colors.rgb(c.color0),
       },
-      inactive_border = colors.rgb(c.color0),
-    },
     resize_on_border = false,
     allow_tearing = false,
     layout = "dwindle",

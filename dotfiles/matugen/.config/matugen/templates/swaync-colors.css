@@ -1,0 +1,29 @@
+@define-color text {{ colors.on_surface.default.hex }};
+@define-color background {{ colors.surface.default.hex }};
+@define-color background-alt {{ colors.surface.default.hex }};
+@define-color cursor {{ colors.primary.default.hex }};
+@define-color hovered {{ colors.primary.default.hex }};
+@define-color button-background {{ colors.primary_container.default.hex }};
+@define-color button-active {{ colors.primary.default.hex }};
+@define-color border {{ colors.outline.default.hex }};
+@define-color urgent {{ colors.error.default.hex }};
+
+:root {
+    --cc-bg: rgba({{ colors.surface.default.red }}, {{ colors.surface.default.green }}, {{ colors.surface.default.blue }}, 0.75);
+    --noti-border-color: rgba({{ colors.outline.default.red }}, {{ colors.outline.default.green }}, {{ colors.outline.default.blue }}, 0.3);
+    --noti-bg: {{ colors.surface.default.red }}, {{ colors.surface.default.green }}, {{ colors.surface.default.blue }};
+    --noti-bg-alpha: 0.75;
+    --noti-bg-darker: rgb({{ colors.surface_container_highest.default.red }}, {{ colors.surface_container_highest.default.green }}, {{ colors.surface_container_highest.default.blue }});
+    --noti-bg-hover: rgba({{ colors.primary.default.red }}, {{ colors.primary.default.green }}, {{ colors.primary.default.blue }}, 0.25);
+    --noti-bg-focus: rgba({{ colors.primary.default.red }}, {{ colors.primary.default.green }}, {{ colors.primary.default.blue }}, 0.35);
+    --noti-close-bg: rgba({{ colors.outline.default.red }}, {{ colors.outline.default.green }}, {{ colors.outline.default.blue }}, 0.25);
+    --noti-close-bg-hover: rgba({{ colors.outline.default.red }}, {{ colors.outline.default.green }}, {{ colors.outline.default.blue }}, 0.5);
+    --text-color: {{ colors.on_surface.default.hex }};
+    --text-color-disabled: {{ colors.on_surface_variant.default.hex }};
+    --bg-selected: {{ colors.primary_container.default.hex }};
+    --notification-icon-size: 32px;
+    --border: 1px solid var(--noti-border-color);
+    --border-radius: 16px;
+    --font-size-body: 13px;
+    --font-size-summary: 14px;
+}

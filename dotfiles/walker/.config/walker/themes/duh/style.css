@@ -68,8 +68,8 @@ scrollbar {
 }
 
 .input selection {
-  color: @foreground;
-  background: alpha(@accent_deep, 0.72);
+  color: @accent;
+  background: alpha(@accent_deep, 0.80);
 }
 
 .elephant-hint,
@@ -133,9 +133,9 @@ scrollbar {
 .item-quick-activation {
   min-width: 16px;
   padding: 3px 6px;
-  color: alpha(@foreground, 0.70);
-  background: alpha(@foreground, 0.07);
-  border: 1px solid alpha(@foreground, 0.12);
+  color: @hint_fg;
+  background: alpha(@hint, 0.55);
+  border: 1px solid alpha(@hint_fg, 0.20);
   border-radius: 5px;
   font-size: 10px;
   font-weight: 650;
@@ -152,7 +152,7 @@ row:hover .item-box {
 }
 
 .calc .item-text {
-  color: @cyan;
+  color: @hint_fg;
   font-size: 23px;
   font-weight: 700;
 }
@@ -173,29 +173,29 @@ child:selected .item-box,
 row:selected .item-box,
 child:selected:hover .item-box,
 row:selected:hover .item-box {
-  background: @foreground;
+  background: alpha(@accent_deep, 0.90);
 }
 
 child:selected .item-text,
 child:selected .item-image,
 child:selected .item-image-text,
 child:selected .normal-icons {
-  color: @surface;
+  color: @accent;
 }
 
 child:selected .item-subtext {
-  color: alpha(@surface, 0.72);
+  color: alpha(@accent, 0.65);
 }
 
 child:selected .providerlist .item-subtext,
 child:selected .calc .item-text {
-  color: @surface;
+  color: @accent;
 }
 
 child:selected .item-quick-activation {
-  color: @surface;
-  background: alpha(@surface, 0.12);
-  border-color: alpha(@surface, 0.28);
+  color: @hint_fg;
+  background: @hint;
+  border-color: transparent;
 }
 
 .preview {
@@ -235,9 +235,9 @@ child:selected .item-quick-activation {
 
 .keybind-label {
   padding: 2px 5px;
-  color: @accent;
-  background: alpha(@accent, 0.08);
-  border: 1px solid alpha(@accent, 0.25);
+  color: @hint_fg;
+  background: alpha(@hint, 0.55);
+  border: 1px solid alpha(@hint_fg, 0.20);
   border-radius: 5px;
   font-size: 10px;
   font-weight: 650;

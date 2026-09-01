@@ -5,6 +5,6 @@ clash-verge-rev-bin
 lazysql
 neovim-git
 tor-browser-bin
-wallust
+matugen
 wayvnc-git
 yay

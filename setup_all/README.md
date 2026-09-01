@@ -87,7 +87,7 @@ while read -r app; do flatpak install -y flathub "$app"; done < setup_all/pkg-fl
 
 ```bash
 cd ~/duh_files/dotfiles
-stow zsh kitty ghostty hypr waybar tmux wallust swaync walker elephant systemd starship fastfetch gtk qt5 nvim
+stow zsh kitty ghostty hypr waybar tmux matugen swaync walker elephant systemd starship fastfetch gtk qt5 nvim
 ```
 
 Only stow directories that make sense on the target machine.

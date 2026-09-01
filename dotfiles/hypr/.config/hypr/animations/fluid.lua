@@ -3,6 +3,7 @@ return {
     { name = "fluidSpring", cfg = { type = "spring",  mass = 1, stiffness = 75, dampening = 12 } },
     { name = "fluidExit",   cfg = { type = "bezier",  points = { { 0.4, 0 }, { 1, 1 } } } },
     { name = "fluidFade",   cfg = { type = "bezier",  points = { { 0.5, 0.5 }, { 0.75, 1 } } } },
+    { name = "liner",       cfg = { type = "bezier",  points = { { 0, 0 }, { 1, 1 } } } },
   },
   animations = {
     { leaf = "windowsIn",        enabled = true, speed = 5.0, spring = "fluidSpring", style = "popin 85%" },
@@ -16,6 +17,6 @@ return {
     { leaf = "workspaces",       enabled = true, speed = 5.0, spring = "fluidSpring", style = "slidefade 20%" },
     { leaf = "specialWorkspace", enabled = true, speed = 4.0, spring = "fluidSpring", style = "slidevert" },
     { leaf = "border",           enabled = true, speed = 6.0, bezier = "fluidFade" },
-    { leaf = "borderangle",      enabled = false },
+    { leaf = "borderangle",      enabled = true, speed = 100.0, bezier = "liner", style = "loop" },
   },
 }

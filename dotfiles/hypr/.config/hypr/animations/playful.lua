@@ -4,6 +4,7 @@ return {
     { name = "exprDecel", cfg = { type = "bezier", points = { { 0.05, 0.7  }, { 0.1,  1.0  } } } },
     { name = "exprAccel", cfg = { type = "bezier", points = { { 0.3,  0.0  }, { 0.8,  0.15 } } } },
     { name = "exprStall", cfg = { type = "bezier", points = { { 1.0, -0.1  }, { 0.7,  0.85 } } } },
+    { name = "liner",     cfg = { type = "bezier", points = { { 0,   0     }, { 1,    1.0  } } } },
   },
   animations = {
     { leaf = "windowsIn",        enabled = true, speed = 4.0, bezier = "exprIn",    style = "popin 80%" },
@@ -18,6 +19,6 @@ return {
     { leaf = "workspaces",       enabled = true, speed = 7.0, bezier = "exprDecel", style = "slide" },
     { leaf = "specialWorkspace", enabled = true, speed = 3.5, bezier = "exprDecel", style = "slidevert" },
     { leaf = "border",           enabled = true, speed = 10,  bezier = "exprDecel" },
-    { leaf = "borderangle",      enabled = false },
+    { leaf = "borderangle",      enabled = true, speed = 100.0, bezier = "liner", style = "loop" },
   },
 }

@@ -55,13 +55,13 @@ return {
 			end
 
 			local themes = {
-				wallust = {
-					variants = { "wallust" },
-					load = function(_)
-						vim.o.background = "dark"
-						vim.cmd("colorscheme wallust")
-					end,
-				},
+			dynamic = {
+				variants = { "dynamic" },
+				load = function(_)
+					vim.o.background = "dark"
+					vim.cmd("colorscheme dynamic")
+				end,
+			},
 				kanagawa = {
 					variants = { "kanagawa-wave", "kanagawa-dragon", "kanagawa-lotus [LIGHT]" },
 					load = function(variant)

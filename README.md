@@ -26,7 +26,7 @@ ghostty
 hypr
 waybar
 tmux
-wallust
+matugen
 swaync
 walker
 elephant
@@ -42,7 +42,7 @@ Deploy from the repo root like this:
 
 ```bash
 cd ~/duh_files/dotfiles
-stow zsh kitty ghostty hypr waybar tmux wallust swaync walker elephant systemd starship fastfetch gtk qt5 nvim
+stow zsh kitty ghostty hypr waybar tmux matugen swaync walker elephant systemd starship fastfetch gtk qt5 nvim
 ```
 
 Preview first when unsure:

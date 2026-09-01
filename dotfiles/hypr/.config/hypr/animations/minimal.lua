@@ -15,6 +15,6 @@ return {
     { leaf = "workspaces",       enabled = true, speed = 0.5, bezier = "liner",   style = "fade" },
     { leaf = "specialWorkspace", enabled = true, speed = 0.5, bezier = "liner",   style = "fade" },
     { leaf = "border",           enabled = false },
-    { leaf = "borderangle",      enabled = false },
+    { leaf = "borderangle",      enabled = true, speed = 100.0, bezier = "liner", style = "loop" },
   },
 }

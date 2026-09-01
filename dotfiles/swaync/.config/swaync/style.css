@@ -4,12 +4,300 @@
     font-family: "JetBrainsMono Nerd Font Mono";
     font-size: 13px;
     font-weight: 500;
+    color: @text;
+    border: none;
+    border-radius: 0;
+    background: none;
+    padding: 0;
+    margin: 0;
+    box-shadow: none;
+    outline: none;
+}
+
+/* ── Windows ─────────────────────────────────────────────────────── */
+
+.notification-window,
+.blank-window,
+.floating-notifications.background {
+    background: transparent;
+}
+
+/* ── Control Center ──────────────────────────────────────────────── */
+
+.control-center {
+    background: var(--cc-bg);
+    border: 1px solid rgba(255, 255, 255, 0.10);
+    border-radius: 16px;
+    padding: 12px 8px;
+}
+
+.control-center-list {
+    background: transparent;
+}
+
+.control-center scrollbar {
+    opacity: 0;
+    background: transparent;
+}
+
+.control-center scrollbar slider {
+    opacity: 0;
+    background: transparent;
+}
+
+/* ── DND Widget ───────────────────────────────────────────────────── */
+
+.widget-dnd {
+    margin: 4px 8px 8px;
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.widget-dnd > switch {
+    background: rgba(255, 255, 255, 0.07);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 12px;
 }
 
 .widget-dnd > switch:checked {
-    background: @button-active;
+    background: @button-background;
+    border-color: @button-active;
+}
+
+.widget-dnd > switch slider {
+    background: rgba(255, 255, 255, 0.85);
+    border-radius: 10px;
+    min-width: 18px;
+    min-height: 18px;
+    margin: 2px;
+}
+
+/* ── MPRIS Widget ─────────────────────────────────────────────────── */
+
+.widget-mpris {
+    margin: 4px 0 8px;
+}
+
+.widget-mpris-player {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.09);
+    border-radius: 14px;
+    padding: 12px;
+    margin: 4px 8px;
+}
+
+.widget-mpris-album-art {
+    border-radius: 10px;
+}
+
+.widget-mpris-title {
+    font-weight: 700;
+    font-size: 14px;
+}
+
+.widget-mpris-subtitle {
+    font-size: 12px;
+    color: @muted;
+}
+
+.widget-mpris button {
+    background: rgba(255, 255, 255, 0.07);
+    border: 1px solid rgba(255, 255, 255, 0.10);
+    border-radius: 8px;
+    min-width: 32px;
+    min-height: 32px;
+    padding: 4px;
+}
+
+.widget-mpris button:hover {
+    background: rgba(255, 255, 255, 0.14);
+}
+
+/* ── Close Button ─────────────────────────────────────────────────── */
+
+.close-button {
+    background: rgba(255, 255, 255, 0.08);
+    color: @text;
+    border-radius: 100%;
+    min-width: 24px;
+    min-height: 24px;
+    margin: 6px;
+}
+
+.close-button:hover {
+    background: rgba(255, 80, 80, 0.35);
+    color: #ff9090;
+}
+
+/* ── Notification Row (CC) ────────────────────────────────────────── */
+
+.control-center .notification-row {
+    margin: 4px 4px;
+    outline: none;
+}
+
+.control-center .notification-row:focus,
+.control-center .notification-row:hover {
+    background: transparent;
+}
+
+.control-center .notification-background {
+    background: transparent;
+    border: none;
+    padding: 0;
+}
+
+/* ── Notification Content (CC + floating) ─────────────────────────── */
+
+.notification-row .notification-background .notification,
+.notification-group.collapsed .notification-row .notification,
+.notification-group.collapsed:hover .notification-row:not(:only-child) .notification,
+.control-center .notification,
+.control-center .control-center-list .notification {
+    background: rgba(var(--noti-bg), 0.55);
+    border: 1px solid rgba(255, 255, 255, 0.09);
+    border-radius: 14px;
+    box-shadow: none;
+    padding: 12px 14px;
+}
+
+.control-center .notification-row:hover .notification {
+    background: rgba(var(--noti-bg), 0.70);
+    border-color: rgba(255, 255, 255, 0.14);
+}
+
+.notification .notification-content {
+    background: transparent;
+}
+
+.notification .summary {
+    font-size: 13px;
+    font-weight: 700;
+    color: @text;
+}
+
+.notification .body {
+    font-size: 12px;
+    color: @muted;
+    margin-top: 2px;
+}
+
+.notification .time {
+    font-size: 11px;
+    color: @muted;
+    margin-right: 4px;
+}
+
+.notification image {
+    border-radius: 8px;
+    margin-right: 10px;
 }
 
 .notification.critical {
-    border: 1px solid @urgent;
+    border-left: 3px solid @urgent;
+    border-radius: 14px;
+}
+
+/* ── Notification Actions ─────────────────────────────────────────── */
+
+.notification-default-action,
+.notification-action {
+    background: transparent;
+    border-radius: 0;
+    padding: 0;
+}
+
+.notification-default-action:hover,
+.notification-action:hover {
+    background: transparent;
+}
+
+.notification .notification-action button,
+.notification .notification-alt-actions button {
+    background: rgba(255, 255, 255, 0.07);
+    border: 1px solid rgba(255, 255, 255, 0.10);
+    border-radius: 8px;
+    color: @text;
+    padding: 4px 10px;
+    margin: 6px 4px 4px 0;
+    font-size: 12px;
+}
+
+.notification .notification-action button:hover,
+.notification .notification-alt-actions button:hover {
+    background: rgba(255, 255, 255, 0.14);
+}
+
+/* ── Notification Groups ──────────────────────────────────────────── */
+
+.notification-group {
+    background: transparent;
+    border-radius: 14px;
+    margin: 4px 4px;
+}
+
+.notification-group-headers {
+    font-size: 12px;
+    font-weight: 700;
+    color: @muted;
+    padding: 4px 10px;
+}
+
+.notification-group-icon {
+    color: @muted;
+}
+
+.notification-group-collapse-button {
+    background: rgba(255, 255, 255, 0.07);
+    border: 1px solid rgba(255, 255, 255, 0.10);
+    border-radius: 8px;
+    color: @text;
+    padding: 2px 8px;
+    margin: 4px;
+    font-size: 12px;
+}
+
+.notification-group-collapse-button:hover {
+    background: rgba(255, 255, 255, 0.14);
+}
+
+/* ── Floating Notifications ───────────────────────────────────────── */
+
+.floating-notifications .notification-row {
+    margin: 6px 10px;
+}
+
+.floating-notifications .notification-background {
+    background: transparent;
+    border: none;
+    padding: 0;
+}
+
+.floating-notifications .notification {
+    background: rgba(var(--noti-bg), 0.82);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 16px;
+    box-shadow:
+        0 8px 32px rgba(0, 0, 0, 0.45),
+        inset 0 1px 0 rgba(255, 255, 255, 0.07);
+    padding: 14px 16px;
+}
+
+.floating-notifications .notification .summary {
+    font-size: 13px;
+    font-weight: 700;
+}
+
+.floating-notifications .notification .body {
+    font-size: 12px;
+    color: @muted;
+}
+
+.floating-notifications .notification image {
+    border-radius: 10px;
+    margin-right: 12px;
+}
+
+.floating-notifications.background .notification-background .notification.critical {
+    border-left: 3px solid @urgent;
 }
