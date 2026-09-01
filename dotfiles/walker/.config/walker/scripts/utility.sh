@@ -86,7 +86,7 @@ thumbnail() {
             fi
         else
             need magick
-            if ! magick "$source" -auto-orient -thumbnail '320x180^' -gravity center -extent 320x180 "$temporary"; then
+            if ! magick "$source" -auto-orient -thumbnail '220x138^' -gravity center -extent 220x138 "$temporary"; then
                 rm -f "$temporary"
                 fail "Could not create image thumbnail"
             fi

@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<interface>
+  <requires lib="gtk" version="4.0"></requires>
+  <object class="GtkBox" id="ItemBox">
+    <style>
+      <class name="item-box"></class>
+      <class name="wallpaper-item"></class>
+    </style>
+    <property name="overflow">hidden</property>
+    <child>
+      <object class="GtkPicture" id="ItemImage">
+        <style>
+          <class name="wallpaper-image"></class>
+        </style>
+        <property name="content-fit">cover</property>
+        <property name="hexpand">true</property>
+        <property name="vexpand">true</property>
+        <property name="width-request">210</property>
+        <property name="height-request">124</property>
+      </object>
+    </child>
+  </object>
+</interface>

@@ -1,0 +1,12 @@
+--- a/src/theme/mod.rs
++++ b/src/theme/mod.rs
+@@ -221,7 +221,8 @@
+                         key.to_string()
+                     };
+ 
+-                    theme.items.insert(actual_key, s);
++                    theme.items.insert(actual_key.clone(), s.clone());
++                    theme.grid_items.insert(actual_key, s);
+                 }
+             }
+             _ => (),
