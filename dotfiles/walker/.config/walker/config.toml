@@ -10,7 +10,7 @@ hide_action_hints = false
 hide_return_action = false
 keybind_symbols = true
 resume_last_query = false
-ext_background_effect_blur = true
+ext_background_effect_blur = false
 
 [columns]
 "menus:wallpapers" = 3

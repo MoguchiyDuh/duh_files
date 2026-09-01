@@ -96,11 +96,14 @@ for _, m in ipairs(media) do
     hl.bind(m[1], hl.dsp.exec_cmd(m[2]), { locked = true, repeating = true, description = m[3] })
 end
 
+local media_notify = scripts .. "/media_notify.sh"
+
 local players = {
-    { "XF86AudioNext",  "playerctl next",       "Next track" },
-    { "XF86AudioPause", "playerctl play-pause", "Play/pause" },
-    { "XF86AudioPlay",  "playerctl play-pause", "Play/pause" },
-    { "XF86AudioPrev",  "playerctl previous",   "Previous track" },
+    { "XF86AudioNext",  media_notify .. " next",       "Next track" },
+    { "XF86AudioPause", media_notify .. " play-pause", "Play/pause" },
+    { "XF86AudioPlay",  media_notify .. " play-pause", "Play/pause" },
+    { "XF86AudioPrev",  media_notify .. " previous",   "Previous track" },
+    { "XF86AudioStop",  media_notify .. " stop",       "Stop" },
 }
 
 for _, p in ipairs(players) do
