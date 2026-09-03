@@ -6,7 +6,7 @@ Requires=awww-daemon.service
 
 [Service]
 Type=oneshot
-ExecStart=/usr/bin/bash -c 'for _ in $(seq 1 50); do [ -S "${XDG_RUNTIME_DIR}/${WAYLAND_DISPLAY:-wayland-1}-awww-daemon.sock" ] && break; sleep 0.1; done; awww restore 2>/dev/null || awww img /home/kirill/.cache/current_wallpaper.png -t center'
+ExecStart=/usr/bin/bash -c 'for _ in $(seq 1 50); do [ -S "${XDG_RUNTIME_DIR}/${WAYLAND_DISPLAY:-wayland-1}-awww-daemon.sock" ] && break; sleep 0.1; done; awww restore 2>/dev/null || awww img "$HOME/.cache/current_wallpaper.png" -t center'
 
 [Install]
 WantedBy=graphical-session.target

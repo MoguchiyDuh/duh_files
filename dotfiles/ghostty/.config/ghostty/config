@@ -7,4 +7,4 @@ background-opacity = 0.7
 gtk-titlebar = false
 confirm-close-surface = false
 mouse-hide-while-typing = true
-config-file = ?/home/kirill/.cache/wallust/ghostty-colors
+config-file = ?~/.cache/wallust/ghostty-colors
