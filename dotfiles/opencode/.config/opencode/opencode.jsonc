@@ -1,0 +1,160 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+  "permission": {
+    "playwright*": "ask",
+    "bash": {
+      "*": "ask",
+      "git status*": "allow",
+      "git log*": "allow",
+      "git diff*": "allow",
+      "git show*": "allow",
+      "git branch*": "allow",
+      "ls*": "allow",
+      "eza*": "allow",
+      "rg*": "allow",
+      "fd*": "allow",
+      "bat*": "allow",
+      "jq*": "allow",
+      "tldr*": "allow",
+      "cargo check*": "allow",
+      "cargo build*": "allow",
+      "cargo test*": "allow",
+      "cargo clippy*": "allow",
+      "cargo fmt*": "allow",
+      "uv run*": "allow",
+      "uv sync*": "allow",
+      "uv lock*": "allow",
+      "python*": "allow",
+      "pytest*": "allow",
+      "ruff*": "allow",
+    },
+  },
+  "agent": {
+    "general": {
+      "model": "opencode-go/deepseek-v4-pro",
+    },
+    "explore": {
+      "model": "opencode/muse-spark-1.2-contributor-free",
+    },
+  },
+  "plugin": [
+    // "file:/Users/kirill/Documents/opencode-read-keepalive",
+    "file:/Users/kirill/Documents/duh-agy-auth",
+    "file:/Users/kirill/Documents/duh-claude-auth",
+    // "opencode-claude-auth@latest",
+    "cc-safety-net@latest",
+  ],
+  "provider": {
+    "google": {
+      "npm": "@ai-sdk/google",
+      "models": {
+        "antigravity-gemini-3.8-flash": {
+          "name": "Gemini 3.8 Flash (Antigravity)",
+          "limit": { "context": 1048576, "output": 65536 },
+          "modalities": {
+            "input": ["text", "image", "pdf"],
+            "output": ["text"],
+          },
+          "variants": {
+            "low": { "thinkingLevel": "low" },
+            "medium": { "thinkingLevel": "medium" },
+            "high": { "thinkingLevel": "high" },
+          },
+        },
+        "antigravity-gemini-3.7-flash": {
+          "name": "Gemini 3.7 Flash (Antigravity)",
+          "limit": { "context": 1048576, "output": 65536 },
+          "modalities": {
+            "input": ["text", "image", "pdf"],
+            "output": ["text"],
+          },
+          "variants": {
+            "low": { "thinkingLevel": "low" },
+            "medium": { "thinkingLevel": "medium" },
+            "high": { "thinkingLevel": "high" },
+          },
+        },
+        "antigravity-gemini-3.6-flash": {
+          "name": "Gemini 3.6 Flash (Antigravity)",
+          "limit": { "context": 1048576, "output": 65536 },
+          "modalities": {
+            "input": ["text", "image", "pdf"],
+            "output": ["text"],
+          },
+          "variants": {
+            "low": { "thinkingLevel": "low" },
+            "medium": { "thinkingLevel": "medium" },
+            "high": { "thinkingLevel": "high" },
+          },
+        },
+        "antigravity-gemini-3.1-pro": {
+          "name": "Gemini 3.1 Pro (Antigravity)",
+          "limit": { "context": 1048576, "output": 65535 },
+          "modalities": {
+            "input": ["text", "image", "pdf"],
+            "output": ["text"],
+          },
+          "variants": {
+            "low": { "thinkingLevel": "low" },
+            "high": { "thinkingLevel": "high" },
+          },
+        },
+        "antigravity-claude-sonnet-4-6": {
+          "name": "Claude Sonnet 4.6 (Antigravity)",
+          "limit": { "context": 200000, "output": 64000 },
+          "modalities": {
+            "input": ["text", "image", "pdf"],
+            "output": ["text"],
+          },
+        },
+        "antigravity-claude-opus-4-6-thinking": {
+          "name": "Claude Opus 4.6 Thinking (Antigravity)",
+          "limit": { "context": 200000, "output": 64000 },
+          "modalities": {
+            "input": ["text", "image", "pdf"],
+            "output": ["text"],
+          },
+          "variants": {
+            "low": { "thinkingConfig": { "thinkingBudget": 8192 } },
+            "medium": { "thinkingConfig": { "thinkingBudget": 16384 } },
+            "max": { "thinkingConfig": { "thinkingBudget": 32768 } },
+          },
+        },
+      },
+    },
+  },
+  "mcp": {
+    "context7": {
+      "type": "remote",
+      "url": "https://mcp.context7.com/mcp",
+      // free key for higher rate limits: https://context7.com/dashboard
+      // "headers": { "CONTEXT7_API_KEY": "{env:CONTEXT7_API_KEY}" },
+      "enabled": true,
+    },
+    "gh_grep": {
+      "type": "remote",
+      "url": "https://mcp.grep.app",
+      "enabled": true,
+    },
+    "playwright": {
+      "type": "local",
+      "command": ["npx", "-y", "@playwright/mcp@latest", "--browser=chromium"],
+      "enabled": true,
+    },
+    //   "rclone-gdrive": {
+    //     "type": "local",
+    //     "enabled": true,
+    //     "command": [
+    //       "uv",
+    //       "run",
+    //       "--project",
+    //       "/Users/kirill/.config/opencode/mcps/rclone-gdrive",
+    //       "python",
+    //       "/Users/kirill/.config/opencode/mcps/rclone-gdrive/rclone_gdrive_mcp.py"
+    //     ],
+    //     "environment": {
+    //       "RCLONE_REMOTE": "gdrive"
+    //     }
+    //   }
+  },
+}

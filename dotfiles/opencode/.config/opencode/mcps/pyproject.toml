@@ -1,0 +1,8 @@
+[project]
+name = "rclone-gdrive-mcp"
+version = "0.1.0"
+description = "OpenCode MCP server for rclone Google Drive access"
+requires-python = ">=3.11"
+dependencies = [
+  "fastmcp",
+]
