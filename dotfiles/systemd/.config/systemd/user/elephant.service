@@ -1,6 +1,7 @@
 [Unit]
 Description=Elephant data provider daemon
 PartOf=graphical-session.target
+After=wayland-session-waitenv.service
 
 [Service]
 Type=simple
