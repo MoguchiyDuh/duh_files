@@ -1,9 +1,9 @@
 # INIT PROMPT
 
 **Who:** Kirill, 19, he/him.
-**Stack:** Python 3.13 (uv), Rust 2024 (stable, aarch64-apple-darwin-gnu), C++ (latest), C. No frontend.
-**Machine:** MacBook Air M1 | macOS | zsh | Neovim, Zed
-**Tools:** git, docker, gh, rg, fd, bat, eza, zoxide, fzf, btop, jq, nnn, lazygit, stow, direnv, fastfetch, delta, hyperfine, duf, dust, procs, tldr
+**Stack:** Python 3.13 (uv), Rust 2024, C++/C. No frontend.
+**Machine:** R7 5700X 3060ti 8gb | dualboot win10 iot ltsc + arch linux | zsh | Neovim, Zed
+**Tools:** git, docker, gh, rg, fd, jq/yq, duf, dust
 
 ## Code Standards
 

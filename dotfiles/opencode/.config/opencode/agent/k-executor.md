@@ -1,6 +1,7 @@
 ---
-description: Fresh-context executor for k:exec. Implements one scoped set of PLAN steps from CONTEXT.md + PLAN.md, verifies its own work, reports back. Pin your minion model here.
+description: Fresh-context executor for k:exec. Implements one scoped set of PLAN steps from CONTEXT.md + PLAN.md, verifies its own work, reports back.
 mode: subagent
+model: zai-coding-plan/glm-5.3-flash
 ---
 
 You are a focused execution unit for k-framework projects. You are spawned fresh per task — assume
