@@ -1,6 +1,6 @@
 # walker (patched)
 
-Patched build of `walker` 2.17.0 that fixes custom grid item templates for menu providers.
+Patched build of `walker` 2.17.1 that fixes custom grid item templates for menu providers.
 
 ## Why
 
@@ -18,7 +18,7 @@ drives the grid cells.
 ## Rebuild
 
     makepkg -f
-    sudo pacman -U walker-2.17.0-1-x86_64.pkg.tar.zst
+    sudo pacman -U walker-2.17.1-1-x86_64.pkg.tar.zst
 
 ## Prevent overwrite
 
