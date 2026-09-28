@@ -34,3 +34,6 @@ end
 for _, animation in ipairs(preset.animations or {}) do
   hl.animation(animation)
 end
+
+hl.animation({ leaf = "border",      enabled = false })
+hl.animation({ leaf = "borderangle", enabled = false })

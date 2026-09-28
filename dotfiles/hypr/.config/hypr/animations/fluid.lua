@@ -16,7 +16,5 @@ return {
     { leaf = "fadeLayersOut",    enabled = true, speed = 3.0, bezier = "fluidExit" },
     { leaf = "workspaces",       enabled = true, speed = 5.0, spring = "fluidSpring", style = "slidefade 20%" },
     { leaf = "specialWorkspace", enabled = true, speed = 4.0, spring = "fluidSpring", style = "slidevert" },
-    { leaf = "border",           enabled = true, speed = 6.0, bezier = "fluidFade" },
-    { leaf = "borderangle",      enabled = true, speed = 100.0, bezier = "liner", style = "loop" },
   },
 }

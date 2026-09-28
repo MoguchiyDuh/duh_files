@@ -18,7 +18,5 @@ return {
     { leaf = "fadeLayersOut",    enabled = true, speed = 2.7, bezier = "exprStall" },
     { leaf = "workspaces",       enabled = true, speed = 7.0, bezier = "exprDecel", style = "slide" },
     { leaf = "specialWorkspace", enabled = true, speed = 3.5, bezier = "exprDecel", style = "slidevert" },
-    { leaf = "border",           enabled = true, speed = 10,  bezier = "exprDecel" },
-    { leaf = "borderangle",      enabled = true, speed = 100.0, bezier = "liner", style = "loop" },
   },
 }

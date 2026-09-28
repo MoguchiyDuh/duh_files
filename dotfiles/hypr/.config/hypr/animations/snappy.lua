@@ -15,7 +15,5 @@ return {
     { leaf = "fadeLayersOut",    enabled = true, speed = 3.5, bezier = "snappyExit" },
     { leaf = "workspaces",       enabled = true, speed = 4.0, bezier = "snappyOut",  style = "slide" },
     { leaf = "specialWorkspace", enabled = true, speed = 4.0, bezier = "snappyOut",  style = "slidevert" },
-    { leaf = "border",           enabled = true, speed = 8.0, bezier = "snappyOut" },
-    { leaf = "borderangle",      enabled = true, speed = 100.0, bezier = "liner", style = "loop" },
   },
 }
