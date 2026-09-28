@@ -1,7 +1,7 @@
 [Unit]
 Description=Seed matugen cache with fallback palette
 Before=graphical-session.target
-ConditionPathExists=!%h/.cache/wallust/kitty-colors.conf
+ConditionPathExists=!%h/.cache/dyntheme/kitty-colors.conf
 
 [Service]
 Type=oneshot

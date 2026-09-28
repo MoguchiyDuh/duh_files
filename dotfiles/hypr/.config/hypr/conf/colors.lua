@@ -23,7 +23,7 @@ local fallback = {
 }
 
 local function palette()
-  local path = (os.getenv("HOME") or "") .. "/.cache/wallust/colors.lua"
+  local path = (os.getenv("HOME") or "") .. "/.cache/dyntheme/colors.lua"
   local chunk = loadfile(path)
   if not chunk then
     return fallback

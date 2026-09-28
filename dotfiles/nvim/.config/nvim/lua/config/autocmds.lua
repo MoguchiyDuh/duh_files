@@ -7,8 +7,8 @@ vim.api.nvim_create_autocmd("TextYankPost", {
 vim.api.nvim_create_autocmd("Signal", {
 	pattern = "SIGUSR1",
 	callback = function()
-		if vim.g.colors_name == "wallust" then
-			dofile(vim.fn.expand("~/.local/share/nvim/site/colors/wallust.lua"))
+		if vim.g.colors_name == "dynamic" then
+			dofile(vim.fn.expand("~/.local/share/nvim/site/colors/dynamic.lua"))
 		end
 	end,
 })

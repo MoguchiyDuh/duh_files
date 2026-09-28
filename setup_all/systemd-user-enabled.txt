@@ -9,7 +9,7 @@ pipewire.socket
 swaync.service
 walker.service
 wallpaper-restore.service
-wallust-seed.service
+matugen-seed.service
 waybar.service
 wireplumber.service
 xdg-user-dirs.service

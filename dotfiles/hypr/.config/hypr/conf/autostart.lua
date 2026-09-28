@@ -1,7 +1,7 @@
 local autostart = {
   "gsettings set org.gnome.desktop.interface color-scheme 'prefer-dark'",
   "gsettings set org.gnome.desktop.interface gtk-theme 'Adwaita-dark'",
-  "gsettings set org.gnome.desktop.interface font-name 'JetBrainsMono Nerd Font Mono 11'",
+  "gsettings set org.gnome.desktop.interface font-name 'FiraCode Nerd Font Mono 11'",
   "gsettings set org.gnome.desktop.interface cursor-theme 'Adwaita'",
 }
 
