@@ -1,0 +1,12 @@
+[SddmGreeterTheme]
+Name=Dyntheme
+Description=Matugen-generated theme matching the Hyprland lockscreen
+Author=kirill
+License=MIT
+Type=sddm-theme
+Version=1.1
+QtVersion=6
+MainScript=Main.qml
+ConfigFile=theme.conf
+Theme-Id=dyntheme
+Theme-API=2.0

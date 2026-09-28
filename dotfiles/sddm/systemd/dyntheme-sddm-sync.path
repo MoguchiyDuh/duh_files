@@ -1,0 +1,9 @@
+[Unit]
+Description=Watch regenerated matugen colors for the SDDM dyntheme
+
+[Path]
+PathChanged=/home/kirill/.cache/dyntheme/sddm-colors.qml
+Unit=dyntheme-sddm-sync.service
+
+[Install]
+WantedBy=paths.target

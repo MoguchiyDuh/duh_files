@@ -1,0 +1,27 @@
+#!/usr/bin/env bash
+set -Eeuo pipefail
+
+home=/home/kirill
+src="$home/duh_files/dotfiles/sddm/theme"
+dst=/usr/share/sddm/themes/dyntheme
+colors="$home/.cache/dyntheme/sddm-colors.qml"
+wall="$home/.cache/current_wallpaper.png"
+
+mkdir -p "$dst"
+
+install -m 0644 "$src/Main.qml" "$src/theme.conf" "$src/metadata.desktop" "$src/Colors.qml" "$dst/"
+
+if [[ -f "$colors" ]] && grep -q '^import QtQuick' "$colors" && grep -q 'property color foreground' "$colors" && grep -q 'property color surface' "$colors"; then
+    install -m 0644 "$colors" "$dst/Colors.qml"
+fi
+
+if [[ -f "$wall" ]]; then
+    tmp=$(mktemp --suffix=.png)
+    if magick "$wall" -auto-orient -resize '2560x1440^' -gravity center -extent 2560x1440 -blur 0x32 -modulate 52,108,100 "$tmp" 2>/dev/null; then
+        install -m 0644 "$tmp" "$dst/background.png"
+    fi
+    rm -f "$tmp"
+fi
+
+chmod 0755 "$dst"
+find "$dst" -maxdepth 1 -type f -exec chmod 0644 {} +

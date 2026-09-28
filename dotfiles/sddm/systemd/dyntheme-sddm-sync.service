@@ -1,0 +1,7 @@
+[Unit]
+Description=Sync matugen colors and wallpaper into the SDDM dyntheme
+After=local-fs.target
+
+[Service]
+Type=oneshot
+ExecStart=/usr/local/bin/dyntheme-sddm-sync

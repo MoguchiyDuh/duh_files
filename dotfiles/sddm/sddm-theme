@@ -1,0 +1,17 @@
+#!/usr/bin/env bash
+set -Eeuo pipefail
+
+conf=/etc/sddm.conf.d/10-dyntheme.conf
+
+case "${1:-}" in
+dyntheme | maldives | maya | elarun) theme="$1" ;;
+default) theme="" ;;
+*)
+    printf 'usage: %s {dyntheme|maldives|maya|elarun|default}\n' "${0##*/}" >&2
+    exit 1
+    ;;
+esac
+
+install -d /etc/sddm.conf.d
+printf '[Theme]\nCurrent=%s\n' "$theme" >"$conf"
+printf "SDDM theme set to '%s'\n" "${theme:-<system default>}"
