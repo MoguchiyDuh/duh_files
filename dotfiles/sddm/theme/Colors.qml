@@ -16,5 +16,5 @@ QtObject {
     readonly property color tertiary: "#dbbce1"
     readonly property color error: "#ffb4ab"
     readonly property color errorText: "#690005"
-    readonly property color outline: "#8e9099"
+    readonly property color outline: "#8e9199"
 }

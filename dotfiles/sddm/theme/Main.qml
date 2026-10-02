@@ -1,4 +1,5 @@
 import QtQuick 2.0
+import QtQuick.Effects
 import SddmComponents 2.0
 
 Rectangle {
@@ -6,7 +7,7 @@ Rectangle {
 
     Colors { id: theme }
 
-    property string fontFamily: config.font ? config.font : "FiraCode Nerd Font Mono"
+    property string fontFamily: config.font ? config.font : "FiraCode Nerd Font"
     property int sessionIndex: sessionModel.lastIndex >= 0 ? sessionModel.lastIndex : 0
     property string message: ""
     property color messageColor: theme.muted
@@ -14,6 +15,8 @@ Rectangle {
     property string pendingAction: ""
     property bool sessionMenuOpen: false
     property bool capsLock: typeof keyboard !== "undefined" ? keyboard.capsLock : false
+    readonly property bool multiLayout: typeof keyboard !== "undefined" && keyboard.layouts.length > 1
+    readonly property string layoutName: multiLayout ? keyboard.layouts[keyboard.currentLayout].shortName.toUpperCase() : ""
 
     readonly property color cardColor: Qt.rgba(theme.surfaceContainer.r, theme.surfaceContainer.g, theme.surfaceContainer.b, 0.88)
     readonly property color fieldColor: Qt.rgba(theme.surfaceVariant.r, theme.surfaceVariant.g, theme.surfaceVariant.b, 0.45)
@@ -200,7 +203,7 @@ Rectangle {
         onTriggered: {
             var now = new Date()
             clock.text = Qt.formatTime(now, "HH:mm")
-            date.text = Qt.formatDate(now, "dddd, MMMM d")
+            date.text = Qt.formatDate(now, "dddd, MMMM dd").toUpperCase()
         }
     }
 
@@ -208,23 +211,31 @@ Rectangle {
         running: true
         NumberAnimation { target: hero; property: "opacity"; from: 0; to: 1; duration: 420; easing.type: Easing.OutQuad }
         NumberAnimation { target: card; property: "opacity"; from: 0; to: 1; duration: 380; easing.type: Easing.OutQuad }
-        NumberAnimation { target: card; property: "anchors.verticalCenterOffset"; from: 120; to: 90; duration: 420; easing.type: Easing.OutCubic }
+        NumberAnimation { target: card; property: "anchors.verticalCenterOffset"; from: 130; to: 100; duration: 420; easing.type: Easing.OutCubic }
     }
 
     Column {
         id: hero
         anchors.horizontalCenter: parent.horizontalCenter
         anchors.verticalCenter: parent.verticalCenter
-        anchors.verticalCenterOffset: -170
-        spacing: 0
+        anchors.verticalCenterOffset: -200
+        spacing: 2
+        layer.enabled: true
+        layer.effect: MultiEffect {
+            shadowEnabled: true
+            shadowColor: "#8c000000"
+            shadowBlur: 0.6
+            shadowVerticalOffset: 3
+        }
 
         Text {
             id: date
             anchors.horizontalCenter: parent.horizontalCenter
             color: theme.muted
             font.family: root.fontFamily
-            font.pixelSize: 18
+            font.pixelSize: 19
             font.weight: Font.Medium
+            font.letterSpacing: 4
         }
 
         Text {
@@ -232,22 +243,22 @@ Rectangle {
             anchors.horizontalCenter: parent.horizontalCenter
             color: theme.foreground
             font.family: root.fontFamily
-            font.pixelSize: 84
+            font.pixelSize: 150
             font.weight: Font.Bold
         }
     }
 
     Rectangle {
         id: card
-        width: 400
+        width: 420
         height: content.implicitHeight + 56
-        radius: 18
+        radius: 16
         color: root.cardColor
         border.width: 1
         border.color: Qt.rgba(theme.outline.r, theme.outline.g, theme.outline.b, 0.5)
         anchors.horizontalCenter: parent.horizontalCenter
         anchors.verticalCenter: parent.verticalCenter
-        anchors.verticalCenterOffset: 90
+        anchors.verticalCenterOffset: 100
 
         SequentialAnimation {
             id: shake
@@ -263,6 +274,7 @@ Rectangle {
             width: parent.width - 56
             spacing: 14
             opacity: root.busy ? 0.6 : 1
+            layer.enabled: opacity < 1
             Behavior on opacity { NumberAnimation { duration: 120 } }
 
             Row {
@@ -312,27 +324,46 @@ Rectangle {
             }
 
             Rectangle {
+                id: field
                 width: parent.width
-                height: 52
-                radius: 14
-                color: root.fieldColor
-                border.width: 2
-                border.color: password.activeFocus ? theme.primary : Qt.rgba(theme.outline.r, theme.outline.g, theme.outline.b, 0.4)
-                Behavior on border.color { ColorAnimation { duration: 120 } }
+                height: 54
+                radius: 16
+                color: Qt.rgba(theme.outline.r, theme.outline.g, theme.outline.b, 0.35)
+
+                Rectangle {
+                    anchors.fill: parent
+                    radius: parent.radius
+                    opacity: password.activeFocus ? 1 : 0
+                    Behavior on opacity { NumberAnimation { duration: 160 } }
+                    gradient: Gradient {
+                        orientation: Gradient.Horizontal
+                        GradientStop { position: 0.0; color: theme.primary }
+                        GradientStop { position: 1.0; color: theme.tertiary }
+                    }
+                }
+
+                Rectangle {
+                    anchors.fill: parent
+                    anchors.margins: 2
+                    radius: parent.radius - 2
+                    color: theme.surfaceContainerHigh
+                }
 
                 TextInput {
                     id: password
                     anchors.fill: parent
-                    anchors.leftMargin: 18
-                    anchors.rightMargin: 58
+                    anchors.leftMargin: 20
+                    anchors.rightMargin: chips.width + submitButton.width + 26
                     verticalAlignment: TextInput.AlignVCenter
                     echoMode: TextInput.Password
                     passwordCharacter: "\u25cf"
+                    clip: true
                     color: theme.foreground
                     selectionColor: theme.primary
                     selectedTextColor: theme.accentText
                     font.family: root.fontFamily
                     font.pixelSize: 16
+                    font.letterSpacing: 2
                     onAccepted: root.doLogin()
                     Keys.onEscapePressed: {
                         if (root.pendingAction) {
@@ -346,46 +377,73 @@ Rectangle {
                     Text {
                         anchors.fill: parent
                         verticalAlignment: Text.AlignVCenter
-                        text: "Enter password..."
+                        text: "\udb80\udf3e  Enter password"
                         color: theme.muted
-                        font: password.font
+                        font.family: root.fontFamily
+                        font.pixelSize: 15
                         visible: password.text.length === 0
                     }
                 }
 
-                Rectangle {
+                Row {
+                    id: chips
                     anchors.right: submitButton.left
-                    anchors.rightMargin: 10
+                    anchors.rightMargin: 8
                     anchors.verticalCenter: parent.verticalCenter
-                    width: capsText.implicitWidth + 16
-                    height: 24
-                    radius: 12
-                    visible: root.capsLock && password.activeFocus
-                    color: Qt.rgba(theme.error.r, theme.error.g, theme.error.b, 0.16)
+                    spacing: 6
 
-                    Text {
-                        id: capsText
-                        anchors.centerIn: parent
-                        text: "Caps Lock"
-                        color: theme.error
-                        font.family: root.fontFamily
-                        font.pixelSize: 11
-                        font.weight: Font.Medium
+                    Rectangle {
+                        visible: root.capsLock
+                        width: capsText.implicitWidth + 18
+                        height: 26
+                        radius: 10
+                        color: Qt.rgba(theme.tertiary.r, theme.tertiary.g, theme.tertiary.b, 0.18)
+
+                        Text {
+                            id: capsText
+                            anchors.centerIn: parent
+                            text: "\udb81\ude32 CAPS"
+                            color: theme.tertiary
+                            font.family: root.fontFamily
+                            font.pixelSize: 11
+                            font.weight: Font.Bold
+                        }
+                    }
+
+                    Rectangle {
+                        visible: root.multiLayout
+                        width: layoutText.implicitWidth + 18
+                        height: 26
+                        radius: 10
+                        color: Qt.rgba(theme.primary.r, theme.primary.g, theme.primary.b, 0.16)
+
+                        Text {
+                            id: layoutText
+                            anchors.centerIn: parent
+                            text: "\udb80\udf0c " + root.layoutName
+                            color: theme.primary
+                            font.family: root.fontFamily
+                            font.pixelSize: 11
+                            font.weight: Font.Bold
+                        }
                     }
                 }
 
                 Rectangle {
                     id: submitButton
                     anchors.right: parent.right
-                    anchors.rightMargin: 7
+                    anchors.rightMargin: 8
                     anchors.verticalCenter: parent.verticalCenter
                     width: 38
                     height: 38
                     radius: 10
                     scale: submitArea.pressed ? 0.9 : 1
                     Behavior on scale { NumberAnimation { duration: 90 } }
-                    color: submitArea.containsMouse ? Qt.lighter(theme.primary, 1.15) : theme.primary
-                    Behavior on color { ColorAnimation { duration: 90 } }
+                    gradient: Gradient {
+                        orientation: Gradient.Horizontal
+                        GradientStop { position: 0.0; color: submitArea.containsMouse ? Qt.lighter(theme.primary, 1.12) : theme.primary }
+                        GradientStop { position: 1.0; color: submitArea.containsMouse ? Qt.lighter(theme.tertiary, 1.12) : theme.tertiary }
+                    }
 
                     Text {
                         anchors.centerIn: parent
