@@ -67,6 +67,18 @@ hl.window_rule({
   no_focus = true,
 })
 
+hl.window_rule({
+  name = "confine-pointer-fullscreen-games",
+  match = { content = "game", fullscreen = true },
+  confine_pointer = true,
+})
+
+hl.window_rule({
+  name = "confine-pointer-xwayland-games",
+  match = { xwayland = true, fullscreen = true },
+  confine_pointer = true,
+})
+
 hl.layer_rule({
   name = "notifications-blur",
   match = { namespace = "^swaync(-.*)?$" },

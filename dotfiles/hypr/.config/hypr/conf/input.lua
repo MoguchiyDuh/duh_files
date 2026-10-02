@@ -4,7 +4,7 @@ hl.config({
     kb_options = "grp:win_space_toggle",
     numlock_by_default = true,
     follow_mouse = 1,
-    sensitivity = -0.5,
+    sensitivity = -0.4,
     accel_profile = "flat",
     repeat_rate = 50,
     repeat_delay = 250,
