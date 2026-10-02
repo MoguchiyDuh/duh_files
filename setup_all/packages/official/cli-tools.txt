@@ -1,5 +1,4 @@
 7zip
-atuin
 bat
 btop
 croc

@@ -75,7 +75,7 @@ alias y-clean='yay -Sc'
 alias y-autoclean='yay -Scc'
 
 alias h='history'
-alias hc='rm -f ~/.local/share/atuin/history.db'
+alias hc='history -c'
 alias c='clear'
 alias venv='source .venv/bin/activate'
 alias lgit='lazygit'
@@ -93,7 +93,6 @@ yy() {
 
 eval "$(zoxide init zsh)"
 eval "$(fzf --zsh)"
-eval "$(atuin init zsh)"
 [[ -o interactive ]] && fastfetch
 eval "$(starship init zsh)"
 source "$plugin_dir/fast-syntax-highlighting/fast-syntax-highlighting.plugin.zsh"

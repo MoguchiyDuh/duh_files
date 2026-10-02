@@ -1,6 +1,5 @@
 7zip
 amd-ucode
-atuin
 audacious
 awww
 base
