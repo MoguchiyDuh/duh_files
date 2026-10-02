@@ -39,3 +39,9 @@
 @define-color on_surface_variant    {{ colors.on_surface_variant.default.hex }};
 @define-color outline               {{ colors.outline.default.hex }};
 @define-color outline_variant       {{ colors.outline_variant.default.hex }};
+@define-color secondary_container   {{ colors.secondary_container.default.hex }};
+@define-color on_secondary_container {{ colors.on_secondary_container.default.hex }};
+@define-color error                 {{ colors.error.default.hex }};
+@define-color on_error              {{ colors.on_error.default.hex }};
+@define-color error_container       {{ colors.error_container.default.hex }};
+@define-color on_error_container    {{ colors.on_error_container.default.hex }};

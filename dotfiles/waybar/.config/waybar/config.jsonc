@@ -54,7 +54,7 @@
       "critical": 92,
     },
     "format": " {percentage}%",
-    "tooltip-format": "<b>Memory</b>  {percentage}%\nUsed  {used} / {total} GiB\nSwap  {swapPercentage}%",
+    "tooltip-format": "<b>Memory</b>  {percentage}%\nUsed  {used:0.1f} / {total:0.1f} GiB\nSwap  {swapPercentage}%",
     "on-click": "kitty btop",
   },
   "custom/gpu": {
@@ -197,7 +197,7 @@
         "days": "{}",
         "weeks": "<span alpha='60%'>W{}</span>",
         "weekdays": "<b>{}</b>",
-        "today": "<span foreground='#fcaf3e'><b><u>{}</u></b></span>",
+        "today": "<b><u>{}</u></b>",
       },
     },
     "actions": {

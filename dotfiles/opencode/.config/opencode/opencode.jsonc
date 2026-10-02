@@ -42,7 +42,6 @@
     "file:/home/kirill/Documents/duh-agy-auth",
     "file:/home/kirill/Documents/duh-claude-auth",
     "file:/home/kirill/Documents/duh-websearch",
-    "cc-safety-net@latest",
   ],
   "provider": {
     "google": {
@@ -144,7 +143,7 @@
         "@playwright/mcp@latest",
         "--browser=chromium",
         "--executable-path=/usr/bin/helium-browser",
-        "--user-data-dir=/home/kirill/.playwright-mcp/shared-profile"
+        "--user-data-dir=/home/kirill/.playwright-mcp/shared-profile",
       ],
       "enabled": true,
     },

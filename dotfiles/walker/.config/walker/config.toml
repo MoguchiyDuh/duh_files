@@ -17,7 +17,7 @@ ext_background_effect_blur = false
 symbols = 7
 
 [placeholders]
-default = { input = "Search apps, windows, files — DDG bangs work: !gh, !w, !yt, !mdn…", list = "No results" }
+default = { input = "Search apps, windows, files", list = "No results" }
 calc = { input = "Calculate or convert", list = "No calculation" }
 files = { input = "Search files", list = "No files" }
 websearch = { input = "Search the web", list = "No search engine" }

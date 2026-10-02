@@ -33,14 +33,26 @@ window#waybar {
 #custom-profile {
     min-height: 36px;
     margin: 5px;
-    padding: 0 12px;
+    padding: 0 10px;
     border-radius: 10px;
+    color: @foreground;
     background: alpha(@color0, 0.75);
     text-shadow: 0 1px 3px rgba(0, 0, 0, 0.8);
+    transition: box-shadow 120ms ease;
+}
+
+#custom-distro-icon,
+#custom-cliphist,
+#custom-notifications,
+#bluetooth,
+#network,
+#language,
+#custom-awake,
+#custom-profile {
+    padding: 0 14px;
 }
 
 #custom-distro-icon {
-    padding: 0 15px;
     color: @on_primary;
     background: linear-gradient(135deg, @grad_a_dim, @grad_b_dim);
     font-size: 20px;
@@ -51,27 +63,25 @@ window#waybar {
 #cpu,
 #memory,
 #custom-gpu {
-    padding: 0 8px;
-    color: @color4;
-    background: alpha(@color9, 0.4);
+    color: @on_primary_container;
+    background: alpha(@primary_container, 0.85);
 }
 
 #cpu.warning,
 #memory.warning {
-    color: @color3;
-    background: alpha(@color3, 0.4);
+    color: @on_secondary_container;
+    background: alpha(@secondary_container, 0.9);
 }
 
 #cpu.critical,
-#memory.critical {
-    color: @color1;
-    background: alpha(@color1, 0.4);
+#memory.critical,
+#custom-gpu.hot {
+    color: @on_error_container;
+    background: alpha(@error_container, 0.9);
 }
 
 #custom-gpu.hot {
-    color: @color1;
-    background: alpha(@color1, 0.4);
-    text-shadow: 0 0 9px alpha(@color1, 0.75);
+    text-shadow: 0 0 9px alpha(@error, 0.75);
 }
 
 #taskbar {
@@ -83,11 +93,12 @@ window#waybar {
     min-width: 0;
     min-height: 36px;
     margin: 5px 3px;
-    padding: 0 12px;
+    padding: 0 10px;
     border-radius: 10px;
-    color: @color7;
+    color: @foreground;
     background: alpha(@color0, 0.75);
     text-shadow: 0 1px 2px rgba(0, 0, 0, 0.7);
+    transition: box-shadow 120ms ease;
 }
 
 #taskbar button.active {
@@ -97,7 +108,6 @@ window#waybar {
 
 #taskbar button.minimized {
     opacity: 0.5;
-    background: alpha(@color0, 0.75);
 }
 
 #workspaces {
@@ -111,10 +121,11 @@ window#waybar {
     margin: 0 3px;
     padding: 0 14px;
     border-radius: 10px;
-    color: @color7;
+    color: @foreground;
     background: alpha(@color0, 0.75);
     font-weight: 600;
     text-shadow: 0 1px 3px rgba(0, 0, 0, 0.8);
+    transition: box-shadow 120ms ease;
 }
 
 #workspaces button.active {
@@ -124,36 +135,15 @@ window#waybar {
 }
 
 #workspaces button.urgent {
-    color: @color0;
-    background: linear-gradient(135deg, @color1, @color9);
-}
-
-#custom-cliphist {
-    padding: 0 15px;
-    color: @color15;
-    background: alpha(@color0, 0.75);
-}
-
-#custom-notifications {
-    padding: 0 15px;
-    color: @color7;
-    background: alpha(@color0, 0.75);
+    color: @on_error_container;
+    background: linear-gradient(135deg, @error_container, alpha(@error, 0.6));
 }
 
 #custom-notifications.notification,
 #custom-notifications.inhibited-notification {
-    color: @color5;
-    background: alpha(@color9, 0.4);
-    text-shadow: 0 0 9px alpha(@color5, 0.6);
-}
-
-#custom-notifications.dnd-notification,
-#custom-notifications.dnd-none,
-#custom-notifications.dnd-inhibited-notification,
-#custom-notifications.dnd-inhibited-none {
-    color: @color8;
-    background: alpha(@color8, 0.4);
-    opacity: 0.7;
+    color: @on_primary_container;
+    background: alpha(@primary_container, 0.85);
+    text-shadow: 0 0 9px alpha(@primary, 0.6);
 }
 
 #privacy {
@@ -163,13 +153,8 @@ window#waybar {
 #privacy > widget > image,
 #privacy image {
     margin: 0 2px;
-    color: @color1;
-    -gtk-icon-shadow: 0 0 6px alpha(@color1, 0.8);
-}
-
-#tray {
-    padding: 0 12px;
-    background: alpha(@color0, 0.75);
+    color: @error;
+    -gtk-icon-shadow: 0 0 6px alpha(@error, 0.8);
 }
 
 #tray > .passive {
@@ -177,98 +162,80 @@ window#waybar {
 }
 
 #tray > .needs-attention {
-    background: alpha(@color1, 0.4);
+    background: alpha(@error_container, 0.9);
+    border-radius: 6px;
 }
 
 #pulseaudio,
 #bluetooth,
 #network {
-    padding: 0 15px;
-    color: @color13;
-    background: alpha(@color13, 0.4);
+    color: @on_tertiary_container;
+    background: alpha(@tertiary_container, 0.85);
 }
 
-#pulseaudio {
-    padding: 0 8px;
+#language {
+    color: @on_secondary_container;
+    background: alpha(@secondary_container, 0.9);
+    font-weight: 600;
 }
 
-#pulseaudio.mic {
-    padding: 0 8px;
+#custom-weather,
+#clock {
+    color: @on_primary_container;
+    background: linear-gradient(135deg, alpha(@primary_container, 0.9), alpha(@tertiary_container, 0.85));
+    font-weight: 700;
 }
 
-#language,
-#custom-awake,
-#custom-profile {
-    padding: 0 15px;
+#battery {
+    color: @on_tertiary_container;
+    background: alpha(@tertiary_container, 0.85);
+}
+
+#battery.charging,
+#battery.plugged {
+    color: @on_primary_container;
+    background: alpha(@primary_container, 0.85);
+}
+
+#battery.warning:not(.charging) {
+    color: @on_secondary_container;
+    background: alpha(@secondary_container, 0.9);
+}
+
+#battery.critical:not(.charging) {
+    color: @on_error_container;
+    background: alpha(@error_container, 0.9);
+}
+
+#custom-awake.active {
+    color: @on_secondary_container;
+    background: alpha(@secondary_container, 0.9);
+    text-shadow: 0 0 9px alpha(@secondary, 0.6);
+}
+
+#custom-profile.eco {
+    color: @on_tertiary_container;
+    background: alpha(@tertiary_container, 0.85);
+}
+
+#custom-profile.performance {
+    color: @on_error_container;
+    background: alpha(@error_container, 0.9);
 }
 
 #pulseaudio.muted,
 #pulseaudio.mic.source-muted,
 #bluetooth.disabled,
 #bluetooth.off,
-#network.disconnected {
-    color: @color8;
-    background: alpha(@color8, 0.4);
-    opacity: 0.6;
-}
-
-#language {
-    color: @color3;
-    background: alpha(@color3, 0.4);
-    font-weight: 600;
-}
-
-#custom-weather,
-#clock {
-    padding: 0 8px;
-    color: @color5;
-    background: linear-gradient(135deg, alpha(@color5, 0.4), alpha(@color6, 0.35));
-    font-family: "FiraCode Nerd Font";
-    font-weight: 700;
-}
-
-#battery {
-    padding: 0 8px;
-    color: @color2;
-    background: alpha(@color2, 0.4);
-}
-
-#battery.charging,
-#battery.plugged {
-    color: @color10;
-    background: alpha(@color10, 0.4);
-}
-
-#battery.warning:not(.charging) {
-    color: @color3;
-    background: alpha(@color3, 0.4);
-}
-
-#battery.critical:not(.charging) {
-    color: @color1;
-    background: alpha(@color1, 0.4);
-}
-
-#custom-awake,
-#custom-profile {
-    color: @color8;
-    background: alpha(@color8, 0.35);
-}
-
-#custom-awake.active {
-    color: @color3;
-    background: alpha(@color3, 0.4);
-    text-shadow: 0 0 9px alpha(@color3, 0.75);
-}
-
-#custom-profile.eco {
-    color: @color2;
-    background: alpha(@color2, 0.4);
-}
-
-#custom-profile.performance {
-    color: @color1;
-    background: alpha(@color1, 0.4);
+#bluetooth.no-controller,
+#network.disconnected,
+#custom-notifications.dnd-notification,
+#custom-notifications.dnd-none,
+#custom-notifications.dnd-inhibited-notification,
+#custom-notifications.dnd-inhibited-none {
+    color: @outline;
+    background: alpha(@color0, 0.75);
+    text-shadow: none;
 }
 
 #custom-awake.hidden,
@@ -294,16 +261,23 @@ window#waybar {
 #custom-weather:hover,
 #clock:hover,
 #battery:hover,
+#custom-awake:hover,
+#custom-profile:hover,
 #taskbar button:hover,
 #workspaces button:hover {
-    box-shadow: inset 0 0 0 1px alpha(@foreground, 0.18);
+    box-shadow: inset 0 0 0 40px alpha(@foreground, 0.08);
 }
 
 tooltip {
     padding: 10px 14px;
-    border: 2px solid alpha(@color12, 0.6);
-    border-radius: 10px;
-    background: alpha(@color0, 0.95);
+    border: 2px solid transparent;
+    border-radius: 12px;
+    background-color: transparent;
+    background-image:
+        linear-gradient(alpha(@surface_container, 0.97), alpha(@surface_container, 0.97)),
+        linear-gradient(135deg, @color12, @color13);
+    background-origin: border-box;
+    background-clip: padding-box, border-box;
 }
 
 tooltip label {

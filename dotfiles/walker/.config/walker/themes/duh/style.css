@@ -12,8 +12,8 @@
 
 popover {
   padding: 8px;
-  background-color: alpha(@surface, 0.65);
-  border: 1px solid alpha(white, 0.14);
+  background-color: alpha(@surface, 0.92);
+  border: 1px solid alpha(@border, 0.35);
   border-radius: 14px;
   box-shadow: 0 16px 40px alpha(black, 0.40);
 }
@@ -22,23 +22,20 @@ scrollbar {
   opacity: 0;
 }
 
-/* Spotlight: a mostly-opaque frosted panel hugging its content, hairline
-   rim, single hairline separator under the query, rows selected with a
-   solid accent fill. */
 .box-wrapper {
   padding: 20px 20px 12px;
-  background-color: alpha(@surface, 0.65);
-  background-image: linear-gradient(
-    to bottom,
-    alpha(white, 0.06) 0%,
-    alpha(white, 0) 24%
-  );
-  border: 1px solid alpha(white, 0.15);
+  border: 2px solid transparent;
   border-radius: 16px;
+  background-color: transparent;
+  background-image:
+    linear-gradient(to bottom, alpha(@foreground, 0.04), alpha(@foreground, 0) 24%),
+    linear-gradient(alpha(@surface, 0.90), alpha(@surface, 0.90)),
+    linear-gradient(135deg, @accent, @hint_fg);
+  background-origin: border-box;
+  background-clip: padding-box, padding-box, border-box;
   box-shadow:
     0 32px 90px alpha(black, 0.50),
-    0 8px 24px alpha(black, 0.28),
-    inset 0 1px 0 alpha(white, 0.07);
+    0 8px 24px alpha(black, 0.28);
 }
 
 .search-container {
@@ -84,18 +81,18 @@ scrollbar {
 }
 
 .item-box {
-  min-height: 44px;
+  min-height: 50px;
   padding: 7px 11px;
   border-radius: 8px;
 }
 
 .item-image,
 .normal-icons {
-  -gtk-icon-size: 26px;
+  -gtk-icon-size: 30px;
 }
 
 .large-icons {
-  -gtk-icon-size: 56px;
+  -gtk-icon-size: 30px;
 }
 
 .item-image-text {
@@ -166,25 +163,23 @@ row:hover .item-box {
   color: @accent;
 }
 
-/* Selection: invert with the palette foreground instead of filling with a
-   palette accent — matugen accents can be pastel or near-white depending on
-   the wallpaper, the foreground/surface pair is always max contrast. */
 child:selected .item-box:not(.wallpaper-item),
 row:selected .item-box:not(.wallpaper-item),
 child:selected:hover .item-box:not(.wallpaper-item),
 row:selected:hover .item-box:not(.wallpaper-item) {
-  background: alpha(@accent_deep, 0.90);
+  background: linear-gradient(135deg, alpha(@accent, 0.38), alpha(@hint_fg, 0.26));
+  box-shadow: inset 0 0 0 1px alpha(@accent, 0.35);
 }
 
 child:selected .item-text,
 child:selected .item-image,
 child:selected .item-image-text,
 child:selected .normal-icons {
-  color: @accent;
+  color: @foreground;
 }
 
 child:selected .item-subtext {
-  color: alpha(@accent, 0.65);
+  color: alpha(@foreground, 0.72);
 }
 
 child:selected .providerlist .item-subtext,
@@ -201,7 +196,7 @@ child:selected .item-quick-activation {
 .preview {
   min-width: 0;
   background: alpha(@foreground, 0.04);
-  border: 1px solid alpha(white, 0.10);
+  border: 1px solid alpha(@border, 0.25);
   border-radius: 12px;
 }
 
