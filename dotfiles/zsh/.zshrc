@@ -75,7 +75,7 @@ alias y-clean='yay -Sc'
 alias y-autoclean='yay -Scc'
 
 alias h='history'
-alias hc='history -c'
+alias hc=': > ${HISTFILE}; fc -p'
 alias c='clear'
 alias venv='source .venv/bin/activate'
 alias lgit='lazygit'
